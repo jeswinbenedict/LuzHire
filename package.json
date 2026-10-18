@@ -11,9 +11,11 @@
     "test": "vitest run",
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
-    "db:test": "supabase test db"
+    "db:test": "supabase test db",
+    "db:check": "node tools/db-check/run.mjs"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.5.10",
     "@types/node": "^22.10.0",
     "supabase": "^2.121.0",
     "typescript": "^7.0.2",

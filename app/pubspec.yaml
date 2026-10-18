@@ -38,6 +38,8 @@ dependencies:
   go_router: ^18.1.0
   flutter_web_plugins:
     sdk: flutter
+  supabase_flutter: ^2.18.3
+  intl: ^0.20.3
 
 dev_dependencies:
   flutter_test:

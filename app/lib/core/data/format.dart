@@ -1,0 +1,73 @@
+import 'package:intl/intl.dart';
+
+import 'enums.dart';
+import 'models.dart';
+
+/// "₹12–18 L / year", "$40–50 / hour", "€55k / year", or null when no salary.
+/// Every salary shows its period, so mistakes like "$18–22 /yr" for an hourly
+/// wage are visible at a glance.
+String? formatSalary(Job job) {
+  if (!job.hasSalary) return null;
+  final cur = job.salaryCurrency ?? '';
+  final symbol = switch (cur) {
+    'INR' => '₹',
+    'USD' => r'$',
+    'EUR' => '€',
+    'GBP' => '£',
+    _ => '$cur ',
+  };
+  String amount(double v) {
+    if (cur == 'INR' && v >= 100000) {
+      final lakhs = v / 100000;
+      return '${_trim(lakhs)} L';
+    }
+    if (v >= 1000) return '${_trim(v / 1000)}k';
+    return _trim(v);
+  }
+
+  final lo = job.salaryMin;
+  final hi = job.salaryMax;
+  final range = switch ((lo, hi)) {
+    (final a?, final b?) when a != b =>
+      '$symbol${_stripUnit(amount(a), amount(b))}–${amount(b)}',
+    (final a?, _) => '$symbol${amount(a)}${hi == null ? '+' : ''}',
+    (_, final b?) => 'Up to $symbol${amount(b)}',
+    _ => '',
+  };
+  final period = job.salaryPeriod?.label;
+  return period == null ? range : '$range / $period';
+}
+
+// "12 L–18 L" reads better as "12–18 L" when both ends share a unit.
+String _stripUnit(String lo, String hi) {
+  for (final unit in const [' L', 'k']) {
+    if (lo.endsWith(unit) && hi.endsWith(unit)) {
+      return lo.substring(0, lo.length - unit.length);
+    }
+  }
+  return lo;
+}
+
+String _trim(double v) =>
+    v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
+
+/// "Just now", "5 min ago", "3 h ago", "2 days ago", then "12 Oct 2026".
+String formatRelative(DateTime when, {DateTime? now}) {
+  final n = now ?? DateTime.now();
+  final d = n.difference(when);
+  if (d.inMinutes < 1) return 'Just now';
+  if (d.inMinutes < 60) return '${d.inMinutes} min ago';
+  if (d.inHours < 24) return '${d.inHours} h ago';
+  if (d.inDays < 7) return d.inDays == 1 ? 'Yesterday' : '${d.inDays} days ago';
+  return DateFormat('d MMM y').format(when.toLocal());
+}
+
+/// "Bengaluru, IN · Hybrid".
+String formatPlace(Job job) {
+  final parts = [
+    if ((job.location ?? '').isNotEmpty) job.location!,
+    if (job.workplace != WorkplaceType.onsite || (job.location ?? '').isEmpty)
+      job.workplace.label,
+  ];
+  return parts.join(' · ');
+}

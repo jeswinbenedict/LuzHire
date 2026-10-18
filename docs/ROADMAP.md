@@ -15,7 +15,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 |---|---|---|---|---|
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components, layout kit and shells done. Still needed: Stitch designs, Vercel |
-| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ⬜ |
+| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | 🟡 Built and tested locally. Still needed: CI run on GitHub, apply to cloud project |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ⬜ |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
@@ -69,6 +69,17 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** a Vercel account (sign in with GitHub as jeswinbenedict) and a Vercel token, plus a session restart so the Stitch tools load.
 
 ## Phase 2 — Backend foundation (Supabase)
+**Done on `phase-2-backend`:**
+- 7 migrations: auth-claim helpers, enums, profiles + candidate data, companies + members, jobs (full-text + trigram search, moderation, slugs), notifications/announcements/reports/news, append-only audit log, application pipeline (state machine, events, interviews, offers, saved jobs), RLS on every table, storage buckets + policies, `search_jobs` RPC, realtime publication
+- Business rules enforced in Postgres: duplicate applications are impossible, the deadline is enforced, stages can't be skipped, only candidates withdraw, offer acceptance marks the candidate hired, application counter, notifications, verification-gated publishing, and no self-promotion to admin
+- Privacy: employers see a candidate only after that candidate applies, resumes are readable only by the owner or the hiring team for that application, and candidates read interviews through a view without private notes
+- `seed.sql`: 24 fictional companies, 240 jobs, demo accounts
+- 57 pgTAP assertions in `supabase/tests/database/`, run locally in PGlite (`npm run db:check`, no Docker needed) and in CI with the real Supabase stack
+- Dart data layer: enums mirrored from SQL (a test catches drift), models, salary/time formatting, repositories for jobs, saved jobs, applications and notifications
+
+**Still to do:** first green CI run of the `database` job, then `supabase link` + `supabase db push` to the cloud project (needs your Supabase project).
+
+**Original scope:**
 - Migrations: enums, all tables from ARCHITECTURE §6 (profiles, educations, experiences, skills, resumes, companies, company_members, jobs, job_skills, applications, stage transitions, application_events, interviews, offers, saved_jobs, notifications, announcements, reports, audit_logs, news_articles).
 - Triggers: application counter, apply guard (published, deadline, verified email), stage-transition guard + history, notification fan-out, job moderation, audit log, `updated_at`, profile completion.
 - RLS policies for every table; `app.uid()` / `app.role()` helpers; append-only audit log.

@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
+import '../data/enums.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
 import 'luz_surface.dart';
+
+export '../data/enums.dart' show ApplicationStage;
 
 /// Filter chip: raised when off; sinks with an orange dot when selected
 /// (DESIGN.md §2 rule 4: selection is never shown by relief alone).
@@ -64,32 +67,35 @@ class LuzFilterChip extends StatelessWidget {
   }
 }
 
-/// Application pipeline stages (matches the Postgres `application_stage` enum).
-enum ApplicationStage {
-  applied('Applied', LuzChipTone.neutral, Icons.send_outlined),
-  underReview('Under review', LuzChipTone.blue, Icons.search),
-  shortlisted('Shortlisted', LuzChipTone.violet, Icons.star_outline),
-  assessment('Assessment', LuzChipTone.blue, Icons.assignment_outlined),
-  technicalInterview(
-    'Technical interview',
-    LuzChipTone.blue,
-    Icons.event_outlined,
-  ),
-  hrInterview('HR interview', LuzChipTone.blue, Icons.event_outlined),
-  finalReview('Final review', LuzChipTone.violet, Icons.balance_outlined),
-  offerIssued(
-    'Offer issued',
-    LuzChipTone.orange,
-    Icons.mark_email_unread_outlined,
-  ),
-  hired('Hired', LuzChipTone.green, Icons.handshake_outlined),
-  rejected('Rejected', LuzChipTone.red, Icons.folder_off_outlined),
-  withdrawn('Withdrawn', LuzChipTone.neutral, Icons.logout);
+/// Visual identity of each pipeline stage (DESIGN.md §3): tone + icon.
+extension ApplicationStageStyle on ApplicationStage {
+  LuzChipTone get tone => switch (this) {
+    ApplicationStage.applied ||
+    ApplicationStage.withdrawn => LuzChipTone.neutral,
+    ApplicationStage.underReview ||
+    ApplicationStage.assessment ||
+    ApplicationStage.technicalInterview ||
+    ApplicationStage.hrInterview => LuzChipTone.blue,
+    ApplicationStage.shortlisted ||
+    ApplicationStage.finalReview => LuzChipTone.violet,
+    ApplicationStage.offerIssued => LuzChipTone.orange,
+    ApplicationStage.hired => LuzChipTone.green,
+    ApplicationStage.rejected => LuzChipTone.red,
+  };
 
-  const ApplicationStage(this.label, this.tone, this.icon);
-  final String label;
-  final LuzChipTone tone;
-  final IconData icon;
+  IconData get icon => switch (this) {
+    ApplicationStage.applied => Icons.send_outlined,
+    ApplicationStage.underReview => Icons.search,
+    ApplicationStage.shortlisted => Icons.star_outline,
+    ApplicationStage.assessment => Icons.assignment_outlined,
+    ApplicationStage.technicalInterview ||
+    ApplicationStage.hrInterview => Icons.event_outlined,
+    ApplicationStage.finalReview => Icons.balance_outlined,
+    ApplicationStage.offerIssued => Icons.mark_email_unread_outlined,
+    ApplicationStage.hired => Icons.handshake_outlined,
+    ApplicationStage.rejected => Icons.folder_off_outlined,
+    ApplicationStage.withdrawn => Icons.logout,
+  };
 }
 
 /// Inset status pill: colour + icon + text, never colour alone.
