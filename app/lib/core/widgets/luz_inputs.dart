@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
@@ -80,7 +81,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
           outlineWidth: (focused || hasError) ? 2 : 1,
           padding: const EdgeInsets.symmetric(horizontal: LuzSpace.md),
           child: SizedBox(
-            height: zone.isWorkspace ? 38 : 50,
+            height: zone.isWorkspace && context.isPointer ? 38 : 50,
             child: Row(
               children: [
                 if (widget.prefixIcon != null) ...[

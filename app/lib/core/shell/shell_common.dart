@@ -1,0 +1,360 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+import '../layout/input_mode.dart';
+import '../theme/app_theme.dart';
+import '../theme/theme_mode_provider.dart';
+import '../theme/tokens.dart';
+import '../widgets/widgets.dart';
+
+/// A navigation target shown in shells and the command menu.
+class LuzDestination {
+  const LuzDestination({
+    required this.label,
+    required this.path,
+    required this.icon,
+    IconData? selectedIcon,
+    this.group = 'Navigate',
+  }) : selectedIcon = selectedIcon ?? icon;
+
+  final String label;
+  final String path;
+  final IconData icon;
+  final IconData selectedIcon;
+  final String group;
+
+  /// Whether [location] is inside this destination ("/" matches exactly).
+  bool matches(String location) => path == '/'
+      ? location == '/'
+      : location == path || location.startsWith('$path/');
+}
+
+/// Index of the destination that best matches the current location.
+int selectedIndexFor(List<LuzDestination> items, String location) {
+  var best = -1;
+  var bestLen = -1;
+  for (var i = 0; i < items.length; i++) {
+    if (items[i].matches(location) && items[i].path.length > bestLen) {
+      best = i;
+      bestLen = items[i].path.length;
+    }
+  }
+  return best;
+}
+
+/// Brand mark: a lit amber dot set into a raised porcelain tile + wordmark.
+class LuzLogo extends StatelessWidget {
+  const LuzLogo({super.key, this.compact = false, this.onTap});
+  final bool compact;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final mark = LuzSurface(
+      depth: LuzDepth.raisedXs,
+      radius: 10,
+      child: SizedBox.square(
+        dimension: 34,
+        child: Center(
+          child: Container(
+            width: 12,
+            height: 12,
+            decoration: BoxDecoration(
+              color: LuzBrand.primary,
+              shape: BoxShape.circle,
+              boxShadow: [
+                BoxShadow(
+                  color: LuzBrand.primary.withValues(alpha: 0.6),
+                  blurRadius: 10,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    final content = Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        mark,
+        if (!compact) ...[
+          const SizedBox(width: 10),
+          Text(
+            'LuzHire',
+            style: context.luzText.h4.copyWith(
+              fontSize: 20,
+              letterSpacing: -0.4,
+            ),
+          ),
+        ],
+      ],
+    );
+    return Semantics(
+      label: 'LuzHire home',
+      button: onTap != null,
+      excludeSemantics: true,
+      child: MouseRegion(
+        cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
+        child: GestureDetector(onTap: onTap, child: content),
+      ),
+    );
+  }
+}
+
+/// Sun/moon physical switch between light and dark.
+class ThemeSwitchButton extends ConsumerWidget {
+  const ThemeSwitchButton({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    return LuzIconButton(
+      icon: isDark ? Icons.light_mode_outlined : Icons.dark_mode_outlined,
+      tooltip: isDark ? 'Switch to light theme' : 'Switch to dark theme',
+      size: 40,
+      onPressed: () => ref
+          .read(themeModeProvider.notifier)
+          .set(isDark ? ThemeMode.light : ThemeMode.dark),
+    );
+  }
+}
+
+/// System / Light / Dark preference control (drawers, settings).
+class ThemeModeSelector extends ConsumerWidget {
+  const ThemeModeSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return LuzSegmented<ThemeMode>(
+      segments: const [
+        (
+          value: ThemeMode.system,
+          label: 'System',
+          icon: Icons.brightness_auto_outlined,
+        ),
+        (
+          value: ThemeMode.light,
+          label: 'Light',
+          icon: Icons.light_mode_outlined,
+        ),
+        (value: ThemeMode.dark, label: 'Dark', icon: Icons.dark_mode_outlined),
+      ],
+      selected: ref.watch(themeModeProvider),
+      onChanged: (m) => ref.read(themeModeProvider.notifier).set(m),
+    );
+  }
+}
+
+/// Stand-in for screens built in later phases.
+class PlaceholderPage extends StatelessWidget {
+  const PlaceholderPage({
+    super.key,
+    required this.title,
+    required this.phase,
+    required this.icon,
+    this.description,
+  });
+
+  final String title;
+  final String phase;
+  final IconData icon;
+  final String? description;
+
+  @override
+  Widget build(BuildContext context) {
+    return LuzEmptyState(
+      icon: icon,
+      title: title,
+      message: description ?? 'This screen is built in $phase.',
+    );
+  }
+}
+
+/// Small keyboard-hint chip, e.g. "Ctrl K". Only shown with a pointer.
+class KeyHint extends StatelessWidget {
+  const KeyHint(this.keys, {super.key});
+  final String keys;
+
+  @override
+  Widget build(BuildContext context) {
+    if (!context.isPointer) return const SizedBox.shrink();
+    final p = context.luz;
+    return ExcludeSemantics(
+      child: LuzSurface(
+        depth: LuzDepth.insetSm,
+        radius: 6,
+        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+        child: Text(
+          keys,
+          style: context.luzText.mono.copyWith(fontSize: 11, color: p.muted),
+        ),
+      ),
+    );
+  }
+}
+
+String commandKeyLabel(BuildContext context) =>
+    context.usesCommandKey ? '⌘K' : 'Ctrl K';
+
+/// Command menu (Ctrl/⌘ K): type to filter destinations, arrows + Enter to go.
+Future<void> showCommandMenu(
+  BuildContext context,
+  List<LuzDestination> destinations,
+) {
+  return showLuzModal<void>(
+    context: context,
+    title: 'Go to…',
+    builder: (ctx) => _CommandMenu(destinations: destinations),
+  );
+}
+
+class _CommandMenu extends StatefulWidget {
+  const _CommandMenu({required this.destinations});
+  final List<LuzDestination> destinations;
+
+  @override
+  State<_CommandMenu> createState() => _CommandMenuState();
+}
+
+class _CommandMenuState extends State<_CommandMenu> {
+  final _query = TextEditingController();
+  int _active = 0;
+
+  List<LuzDestination> get _results {
+    final q = _query.text.trim().toLowerCase();
+    // One entry per path (e.g. "My LuzHire" and "Dashboard" are both /me).
+    final seen = <String>{};
+    final unique = widget.destinations.where((d) => seen.add(d.path)).toList();
+    if (q.isEmpty) return unique;
+    return unique
+        .where(
+          (d) =>
+              d.label.toLowerCase().contains(q) ||
+              d.group.toLowerCase().contains(q),
+        )
+        .toList();
+  }
+
+  @override
+  void dispose() {
+    _query.dispose();
+    super.dispose();
+  }
+
+  void _go(LuzDestination d) {
+    Navigator.of(context).pop();
+    GoRouter.of(context).go(d.path);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final t = context.luzText;
+    final results = _results;
+    if (_active >= results.length) {
+      _active = results.isEmpty ? 0 : results.length - 1;
+    }
+
+    return Focus(
+      onKeyEvent: (node, e) {
+        if ((e is! KeyDownEvent && e is! KeyRepeatEvent) || results.isEmpty) {
+          return KeyEventResult.ignored;
+        }
+        if (e.logicalKey == LogicalKeyboardKey.arrowDown) {
+          setState(() => _active = (_active + 1).clamp(0, results.length - 1));
+          return KeyEventResult.handled;
+        }
+        if (e.logicalKey == LogicalKeyboardKey.arrowUp) {
+          setState(() => _active = (_active - 1).clamp(0, results.length - 1));
+          return KeyEventResult.handled;
+        }
+        return KeyEventResult.ignored;
+      },
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LuzSurface(
+            depth: LuzDepth.insetSm,
+            radius: LuzRadius.lg,
+            outline: p.outline,
+            padding: const EdgeInsets.symmetric(horizontal: LuzSpace.md),
+            child: SizedBox(
+              height: 48,
+              child: Row(
+                children: [
+                  Icon(Icons.search, size: 20, color: p.muted),
+                  const SizedBox(width: LuzSpace.sm),
+                  Expanded(
+                    child: TextField(
+                      controller: _query,
+                      autofocus: true,
+                      onChanged: (_) => setState(() => _active = 0),
+                      onSubmitted: (_) {
+                        if (results.isNotEmpty) _go(results[_active]);
+                      },
+                      style: t.body.copyWith(color: p.ink),
+                      decoration: InputDecoration.collapsed(
+                        hintText: 'Search pages',
+                        hintStyle: t.body.copyWith(color: p.muted),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(height: LuzSpace.md),
+          if (results.isEmpty)
+            Padding(
+              padding: const EdgeInsets.all(LuzSpace.lg),
+              child: Text(
+                'No matches',
+                textAlign: TextAlign.center,
+                style: t.bodySm.copyWith(color: p.muted),
+              ),
+            ),
+          for (var i = 0; i < results.length; i++)
+            LuzPressable(
+              onPressed: () => _go(results[i]),
+              radius: LuzRadius.sm,
+              semanticLabel: '${results[i].label}, ${results[i].group}',
+              builder: (context, pressed, hovered) {
+                final active = i == _active || hovered;
+                return LuzSurface(
+                  depth: active ? LuzDepth.insetSm : LuzDepth.flat,
+                  radius: LuzRadius.sm,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: LuzSpace.md,
+                    vertical: 10,
+                  ),
+                  child: Row(
+                    children: [
+                      Icon(
+                        results[i].icon,
+                        size: 18,
+                        color: active ? p.accent : p.inkMuted,
+                      ),
+                      const SizedBox(width: LuzSpace.md),
+                      Expanded(
+                        child: Text(
+                          results[i].label,
+                          style: t.label.copyWith(color: p.ink),
+                        ),
+                      ),
+                      Text(
+                        results[i].group,
+                        style: t.caption.copyWith(color: p.muted),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}

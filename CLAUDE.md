@@ -48,5 +48,5 @@ On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH)
 ## Status
 The phase plan, status, definition of done and owner inputs are in **`docs/ROADMAP.md`**. Update it at the end of every phase.
 - [x] Phase 0: Foundation
-- [~] Phase 1: Design system & adaptive shell. Components and gallery are done. Still to do: adaptive layout kit, app shells, more components, Stitch screens, first Vercel deploy
+- [~] Phase 1: Design system & adaptive shell. Components, layout kit, shells and routes are done (branch `phase-1-design-shell`). Still to do: Stitch screens, first Vercel deploy
 - [ ] Phases 2–11: see ROADMAP

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
@@ -96,7 +97,7 @@ class LuzButton extends StatelessWidget {
           color: fill,
           padding: EdgeInsets.symmetric(horizontal: zone.isWorkspace ? 14 : 24),
           child: SizedBox(
-            height: zone.controlHeight,
+            height: zone.controlHeight(pointer: context.isPointer),
             child: Center(widthFactor: 1, child: content),
           ),
         );

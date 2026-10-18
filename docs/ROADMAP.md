@@ -14,7 +14,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | # | Phase | Outcome | Needs from you | Status |
 |---|---|---|---|---|
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
-| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components done |
+| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components, layout kit and shells done. Still needed: Stitch designs, Vercel |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ⬜ |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ⬜ |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
@@ -50,8 +50,14 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 ## Phase 1 — Design system & adaptive shell 🟡
 **Done:** tokens, light/dark themes, relief painter, `LuzSurface`, `LuzButton`, `LuzIconButton`, `LuzTextField`, `LuzToggle`, `LuzFilterChip`, `LuzStatusChip`, `LuzCard`, `LuzDial`, design gallery, widget tests.
+**Done on `phase-1-design-shell`:**
+- Layout kit: `LuzBreakpoint`, `LuzContent`, `LuzGrid`, `LuzTwoPane`, `LuzInputModeScope` (touch vs pointer density)
+- Adaptivity: path URLs (deep links), text scaling clamped at 200 %, Ctrl/⌘ K command menu (works while typing), "/" to search, adaptive modal (sheet on phones, dialog elsewhere)
+- Components: modal/sheet/confirm, skeleton, empty state, toast, segmented tabs, checkbox, radio, range slider, avatar, logo socket, progress groove, hero search bar, data table, kanban column
+- Shells: Spotlight (top nav ≥ 900 px; top bar + bottom nav + menu sheet below that) and Workspace (sidebar ≥ 1024 px, rail 600–1023, drawer below), routes for every section with phase placeholders, home hero
+- 25 widget tests covering breakpoints, shells at each width, shortcuts, modal, slider, table and density
 
-**Remaining**
+**Remaining (original list kept for reference)**
 - **Adaptive layout kit:** `LuzBreakpoint` helper (compact/medium/expanded/large), `AdaptiveScaffold` that swaps bottom nav ↔ navigation rail ↔ sidebar, two-pane list/detail layout, max-width content containers.
 - **Platform adaptivity:** pointer vs touch density (`VisualDensity`), hover only on pointer devices, keyboard shortcuts (`Ctrl/⌘ K`, `/` to search, `Esc`), `SafeArea`, platform back handling (`PopScope`), adaptive dialogs (dialog on wide screens, bottom sheet on phones), text-scale and reduced-motion support.
 - **More components:** `LuzBottomSheet`, `LuzDialog`, `LuzSkeleton`, `LuzEmptyState`, `LuzToast`, `LuzTabs`/segmented control, `LuzCheckbox`/`LuzRadio`, `LuzSlider` (salary range), `LuzAvatar`/logo socket, `LuzProgressGroove`, `LuzSearchBar` (hero), `LuzDataTable` (Workspace), `LuzKanbanColumn`.
