@@ -16,7 +16,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components, layout kit and shells done. Still needed: Stitch designs, Vercel |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | 🟡 Built and tested locally. Still needed: CI run on GitHub, apply to cloud project |
-| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ⬜ |
+| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | 🟡 Built and tested with fakes. Still needed: your config values (docs/SETUP.md) and a live test |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
@@ -93,6 +93,16 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** a Supabase project (free tier is fine for development). Send its **project URL and anon key** only; you'll enter the DB password and service-role key yourself as secrets.
 
 ## Phase 3 — Authentication & roles
+**Done on `phase-3-auth`:**
+- API: `POST /api/auth/bootstrap` sets `role=authenticated` + `app_role` claims and creates the profile. It is idempotent and never grants admin. `POST /api/admin/users/:id/role` is admin-only: it updates claims and profile, signs the user out, and writes an audit entry. CORS allows localhost outside production. 10 Vitest tests.
+- Flutter: `AppConfig` from dart-defines (public values only), Firebase + Supabase start-up with the Firebase ID token as Supabase `accessToken` (anon until claims exist), and an `AuthGateway` (Firebase or disabled), `AuthController` and `AccountApi`.
+- Screens: sign in, sign up (role choice, `?role=employer`), verify email (resend cooldown), forgot password (no account enumeration), choose role (first Google sign-in), no access, account (theme and sign out), and session loading.
+- Router guards: role areas (`/me` candidate, `/employer` employer+admin, `/admin` admin), return-to-`from` with open-redirect protection, a verify-email hold, and choose-role. Shells show an avatar menu or "Finish setup" depending on state.
+- Tests: 11 redirect unit tests and 11 end-to-end auth journeys (fakes), 70 app tests in total.
+
+**Still to do:** you follow `docs/SETUP.md`, then I add `env/local.json` and we test a real sign-up on web (and Android if you register the app).
+
+**Original scope:**
 - Firebase project; Email/Password + Google providers; Flutter `firebase_core` / `firebase_auth` for web, Android and iOS.
 - Supabase Third-Party Auth (Firebase) configured; `accessToken` callback in `Supabase.initialize`.
 - `/api/auth/bootstrap` (Firebase Admin SDK on Vercel): sets `role: authenticated` and `app_role`, creates the profile row; `/api/admin/users/:id/role`.

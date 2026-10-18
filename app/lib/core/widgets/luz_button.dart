@@ -176,3 +176,39 @@ class LuzIconButton extends StatelessWidget {
     );
   }
 }
+
+/// Inline text link (accent colour, underline on hover/focus).
+class LuzTextLink extends StatelessWidget {
+  const LuzTextLink({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.style,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    return LuzPressable(
+      onPressed: onPressed,
+      radius: LuzRadius.xs,
+      semanticLabel: label,
+      builder: (context, pressed, hovered) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          label,
+          style: (style ?? context.luzText.label).copyWith(
+            color: p.accent,
+            fontWeight: FontWeight.w600,
+            decoration: hovered || pressed ? TextDecoration.underline : null,
+            decorationColor: p.accent,
+          ),
+        ),
+      ),
+    );
+  }
+}

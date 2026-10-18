@@ -3,7 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/auth/application/auth_controller.dart';
+import '../../features/auth/domain/auth_state.dart';
 import '../layout/input_mode.dart';
+import '../router/auth_redirect.dart';
 import '../theme/app_theme.dart';
 import '../theme/theme_mode_provider.dart';
 import '../theme/tokens.dart';
@@ -300,4 +303,126 @@ class _CommandMenuState extends State<_CommandMenu> {
       ),
     );
   }
+}
+
+/// Right side of the top bars: sign-in buttons, "finish setup", or the
+/// signed-in avatar menu.
+class AccountArea extends ConsumerWidget {
+  const AccountArea({super.key, this.compact = false});
+
+  /// Phones: avatar only (sign-in lives in the menu sheet).
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    switch (auth) {
+      case SignedIn(:final user):
+        return LuzPressable(
+          onPressed: () => showAccountMenu(context, ref),
+          radius: LuzRadius.pill,
+          tooltip: 'Account: ${user.displayName}',
+          semanticLabel: 'Account menu for ${user.displayName}',
+          builder: (context, pressed, _) => LuzSurface(
+            depth: pressed ? LuzDepth.insetSm : LuzDepth.raisedXs,
+            radius: LuzRadius.pill,
+            padding: EdgeInsets.fromLTRB(4, 4, compact ? 4 : 12, 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LuzAvatar(name: user.displayName, size: 32),
+                if (!compact) ...[
+                  const SizedBox(width: 8),
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 140),
+                    child: Text(
+                      user.displayName,
+                      overflow: TextOverflow.ellipsis,
+                      style: context.luzText.label,
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Icon(Icons.expand_more, size: 18, color: context.luz.muted),
+                ],
+              ],
+            ),
+          ),
+        );
+      case NeedsRole() || NeedsEmailVerification():
+        return LuzButton(
+          label: 'Finish setup',
+          icon: Icons.arrow_forward,
+          onPressed: () =>
+              context.go(auth is NeedsRole ? chooseRolePath : verifyPath),
+        );
+      case AuthLoading():
+        return const SizedBox(width: 32, height: 32);
+      case SignedOut():
+        if (compact) return const SizedBox.shrink();
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            LuzButton(
+              label: 'Sign in',
+              onPressed: () => context.go('/sign-in'),
+            ),
+            const SizedBox(width: LuzSpace.md),
+            LuzButton.accent(
+              label: 'Get started',
+              onPressed: () => context.go('/sign-up'),
+            ),
+          ],
+        );
+    }
+  }
+}
+
+/// Account menu (sheet on phones, dialog elsewhere).
+Future<void> showAccountMenu(BuildContext context, WidgetRef ref) {
+  final auth = ref.read(authControllerProvider);
+  if (auth is! SignedIn) return Future.value();
+  return showLuzModal<void>(
+    context: context,
+    title: auth.user.displayName,
+    builder: (ctx) => Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Text(
+          auth.user.email,
+          style: ctx.luzText.bodySm.copyWith(color: ctx.luz.muted),
+        ),
+        const SizedBox(height: LuzSpace.lg),
+        LuzButton(
+          label: 'My dashboard',
+          icon: Icons.space_dashboard_outlined,
+          expand: true,
+          onPressed: () {
+            Navigator.of(ctx).pop();
+            context.go(homeFor(auth.role));
+          },
+        ),
+        const SizedBox(height: LuzSpace.md),
+        LuzButton(
+          label: 'Account & appearance',
+          icon: Icons.manage_accounts_outlined,
+          expand: true,
+          onPressed: () {
+            Navigator.of(ctx).pop();
+            context.go('/account');
+          },
+        ),
+        const SizedBox(height: LuzSpace.md),
+        LuzButton(
+          label: 'Sign out',
+          icon: Icons.logout,
+          expand: true,
+          onPressed: () {
+            Navigator.of(ctx).pop();
+            ref.read(authControllerProvider.notifier).signOut();
+          },
+        ),
+      ],
+    ),
+  );
 }

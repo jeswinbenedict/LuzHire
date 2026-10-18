@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+import '../../features/auth/application/auth_controller.dart';
+import '../../features/auth/domain/auth_state.dart';
+import '../data/enums.dart';
 
 import '../layout/app_shortcuts.dart';
 import '../layout/breakpoints.dart';
@@ -14,7 +19,46 @@ import 'shell_common.dart';
 /// - ≥ 900 px: raised top navigation with text links.
 /// - < 900 px: compact top bar (logo, theme, menu) + bottom navigation
 ///   for thumb reach; secondary links live in the menu sheet.
-class SpotlightShell extends StatelessWidget {
+/// Bottom/top destinations; the last item points at the signed-in role's home.
+List<LuzDestination> spotlightDestinationsFor(AuthState auth) {
+  final role = auth is SignedIn ? auth.role : null;
+  final last = switch (role) {
+    AppRole.employer => const LuzDestination(
+      label: 'Workspace',
+      path: '/employer',
+      icon: Icons.business_center_outlined,
+      selectedIcon: Icons.business_center,
+    ),
+    AppRole.admin => const LuzDestination(
+      label: 'Admin',
+      path: '/admin',
+      icon: Icons.admin_panel_settings_outlined,
+      selectedIcon: Icons.admin_panel_settings,
+    ),
+    _ => spotlightDestinations.last,
+  };
+  return [
+    ...spotlightDestinations.take(spotlightDestinations.length - 1),
+    last,
+  ];
+}
+
+/// "For employers": sign up as an employer, or open the workspace.
+LuzDestination? employerLinkFor(AuthState auth) => switch (auth) {
+  SignedIn(role: AppRole.candidate) => null,
+  SignedIn() => const LuzDestination(
+    label: 'Employer workspace',
+    path: '/employer',
+    icon: Icons.business_center_outlined,
+  ),
+  _ => const LuzDestination(
+    label: 'For employers',
+    path: '/sign-up?role=employer',
+    icon: Icons.business_center_outlined,
+  ),
+};
+
+class SpotlightShell extends ConsumerWidget {
   const SpotlightShell({
     super.key,
     required this.location,
@@ -27,9 +71,11 @@ class SpotlightShell extends StatelessWidget {
   static const wideNavWidth = 900.0;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final wide = MediaQuery.sizeOf(context).width >= wideNavWidth;
-    final selected = selectedIndexFor(spotlightDestinations, location);
+    final auth = ref.watch(authControllerProvider);
+    final dests = spotlightDestinationsFor(auth);
+    final selected = selectedIndexFor(dests, location);
 
     return LuzZone(
       kind: LuzZoneKind.spotlight,
@@ -41,7 +87,13 @@ class SpotlightShell extends StatelessWidget {
             bottom: false,
             child: Column(
               children: [
-                wide ? _TopNav(selected: selected) : const _CompactTopBar(),
+                wide
+                    ? _TopNav(
+                        destinations: dests,
+                        selected: selected,
+                        employerLink: employerLinkFor(auth),
+                      )
+                    : _CompactTopBar(employerLink: employerLinkFor(auth)),
                 Expanded(child: child),
               ],
             ),
@@ -49,8 +101,9 @@ class SpotlightShell extends StatelessWidget {
           bottomNavigationBar: wide
               ? null
               : _BottomNav(
+                  destinations: dests,
                   selected: selected,
-                  onSelect: (i) => context.go(spotlightDestinations[i].path),
+                  onSelect: (i) => context.go(dests[i].path),
                 ),
         ),
       ),
@@ -59,8 +112,14 @@ class SpotlightShell extends StatelessWidget {
 }
 
 class _TopNav extends StatelessWidget {
-  const _TopNav({required this.selected});
+  const _TopNav({
+    required this.destinations,
+    required this.selected,
+    this.employerLink,
+  });
+  final List<LuzDestination> destinations;
   final int selected;
+  final LuzDestination? employerLink;
 
   @override
   Widget build(BuildContext context) {
@@ -85,20 +144,13 @@ class _TopNav extends StatelessWidget {
                   clipBehavior: Clip.none,
                   child: Row(
                     children: [
-                      for (var i = 1; i < spotlightDestinations.length - 1; i++)
+                      for (var i = 1; i < destinations.length - 1; i++)
                         _NavLink(
-                          destination: spotlightDestinations[i],
+                          destination: destinations[i],
                           selected: i == selected,
                         ),
-                      if (wide)
-                        const _NavLink(
-                          destination: LuzDestination(
-                            label: 'For employers',
-                            path: '/employer',
-                            icon: Icons.business_center_outlined,
-                          ),
-                          selected: false,
-                        ),
+                      if (wide && employerLink != null)
+                        _NavLink(destination: employerLink!, selected: false),
                     ],
                   ),
                 ),
@@ -129,15 +181,7 @@ class _TopNav extends StatelessWidget {
               const SizedBox(width: LuzSpace.sm),
               const ThemeSwitchButton(),
               const SizedBox(width: LuzSpace.md),
-              LuzButton(
-                label: 'Sign in',
-                onPressed: () => context.go('/sign-in'),
-              ),
-              const SizedBox(width: LuzSpace.md),
-              LuzButton.accent(
-                label: 'Get started',
-                onPressed: () => context.go('/sign-up'),
-              ),
+              const AccountArea(),
             ],
           ),
         ),
@@ -187,11 +231,12 @@ class _NavLink extends StatelessWidget {
   }
 }
 
-class _CompactTopBar extends StatelessWidget {
-  const _CompactTopBar();
+class _CompactTopBar extends ConsumerWidget {
+  const _CompactTopBar({this.employerLink});
+  final LuzDestination? employerLink;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return LuzSurface(
       depth: LuzDepth.raisedXs,
       radius: 0,
@@ -201,15 +246,25 @@ class _CompactTopBar extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: LuzSpace.md),
           child: Row(
             children: [
-              LuzLogo(onTap: () => context.go('/')),
-              const Spacer(),
+              // On very narrow phones the logo scales down instead of
+              // pushing the controls off-screen.
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: LuzLogo(onTap: () => context.go('/')),
+                ),
+              ),
+              const SizedBox(width: LuzSpace.sm),
               const ThemeSwitchButton(),
+              const SizedBox(width: LuzSpace.sm),
+              const AccountArea(compact: true),
               const SizedBox(width: LuzSpace.sm),
               LuzIconButton(
                 icon: Icons.menu,
                 tooltip: 'Menu',
                 size: 40,
-                onPressed: () => _openMenu(context),
+                onPressed: () =>
+                    _openMenu(context, ref.read(authControllerProvider)),
               ),
             ],
           ),
@@ -218,7 +273,7 @@ class _CompactTopBar extends StatelessWidget {
     );
   }
 
-  void _openMenu(BuildContext context) {
+  void _openMenu(BuildContext context, AuthState auth) {
     showLuzModal<void>(
       context: context,
       title: 'Menu',
@@ -227,33 +282,48 @@ class _CompactTopBar extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: [
-          LuzButton.accent(
-            label: 'Get started',
-            expand: true,
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.go('/sign-up');
-            },
-          ),
-          const SizedBox(height: LuzSpace.md),
-          LuzButton(
-            label: 'Sign in',
-            expand: true,
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.go('/sign-in');
-            },
-          ),
-          const SizedBox(height: LuzSpace.md),
-          LuzButton(
-            label: 'For employers',
-            icon: Icons.business_center_outlined,
-            expand: true,
-            onPressed: () {
-              Navigator.of(ctx).pop();
-              context.go('/employer');
-            },
-          ),
+          if (auth is SignedOut) ...[
+            LuzButton.accent(
+              label: 'Get started',
+              expand: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.go('/sign-up');
+              },
+            ),
+            const SizedBox(height: LuzSpace.md),
+            LuzButton(
+              label: 'Sign in',
+              expand: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.go('/sign-in');
+              },
+            ),
+            const SizedBox(height: LuzSpace.md),
+          ],
+          if (auth is SignedIn) ...[
+            LuzButton(
+              label: 'Account & appearance',
+              icon: Icons.manage_accounts_outlined,
+              expand: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.go('/account');
+              },
+            ),
+            const SizedBox(height: LuzSpace.md),
+          ],
+          if (employerLink != null)
+            LuzButton(
+              label: employerLink!.label,
+              icon: Icons.business_center_outlined,
+              expand: true,
+              onPressed: () {
+                Navigator.of(ctx).pop();
+                context.go(employerLink!.path);
+              },
+            ),
           const SizedBox(height: LuzSpace.lg),
           Text(
             'Appearance',
@@ -271,7 +341,12 @@ class _CompactTopBar extends StatelessWidget {
 }
 
 class _BottomNav extends StatelessWidget {
-  const _BottomNav({required this.selected, required this.onSelect});
+  const _BottomNav({
+    required this.destinations,
+    required this.selected,
+    required this.onSelect,
+  });
+  final List<LuzDestination> destinations;
   final int selected;
   final ValueChanged<int> onSelect;
 
@@ -287,16 +362,16 @@ class _BottomNav extends StatelessWidget {
           height: 66,
           child: Row(
             children: [
-              for (var i = 0; i < spotlightDestinations.length; i++)
+              for (var i = 0; i < destinations.length; i++)
                 Expanded(
                   child: LuzPressable(
                     onPressed: () => onSelect(i),
                     radius: LuzRadius.md,
-                    semanticLabel: spotlightDestinations[i].label,
+                    semanticLabel: destinations[i].label,
                     selected: i == selected,
                     builder: (context, pressed, _) {
                       final on = i == selected;
-                      final d = spotlightDestinations[i];
+                      final d = destinations[i];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
                           vertical: 6,

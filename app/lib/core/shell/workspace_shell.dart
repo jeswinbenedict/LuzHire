@@ -391,6 +391,8 @@ class _TopBar extends StatelessWidget {
                 icon: Icons.notifications_none,
               ),
             ),
+            const SizedBox(width: LuzSpace.sm),
+            const AccountArea(compact: true),
           ],
         ),
       ),

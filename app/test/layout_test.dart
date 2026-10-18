@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:luzhire/app.dart';
 import 'package:luzhire/core/layout/breakpoints.dart';
 import 'package:luzhire/core/layout/content.dart';
 import 'package:luzhire/core/layout/input_mode.dart';
 import 'package:luzhire/core/theme/app_theme.dart';
+import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
+
+import 'support/fakes.dart';
 
 void setWindow(WidgetTester tester, double width, [double height = 900]) {
   tester.view.physicalSize = Size(width, height);
@@ -16,13 +17,16 @@ void setWindow(WidgetTester tester, double width, [double height = 900]) {
   addTearDown(tester.view.reset);
 }
 
+/// Workspace pages are protected, so those tests sign in as an admin
+/// (admins may open both /employer and /admin).
 Future<void> pumpApp(WidgetTester tester, {String location = '/'}) async {
-  await tester.pumpWidget(const ProviderScope(child: LuzHireApp()));
-  await tester.pumpAndSettle();
-  if (location != '/') {
-    GoRouter.of(tester.element(find.byType(Scaffold).first)).go(location);
-    await tester.pumpAndSettle();
-  }
+  final workspace =
+      location.startsWith('/employer') || location.startsWith('/admin');
+  final gateway = FakeAuthGateway(
+    signedIn: workspace ? signedInAs(AppRole.admin) : null,
+  );
+  final view = tester.view.physicalSize / tester.view.devicePixelRatio;
+  await pumpLuzHire(tester, gateway: gateway, location: location, size: view);
 }
 
 Widget wrap(Widget child, {LuzInputMode? mode}) => MaterialApp(
@@ -147,12 +151,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Go to…'), findsOneWidget);
 
-      await tester.enterText(find.byType(TextField).last, 'audit');
+      await tester.enterText(find.byType(TextField).last, 'companies');
       await tester.pump();
       await tester.testTextInput.receiveAction(TextInputAction.done);
       await tester.pumpAndSettle();
       final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
-      expect(router.state.uri.path, '/admin/audit');
+      expect(router.state.uri.path, '/companies');
     });
 
     testWidgets('Ctrl+K works even while typing in a text field', (
