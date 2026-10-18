@@ -498,6 +498,8 @@ vercel deploy --prebuilt --prod
 
 ## 10. Build plan for Claude Code
 
+> **Superseded by [`docs/ROADMAP.md`](ROADMAP.md)**, which has the current phase order (0–11), status, definition of done and the inputs needed from the project owner. The table below is the original plan, kept for reference.
+
 Each phase ends with something runnable and tested. Feed one phase at a time.
 
 | Phase | Deliverable | Done when |

@@ -1,0 +1,162 @@
+# LuzHire — Development Roadmap
+
+How we get from the current scaffold to a production app hosted on Vercel. This file supersedes the phase table in `docs/ARCHITECTURE.md §10`; the architecture itself is unchanged.
+
+**Product goal:** one Flutter codebase that is
+- **responsive**: layouts reflow from 360 px phones up to 1440 px+ desktops (compact / medium / expanded / large breakpoints, DESIGN.md §10);
+- **adaptive**: behaviour matches the device: touch vs mouse/keyboard, hover states, keyboard shortcuts on desktop web, platform back gestures and text-selection on Android/iOS, safe areas and notches, OS light/dark, text scaling, reduced motion, high contrast;
+- **cross-platform**: web (primary, hosted on Vercel), Android and iOS builds from the same code.
+
+---
+
+## Overview
+
+| # | Phase | Outcome | Needs from you | Status |
+|---|---|---|---|---|
+| 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
+| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components done |
+| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ⬜ |
+| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ⬜ |
+| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
+| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
+| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
+| 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | ⬜ |
+| 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
+| 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | ⬜ |
+| 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | ⬜ |
+| 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Domain (optional) | ⬜ |
+
+Deployment is **continuous**, not left to the end. From Phase 1 onward every push to `main` deploys to Vercel; Phase 11 is the production cut-over and launch checklist.
+
+---
+
+## Way of working (every phase)
+
+1. **Branch:** `phase-<n>-<name>` from `main`.
+2. **Build** in small commits, credited only to `jeswinbenedict`, with no Claude co-author line (see CLAUDE.md).
+3. **Definition of done**, checked before merge:
+   - `flutter analyze` clean, `dart format` clean, all Flutter tests pass
+   - `npm run typecheck` + `npm test` pass; pgTAP tests pass (from Phase 2)
+   - Verified in the browser at 375 px, 768 px and 1280 px, in light **and** dark
+   - Keyboard-only walkthrough of the new screens; no text below AA contrast
+   - CI green on GitHub
+4. **Merge:** push the branch, then you open and merge the PR on GitHub (or we merge to `main` directly if you prefer). Vercel deploys `main`.
+5. **Update** the status column above and `CLAUDE.md`.
+
+---
+
+## Phase 0 — Foundation ✅
+Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app for web, Android and iOS with Riverpod and go_router, `/api/health` Vercel function with a test, Supabase CLI init, `vercel.json`, CI workflow (analyze, test, WASM build) and prebuilt-deploy workflow, `CLAUDE.md`, `.gitattributes` and `.gitignore`.
+
+## Phase 1 — Design system & adaptive shell 🟡
+**Done:** tokens, light/dark themes, relief painter, `LuzSurface`, `LuzButton`, `LuzIconButton`, `LuzTextField`, `LuzToggle`, `LuzFilterChip`, `LuzStatusChip`, `LuzCard`, `LuzDial`, design gallery, widget tests.
+
+**Remaining**
+- **Adaptive layout kit:** `LuzBreakpoint` helper (compact/medium/expanded/large), `AdaptiveScaffold` that swaps bottom nav ↔ navigation rail ↔ sidebar, two-pane list/detail layout, max-width content containers.
+- **Platform adaptivity:** pointer vs touch density (`VisualDensity`), hover only on pointer devices, keyboard shortcuts (`Ctrl/⌘ K`, `/` to search, `Esc`), `SafeArea`, platform back handling (`PopScope`), adaptive dialogs (dialog on wide screens, bottom sheet on phones), text-scale and reduced-motion support.
+- **More components:** `LuzBottomSheet`, `LuzDialog`, `LuzSkeleton`, `LuzEmptyState`, `LuzToast`, `LuzTabs`/segmented control, `LuzCheckbox`/`LuzRadio`, `LuzSlider` (salary range), `LuzAvatar`/logo socket, `LuzProgressGroove`, `LuzSearchBar` (hero), `LuzDataTable` (Workspace), `LuzKanbanColumn`.
+- **App shells:** Spotlight shell (top nav / hamburger / candidate bottom bar) and Workspace shell (sidebar / rail / drawer + top bar), with placeholder routes for every section.
+- **Stitch designs** (Stitch MCP; needs a session restart): home, job search, job detail, candidate dashboard, employer pipeline, admin queue, each in light, dark and mobile. Translate into the shells.
+- **Vercel:** link the repo, add `VERCEL_TOKEN`, `VERCEL_ORG_ID` and `VERCEL_PROJECT_ID` as GitHub secrets, then get the first live deploy of the gallery and shells.
+
+**Done when:** every component is in the gallery with tests; shells adapt correctly at all four breakpoints on web, Android emulator and an iOS layout check; the site is live on a `*.vercel.app` URL.
+**You provide:** a Vercel account (sign in with GitHub as jeswinbenedict) and a Vercel token, plus a session restart so the Stitch tools load.
+
+## Phase 2 — Backend foundation (Supabase)
+- Migrations: enums, all tables from ARCHITECTURE §6 (profiles, educations, experiences, skills, resumes, companies, company_members, jobs, job_skills, applications, stage transitions, application_events, interviews, offers, saved_jobs, notifications, announcements, reports, audit_logs, news_articles).
+- Triggers: application counter, apply guard (published, deadline, verified email), stage-transition guard + history, notification fan-out, job moderation, audit log, `updated_at`, profile completion.
+- RLS policies for every table; `app.uid()` / `app.role()` helpers; append-only audit log.
+- Storage buckets and policies (avatars, company-media, private resumes with signed-URL RPC, offer letters).
+- Full-text search: `tsvector`, GIN and trigram indexes, `search_jobs` RPC with keyset pagination.
+- Seed data (≈ 50 companies, 500 jobs, demo users per role).
+- pgTAP tests for every policy and trigger, run in CI (GitHub runners have Docker for `supabase start`).
+- Typed Dart data layer: freezed models + repositories per feature.
+
+**Done when:** `supabase db reset` + `supabase test db` pass in CI; migrations are applied to the cloud project.
+**You provide:** a Supabase project (free tier is fine for development). Send its **project URL and anon key** only; you'll enter the DB password and service-role key yourself as secrets.
+
+## Phase 3 — Authentication & roles
+- Firebase project; Email/Password + Google providers; Flutter `firebase_core` / `firebase_auth` for web, Android and iOS.
+- Supabase Third-Party Auth (Firebase) configured; `accessToken` callback in `Supabase.initialize`.
+- `/api/auth/bootstrap` (Firebase Admin SDK on Vercel): sets `role: authenticated` and `app_role`, creates the profile row; `/api/admin/users/:id/role`.
+- Screens: sign in, sign up (role choice), verify email, forgot password, account settings; theme preference synced to profile.
+- go_router guards by role and email-verified state; deep links preserved through login.
+- Tests: claim-escalation attempt fails; candidate cannot read another profile (pgTAP); widget tests for auth forms.
+
+**Done when:** a new user can sign up on web and Android, lands on the right dashboard, and RLS sees their claims.
+**You provide:** a Firebase project. You add the Firebase Admin service-account JSON as a Vercel env var yourself; never paste it in chat.
+
+## Phase 4 — Public job board (Spotlight)
+- Home (hero search, categories, live "new jobs" banner via Realtime broadcast, honest stats).
+- Job search: keyword + filters (location, remote, type, level, salary slider, skills, posted date), filter bottom sheet on phones / side panel on desktop, list ↔ two-pane detail on expanded, infinite keyset pagination, URL-synced filters (shareable links).
+- Job detail (sticky apply panel/bar, company card, similar jobs), companies directory + company page, saved jobs (bookmark ribbon, synced).
+- Empty, error and loading states; skeletons.
+
+**Done when:** search p95 < 300 ms on seed data; all states verified at three widths in both themes.
+
+## Phase 5 — Candidate portal
+- Dashboard (completeness groove, applications, upcoming interviews, saved, recommended).
+- Profile builder (headline, bio, links, skills, education, experience) with completion %.
+- Resume upload (drag-and-drop tray on web, file picker on mobile), preview, primary resume.
+- Apply flow (resume + cover letter, duplicate and deadline errors), applications tracker with **realtime** stage chips and timeline, interviews (calendar pages, add-to-calendar), offers (accept/decline).
+- Notification centre (realtime, mark read).
+
+**Done when:** an employer stage change appears on the candidate screen in < 1 s.
+
+## Phase 6 — Employer workspace
+- Company profile + verification request; team invites (owner, recruiter, viewer).
+- Job editor (draft → publish / pending review) with live card preview.
+- Pipeline kanban per job (drag-and-drop + keyboard move, Realtime broadcast), candidate drawer (profile, resume via signed URL, history), bulk actions.
+- Interview scheduler (timezone-aware), offers, analytics (funnel, time-to-hire) with real data only.
+- Command menu (`Ctrl/⌘ K`).
+
+**Done when:** a full hire flow (post → apply → interview → offer → hired) passes as an integration test.
+
+## Phase 7 — Admin console
+- Verification queue, job moderation queue, reports, user management (suspend, role change), announcements, audit-log viewer (filters, JSON diff in mono), platform stats.
+
+**Done when:** every admin action creates an audit row and is reversible where it should be.
+
+## Phase 8 — Data ingestion & SEO
+- `/api/ingest/jobs`: provider adapters, normalisation (salary period!), HTML → Markdown sanitising, cross-provider dedupe, expiry; scheduled by Supabase `pg_cron` + `pg_net`.
+- `/api/ingest/news`: career-specific sources + relevance scoring; Career News screen.
+- SEO: `/jobs/:slug` server-rendered HTML with JobPosting JSON-LD, `/sitemap.xml`, `/robots.txt`, correct 404/410.
+
+**Done when:** Google Rich Results Test passes on a job page; no off-topic news items get through.
+**You provide:** API keys for chosen providers (entered as Vercel env vars), after checking their terms.
+
+## Phase 9 — Notifications
+- In-app (already realtime) + preferences screen.
+- Push: FCM for web (service worker) and Android/iOS; DB webhook → `/api/notify/dispatch`.
+- Transactional email templates (application received, stage change, interview, offer).
+
+**Done when:** push arrives on web and Android; emails render in Gmail and Outlook.
+
+## Phase 10 — Hardening
+- Performance: deferred imports for employer/admin, image sizing, bundle check, Lighthouse on SEO pages, LCP ≤ 2.5 s on mid-range mobile.
+- Accessibility: full WCAG 2.1 AA pass (screen reader on web/Android, keyboard, contrast, 200 % text).
+- Security: RLS review, OWASP checklist, CSP headers, rate limits on API, dependency audit, secret scan.
+- Reliability: Sentry (Flutter + functions), `/api/health` uptime monitor, Supabase backups, load test (500 concurrent users).
+
+## Phase 11 — Production launch on Vercel
+- Production Supabase project (Pro plan recommended: no auto-pause, daily backups) + production Firebase project.
+- Vercel production env vars, custom domain (optional), HTTPS, security headers and CSP enforced.
+- Release checklist and rollback plan; seed real admin account; smoke tests on the live URL.
+- Handover docs: README, setup guide, demo accounts, architecture + design docs, and a screenshot set for the project report.
+- Optional: Android APK/AAB and iOS TestFlight builds.
+
+**Done when:** the production URL passes the smoke test and the release checklist is signed off.
+
+---
+
+## Inputs checklist (what only you can do)
+
+| When | Item | How to share safely |
+|---|---|---|
+| Phase 1 | Vercel account linked to GitHub `jeswinbenedict`, plus a Vercel token | Add the token yourself as GitHub secret `VERCEL_TOKEN` |
+| Phase 1 | Restart the Claude session (loads Stitch tools) | — |
+| Phase 2 | Supabase project | URL + anon key are public, so you can paste them. Keep the service-role key and DB password in secrets only |
+| Phase 3 | Firebase project (web, Android, iOS apps registered) | Web config is public. Service-account JSON goes into Vercel env vars only |
+| Phase 8 | Job/news provider API keys | Vercel env vars only |
+| Phase 9 | Email provider (e.g. Resend) | Vercel env vars only |
+| Phase 11 | Domain (optional) | DNS settings in Vercel |

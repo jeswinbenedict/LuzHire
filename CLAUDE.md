@@ -46,7 +46,7 @@ On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH)
 - Remote: `https://github.com/jeswinbenedict/LuzHire.git`, branch `main`.
 
 ## Status
-- [x] Architecture + design system
-- [x] Phase 0: monorepo skeleton, API health function, Vercel config, CI/CD, Supabase init
-- [~] Phase 1: neumorphic tokens, theme (light/dark), relief painter, core `Luz*` widgets and the design gallery are done. Still to do: Stitch screen designs (restart the session to load the Stitch MCP tools)
-- [ ] Phase 2+: see docs/ARCHITECTURE.md §10
+The phase plan, status, definition of done and owner inputs are in **`docs/ROADMAP.md`**. Update it at the end of every phase.
+- [x] Phase 0: Foundation
+- [~] Phase 1: Design system & adaptive shell. Components and gallery are done. Still to do: adaptive layout kit, app shells, more components, Stitch screens, first Vercel deploy
+- [ ] Phases 2–11: see ROADMAP
