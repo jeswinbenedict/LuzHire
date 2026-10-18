@@ -1,0 +1,31 @@
+# Node / Vercel
+node_modules/
+.vercel/
+coverage/
+*.tsbuildinfo
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+app/env/*.json
+!app/env/example.json
+service-account*.json
+
+# Supabase local
+supabase/.branches/
+supabase/.temp/
+
+# Flutter / Dart (app/ also has its own .gitignore from flutter create)
+app/build/
+app/.dart_tool/
+
+# OS / editors
+.DS_Store
+Thumbs.db
+.idea/
+*.iml
+
+# Claude Code local settings (may contain MCP keys)
+.claude/settings.local.json
+.mcp.json

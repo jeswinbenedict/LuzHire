@@ -1,43 +1,42 @@
 ---
 version: alpha
 name: LuzHire
-description: LuzHire's design language. "Luz" means light, so the brand is built around a warm sunrise amber used sparingly against near-black ink and clean white or deep-graphite surfaces. Public and candidate screens (the "Spotlight" zone) borrow the friendly, high-energy rhythm of Jobright — tinted section bands, bold display headings, pill CTAs, generous rounded cards. Employer and admin screens (the "Workspace" zone) borrow Linear's dense, calm, hairline-bordered product craft — small radii, a surface ladder instead of shadows, one accent. Both zones ship light and dark themes from the same token set.
+description: LuzHire's design language is accessible neumorphism. Every element is moulded from one soft, warm "porcelain" surface (graphite in dark mode). Raised elements catch light from the top-left and cast a soft shade to the bottom-right; pressed or selected elements sink into the surface. Familiar real-world metaphors (bookmark ribbons, paper-clip attachments, calendar pages, paper cards, physical toggles) make actions obvious at a glance. "Luz" means light, so the single brand accent is a warm sunrise amber, used sparingly. Public and candidate screens (the "Spotlight" zone) borrow Jobright's friendly rhythm with generous, deeply moulded pills and cards. Employer and admin screens (the "Workspace" zone) borrow Linear's density and calm, with shallower relief. Both ship light and dark themes. Shadows never carry meaning on their own — text keeps full AA contrast, inputs keep a visible outline, and focus and selection always add amber.
 
 colors:
   # ---------- brand (both themes) ----------
   primary: "#FFB224"           # Luz amber: signature pill, brand mark, highlights, dark-theme links/focus
   primary-hover: "#FFC453"
   primary-pressed: "#E89A0C"
-  on-primary: "#14110F"        # text/icons on amber — never white
-  primary-strong: "#A84D07"    # amber that passes AA on light surfaces: links, focus ring, active nav (light theme)
+  on-primary: "#14110F"        # text/icons on amber, never white
+  primary-strong: "#9A4605"    # amber that passes AA on light surfaces: links, focus ring, active indicators
 
-  # ---------- light theme ----------
-  ink: "#14110F"               # headings, body, black pills
-  ink-muted: "#3D4148"         # secondary body
-  muted: "#5F646B"             # captions, meta, placeholders
-  disabled: "#9A9EA6"          # disabled text only (not for information)
+  # ---------- light theme (porcelain) ----------
+  base: "#EEECE7"              # THE surface: page and every raised element share it
+  sunken: "#E4E1DA"            # inset wells: inputs, pressed buttons, selected chips, tracks
+  highlight: "#FFFFFF"         # top-left light shadow
+  shade: "#CBC5BA"             # bottom-right dark shadow
+  base-tint: "#F6EAD2"         # amber-tinted band (Spotlight hero / CTA), still moulded
+  ink: "#14110F"
+  ink-muted: "#3D4148"
+  muted: "#5A5F66"
+  disabled: "#9A9EA6"          # disabled text only
   on-dark: "#FFFFFF"
-  canvas: "#FFFFFF"
-  canvas-tint: "#FFF7E6"       # pale amber bands (hero, features, CTA) — Spotlight only
-  surface-soft: "#F4F4F2"      # inputs, inset panels
-  surface-1: "#FFFFFF"         # Workspace cards on canvas-sub
-  canvas-sub: "#F7F7F5"        # Workspace page background (light)
-  surface-2: "#F1F1EE"         # hover, selected row
-  hairline: "#E6E4DF"
-  hairline-strong: "#D3D0C9"
+  outline: "#85817A"           # 1px outline on inputs and checkboxes (>= 3:1 vs base)
+  hairline: "#DAD6CE"          # dividers inside a raised panel (decorative)
 
-  # ---------- dark theme ----------
-  dark-canvas: "#0B0C0E"
-  dark-surface-1: "#121316"
-  dark-surface-2: "#17191C"
-  dark-surface-3: "#1C1E22"
-  dark-canvas-tint: "#1A160D"  # dark counterpart of the amber band
-  dark-hairline: "#26282D"
-  dark-hairline-strong: "#34373D"
-  dark-ink: "#F5F5F3"
+  # ---------- dark theme (graphite) ----------
+  dark-base: "#1D1F23"
+  dark-sunken: "#16171A"
+  dark-highlight: "#2A2D33"
+  dark-shade: "#0E0F11"
+  dark-base-tint: "#272116"
+  dark-ink: "#F2F2EF"
   dark-ink-muted: "#C9CCD1"
-  dark-muted: "#9A9EA6"
+  dark-muted: "#9EA2AA"
   dark-disabled: "#63676E"
+  dark-outline: "#6E737B"
+  dark-hairline: "#2B2E34"
 
   # ---------- semantic ----------
   success: "#15803D"
@@ -48,20 +47,20 @@ colors:
   dark-danger: "#F87171"
   info: "#1D4ED8"
   dark-info: "#93B4FF"
-  scrim: "#000000"             # modal overlay at 48% (light) / 64% (dark)
+  scrim: "#14110F"             # modal overlay at 40% (light) / 64% (dark)
 
-  # ---------- status chips (bg / fg) ----------
-  chip-neutral-bg: "#F1F2F4"
+  # ---------- status chips (inset wells: bg / fg) ----------
+  chip-neutral-bg: "#E4E1DA"
   chip-neutral-fg: "#4B5058"
-  chip-blue-bg: "#EFF4FF"
+  chip-blue-bg: "#E6EBF7"
   chip-blue-fg: "#1D4ED8"
-  chip-violet-bg: "#F3EEFF"
+  chip-violet-bg: "#ECE5F7"
   chip-violet-fg: "#6D28D9"
-  chip-amber-bg: "#FFF4DB"
+  chip-amber-bg: "#F7EBD0"
   chip-amber-fg: "#92400E"
-  chip-green-bg: "#EAF7EE"
+  chip-green-bg: "#E3F1E6"
   chip-green-fg: "#166534"
-  chip-red-bg: "#FDECEC"
+  chip-red-bg: "#F6E3E1"
   chip-red-fg: "#B91C1C"
   dark-chip-neutral-bg: "#202227"
   dark-chip-neutral-fg: "#B9BDC4"
@@ -76,8 +75,19 @@ colors:
   dark-chip-red-bg: "#331A1A"
   dark-chip-red-fg: "#FCA5A5"
 
+elevation:
+  # Each raised level = two shadows: highlight (top-left, negative offset) + shade (bottom-right).
+  # Inset levels use the same pair inside the element. Dark theme swaps in dark-highlight / dark-shade.
+  flat: none
+  raised-xs: "-2px -2px 4px {colors.highlight}, 2px 2px 4px {colors.shade}"
+  raised-sm: "-4px -4px 8px {colors.highlight}, 4px 4px 8px {colors.shade}"
+  raised-md: "-8px -8px 16px {colors.highlight}, 8px 8px 16px {colors.shade}"
+  raised-lg: "-12px -12px 24px {colors.highlight}, 12px 12px 24px {colors.shade}"
+  inset-sm: "inset 2px 2px 4px {colors.shade}, inset -2px -2px 4px {colors.highlight}"
+  inset-md: "inset 4px 4px 8px {colors.shade}, inset -4px -4px 8px {colors.highlight}"
+  glow-primary: "0 6px 16px rgba(255,178,36,0.35)"
+
 typography:
-  # Spotlight display (public + candidate marketing surfaces)
   display:
     fontFamily: Plus Jakarta Sans
     fontSize: 64px
@@ -108,7 +118,6 @@ typography:
     fontWeight: 700
     lineHeight: 1.25
     letterSpacing: -0.2px
-  # Workspace headings (employer + admin; also in-app candidate pages)
   ws-title:
     fontFamily: Inter
     fontSize: 24px
@@ -127,7 +136,6 @@ typography:
     fontWeight: 600
     lineHeight: 1.35
     letterSpacing: -0.1px
-  # Shared text
   body-lg:
     fontFamily: Inter
     fontSize: 18px
@@ -185,15 +193,14 @@ typography:
 
 rounded:
   none: 0px
-  xs: 4px          # Workspace chips, table rows, kbd
-  sm: 6px          # Workspace inline tags
-  md: 8px          # Workspace buttons + inputs
-  lg: 12px         # Workspace cards, Spotlight inputs
-  xl: 16px         # Spotlight job cards, modals
-  xxl: 24px        # Spotlight feature cards, bottom sheets
-  hero: 32px       # Spotlight hero/CTA panels
-  pill: 9999px     # Spotlight CTAs, filter chips, status pills
-  full: 9999px     # avatars
+  xs: 6px
+  sm: 10px         # Workspace buttons, inputs, chips
+  md: 14px         # Workspace cards, kanban cards
+  lg: 18px         # Spotlight job cards, inputs
+  xl: 24px         # Spotlight feature cards, modals
+  xxl: 32px        # hero panels, bottom sheets
+  pill: 9999px
+  full: 9999px
 
 spacing:
   xxs: 4px
@@ -209,335 +216,378 @@ spacing:
 components:
   # ----- Spotlight zone -----
   nav-bar:
-    backgroundColor: "{colors.canvas}"
+    backgroundColor: "{colors.base}"
     textColor: "{colors.ink}"
     typography: "{typography.label}"
     height: 64px
+    elevation: "{elevation.raised-xs}"
   button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
+    backgroundColor: "{colors.base}"
+    textColor: "{colors.ink}"
     typography: "{typography.button}"
     rounded: "{rounded.pill}"
     padding: "14px 24px"
+    elevation: "{elevation.raised-sm}"
+    pressedElevation: "{elevation.inset-sm}"
   button-signature:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
-    border: "1px solid {colors.ink}"
     typography: "{typography.button}"
     rounded: "{rounded.pill}"
     padding: "14px 24px"
-  button-secondary:
-    backgroundColor: "{colors.canvas}"
-    textColor: "{colors.ink}"
-    border: "1px solid {colors.hairline-strong}"
-    typography: "{typography.button}"
-    rounded: "{rounded.pill}"
-    padding: "14px 24px"
+    elevation: "{elevation.glow-primary}"
+    pressedBackground: "{colors.primary-pressed}"
+  icon-button:
+    backgroundColor: "{colors.base}"
+    textColor: "{colors.ink-muted}"
+    rounded: "{rounded.full}"
+    size: 44px
+    elevation: "{elevation.raised-xs}"
+    pressedElevation: "{elevation.inset-sm}"
   search-bar:
-    backgroundColor: "{colors.canvas}"
-    border: "1px solid {colors.hairline}"
+    backgroundColor: "{colors.sunken}"
+    border: "1px solid {colors.outline}"
     rounded: "{rounded.pill}"
     height: 56px
-    shadow: "0 8px 24px rgba(20,17,15,0.08)"
+    elevation: "{elevation.inset-md}"
+  text-input:
+    backgroundColor: "{colors.sunken}"
+    border: "1px solid {colors.outline}"
+    rounded: "{rounded.lg}"
+    padding: "14px 16px"
+    elevation: "{elevation.inset-sm}"
   filter-chip:
-    backgroundColor: "{colors.surface-soft}"
+    backgroundColor: "{colors.base}"
     textColor: "{colors.ink}"
     typography: "{typography.label}"
     rounded: "{rounded.pill}"
     padding: "8px 14px"
+    elevation: "{elevation.raised-xs}"
   filter-chip-selected:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
+    backgroundColor: "{colors.sunken}"
+    textColor: "{colors.ink}"
+    indicator: "{colors.primary-strong}"
     rounded: "{rounded.pill}"
+    elevation: "{elevation.inset-sm}"
   job-card:
-    backgroundColor: "{colors.canvas}"
-    border: "1px solid {colors.hairline}"
-    rounded: "{rounded.xl}"
+    backgroundColor: "{colors.base}"
+    rounded: "{rounded.lg}"
     padding: "{spacing.lg}"
+    elevation: "{elevation.raised-md}"
   feature-card:
-    backgroundColor: "{colors.canvas}"
-    rounded: "{rounded.xxl}"
+    backgroundColor: "{colors.base}"
+    rounded: "{rounded.xl}"
     padding: "{spacing.xl}"
-    shadow: "0 12px 32px rgba(20,17,15,0.06)"
+    elevation: "{elevation.raised-lg}"
   band-tint:
-    backgroundColor: "{colors.canvas-tint}"
+    backgroundColor: "{colors.base-tint}"
     padding: "{spacing.section} 0"
-  band-dark:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
-    padding: "{spacing.section} 0"
-  match-ring:
+  match-dial:
     size: 56px
-    stroke: 5px
-    trackColor: "{colors.hairline}"
+    track: "{colors.sunken}"
+    trackElevation: "{elevation.inset-sm}"
     valueColor: "{colors.primary}"
+  toggle:
+    track: "{colors.sunken}"
+    trackElevation: "{elevation.inset-sm}"
+    trackOn: "{colors.primary}"
+    knob: "{colors.base}"
+    knobElevation: "{elevation.raised-xs}"
+    width: 52px
+    height: 30px
   # ----- Workspace zone -----
   ws-sidebar:
-    backgroundColor: "{colors.canvas-sub}"
+    backgroundColor: "{colors.base}"
     width: 240px
-    itemHeight: 32px
+    itemHeight: 36px
     itemRounded: "{rounded.sm}"
-    itemActiveBackground: "{colors.surface-2}"
+    itemActiveElevation: "{elevation.inset-sm}"
+    itemActiveIndicator: "{colors.primary-strong}"
   ws-topbar:
-    backgroundColor: "{colors.canvas}"
-    borderBottom: "1px solid {colors.hairline}"
-    height: 52px
-  ws-button-primary:
-    backgroundColor: "{colors.ink}"
-    textColor: "{colors.on-dark}"
+    backgroundColor: "{colors.base}"
+    height: 56px
+    elevation: "{elevation.raised-xs}"
+  ws-button:
+    backgroundColor: "{colors.base}"
+    textColor: "{colors.ink}"
     typography: "{typography.button-sm}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.sm}"
     padding: "8px 14px"
+    elevation: "{elevation.raised-xs}"
+    pressedElevation: "{elevation.inset-sm}"
   ws-button-accent:
     backgroundColor: "{colors.primary}"
     textColor: "{colors.on-primary}"
     typography: "{typography.button-sm}"
-    rounded: "{rounded.md}"
+    rounded: "{rounded.sm}"
     padding: "8px 14px"
-  ws-button-secondary:
-    backgroundColor: "{colors.surface-1}"
-    textColor: "{colors.ink}"
-    border: "1px solid {colors.hairline}"
-    typography: "{typography.button-sm}"
-    rounded: "{rounded.md}"
-    padding: "8px 14px"
+    elevation: "{elevation.raised-xs}"
   ws-input:
-    backgroundColor: "{colors.surface-1}"
-    border: "1px solid {colors.hairline}"
-    focusBorder: "1px solid {colors.primary-strong}"
-    rounded: "{rounded.md}"
+    backgroundColor: "{colors.sunken}"
+    border: "1px solid {colors.outline}"
+    rounded: "{rounded.sm}"
     padding: "8px 12px"
-    height: 36px
-  ws-card:
-    backgroundColor: "{colors.surface-1}"
-    border: "1px solid {colors.hairline}"
-    rounded: "{rounded.lg}"
+    height: 38px
+    elevation: "{elevation.inset-sm}"
+  ws-panel:
+    backgroundColor: "{colors.base}"
+    rounded: "{rounded.md}"
     padding: "{spacing.lg}"
+    elevation: "{elevation.raised-sm}"
   ws-table-row:
     height: 44px
-    border: "1px solid {colors.hairline}"
-    hoverBackground: "{colors.surface-2}"
-    rounded: "{rounded.xs}"
+    divider: "1px solid {colors.hairline}"
+    hoverBackground: "{colors.sunken}"
+    elevation: "{elevation.flat}"
   ws-kanban-column:
-    backgroundColor: "{colors.canvas-sub}"
+    backgroundColor: "{colors.sunken}"
     width: 288px
-    rounded: "{rounded.lg}"
-    padding: "{spacing.xs}"
-  ws-kanban-card:
-    backgroundColor: "{colors.surface-1}"
-    border: "1px solid {colors.hairline}"
     rounded: "{rounded.md}"
+    padding: "{spacing.xs}"
+    elevation: "{elevation.inset-sm}"
+  ws-kanban-card:
+    backgroundColor: "{colors.base}"
+    rounded: "{rounded.sm}"
     padding: "{spacing.sm}"
+    elevation: "{elevation.raised-xs}"
+    dragElevation: "{elevation.raised-md}"
   ws-stat-tile:
-    backgroundColor: "{colors.surface-1}"
-    border: "1px solid {colors.hairline}"
-    rounded: "{rounded.lg}"
+    backgroundColor: "{colors.base}"
+    rounded: "{rounded.md}"
     padding: "{spacing.md}"
+    elevation: "{elevation.raised-sm}"
   command-menu:
-    backgroundColor: "{colors.surface-1}"
-    border: "1px solid {colors.hairline-strong}"
+    backgroundColor: "{colors.base}"
     rounded: "{rounded.xl}"
     width: 640px
+    elevation: "{elevation.raised-lg}"
   # ----- shared -----
   status-chip:
     typography: "{typography.caption}"
     rounded: "{rounded.pill}"
-    padding: "2px 8px"
+    padding: "3px 10px"
+    elevation: "{elevation.inset-sm}"
   modal:
-    backgroundColor: "{colors.surface-1}"
+    backgroundColor: "{colors.base}"
     rounded: "{rounded.xl}"
     padding: "{spacing.lg}"
+    elevation: "{elevation.raised-lg}"
   bottom-sheet:
-    backgroundColor: "{colors.surface-1}"
+    backgroundColor: "{colors.base}"
     rounded: "{rounded.xxl} {rounded.xxl} 0 0"
+    elevation: "{elevation.raised-lg}"
   toast:
     backgroundColor: "{colors.ink}"
     textColor: "{colors.on-dark}"
-    rounded: "{rounded.lg}"
+    rounded: "{rounded.md}"
   focus-ring:
     outline: "2px solid {colors.primary-strong}"
     outlineDark: "2px solid {colors.primary}"
-    offset: 2px
+    offset: 3px
 ---
 
-# LuzHire Design System
+# LuzHire Design System — Accessible Neumorphism
 
 ## 1. Overview
 
-LuzHire has two zones that share one token set:
+LuzHire looks like it was **moulded from a single soft material**. The page and every card, button and chip share one surface colour. Elements are distinguished by *relief*: raised items catch light from the top-left and cast a soft shade bottom-right; pressed, selected and input elements *sink* into the surface. A few honest real-world metaphors (skeuomorphism) make actions instantly understandable.
 
-| Zone | Screens | Reference | Personality |
+Two zones share one token set:
+
+| Zone | Screens | Reference | Relief |
 |---|---|---|---|
-| **Spotlight** | Home, job search, job detail, companies, career news, auth, candidate dashboard / profile / applications | Jobright | Warm, energetic, optimistic. Big bold headings, amber-tinted bands, pill CTAs, rounded cards, generous whitespace. |
-| **Workspace** | Employer dashboard, job editor, pipeline kanban, interviews, analytics, team; all admin screens | Linear | Calm, dense, precise. Small radii, hairlines, surface ladder, one accent, keyboard-first. |
+| **Spotlight** | Home, job search, job detail, companies, career news, auth, candidate dashboard / profile / applications | Jobright rhythm | Deep and generous: `raised-md`/`raised-lg` cards, pill buttons, big radii |
+| **Workspace** | Employer dashboard, job editor, pipeline kanban, interviews, analytics, team; all admin screens | Linear density | Shallow: `raised-xs`/`raised-sm`, 10–14 px radii, tables flat inside one raised panel |
 
-Both zones support **light and dark** themes. Default follows the OS setting; the user can override (System / Light / Dark) in settings, and the choice syncs to their profile.
+Both zones support **light (porcelain) and dark (graphite)** themes. Default follows the OS; the user can override in settings.
 
-The brand is *light*: a single sunrise amber (`primary #FFB224`) that appears where something deserves attention — the brand mark, the one signature CTA per screen, match scores, the "Offer" stage, the active nav indicator in dark mode. Everything else is ink and neutral surfaces.
+The brand is *light*: a single sunrise amber (`primary #FFB224`) for the brand mark, the one signature CTA per screen, match dials, active indicators, toggles in the "on" position, and the "Offer" stage. Everything else is moulded neutral.
 
-## 2. Colors
+## 2. Accessibility rules for neumorphism (non-negotiable)
+
+Pure neumorphism fails WCAG because shapes are defined only by faint shadows. LuzHire keeps the look and fixes the failure:
+
+1. **Text always meets AA** (≥ 4.5:1; large text ≥ 3:1) against `base`, `sunken` and `base-tint`. All pairs in this file have been checked.
+2. **Inputs, checkboxes, radios and the search bar have a 1 px `outline`** (≥ 3:1 against `base`) in addition to the inset shadow.
+3. **Buttons are identified by their label/icon**, not by relief alone. Icon-only buttons always have a tooltip and a semantics label.
+4. **Selected / active state = inset + amber indicator** (a 3 px amber bar, amber icon, or amber dot) — never inset alone.
+5. **Focus ring**: 2 px `primary-strong` (light) / `primary` (dark), 3 px offset, on every interactive element.
+6. **Disabled = flat** (no shadow) + `disabled` text, so it is clearly different from both raised and pressed.
+7. **High-contrast mode**: when the OS requests high contrast (`MediaQuery.highContrast`), replace shadows with a 1.5 px `outline` border on every raised element.
+8. Status is never colour-only: chips carry a text label and, where useful, an icon.
+
+## 3. Colors
+
+### Light — porcelain
+`base #EEECE7` is the page **and** the fill of every raised element. `sunken #E4E1DA` fills wells (inputs, pressed buttons, kanban columns, chip backgrounds). Shadows: `highlight #FFFFFF` (top-left) and `shade #CBC5BA` (bottom-right). `base-tint #F6EAD2` is an amber-warmed band for the Spotlight hero and CTA sections.
+Text: `ink #14110F` (15.9:1), `ink-muted #3D4148` (8.7:1), `muted #5A5F66` (5.5:1 on base, 4.9:1 on sunken). Links and indicators: `primary-strong #9A4605` (5.5:1 on base, 4.9:1 on sunken).
+
+### Dark — graphite
+`dark-base #1D1F23`, `dark-sunken #16171A`, `dark-highlight #2A2D33`, `dark-shade #0E0F11`, `dark-base-tint #272116`.
+Text: `dark-ink #F2F2EF` (14.7:1), `dark-ink-muted #C9CCD1`, `dark-muted #9EA2AA` (6.5:1). Links, focus and indicators use plain `primary` amber (9.2:1).
 
 ### Brand
-- **Luz amber `#FFB224`** — fills and highlights only. Text on amber is always `on-primary #14110F` (10.4:1). Never put white text on amber.
-- **Amber strong `#A84D07`** — the amber used for *text and focus rings on light surfaces* (5.6:1 on white). Light-theme links, active tab underline, focus ring.
-- In **dark** theme, plain `primary` is used for links and focus rings (10.9:1 on `dark-canvas`).
-
-### Neutrals
-Light: `canvas #FFFFFF` → `canvas-sub #F7F7F5` (Workspace page) → `surface-soft #F4F4F2` → `surface-2 #F1F1EE`. Borders `hairline #E6E4DF`, `hairline-strong #D3D0C9`. Text `ink #14110F`, `ink-muted #3D4148`, `muted #5F646B` (≥ 5.4:1 on all light surfaces).
-
-Dark (Linear-style ladder; never skip a level): `dark-canvas #0B0C0E` → `dark-surface-1 #121316` → `dark-surface-2 #17191C` → `dark-surface-3 #1C1E22`. Borders `dark-hairline #26282D`, `dark-hairline-strong #34373D`. Text `dark-ink #F5F5F3`, `dark-ink-muted #C9CCD1`, `dark-muted #9A9EA6`.
-
-`disabled` / `dark-disabled` are for disabled controls only — never for information a user must read.
+Text on amber is always `on-primary #14110F` (10.4:1). Never white on amber. Amber surfaces glow (`glow-primary`) instead of using the grey shadow pair, so they look lit rather than moulded.
 
 ### Theme mapping
-Every light token has a `dark-` counterpart. When building a component, reference the light token name; the theme layer swaps it:
-
-| Light | Dark |
-|---|---|
-| canvas | dark-canvas |
-| canvas-sub | dark-canvas |
-| surface-1 | dark-surface-1 |
-| surface-soft, surface-2 | dark-surface-2 |
-| canvas-tint | dark-canvas-tint |
-| hairline / hairline-strong | dark-hairline / dark-hairline-strong |
-| ink / ink-muted / muted | dark-ink / dark-ink-muted / dark-muted |
-| primary-strong (links, focus) | primary |
-| button-primary `ink` fill + white text | `dark-ink` fill + `dark-canvas` text |
-| band-dark `ink` | `dark-surface-2` with `dark-hairline` top/bottom border |
-| chip-*-bg / chip-*-fg | dark-chip-*-bg / dark-chip-*-fg |
-| success / warning / danger / info | dark-success / dark-warning / dark-danger / dark-info |
+Reference light token names in components; the theme layer swaps to the `dark-` twin: `base`, `sunken`, `highlight`, `shade`, `base-tint`, `ink`, `ink-muted`, `muted`, `disabled`, `outline`, `hairline`, all semantic colours and all chip colours. `primary-strong` maps to `primary` in dark.
 
 ### Semantic
-`success` green, `warning` **orange** (deliberately not amber, so warnings never read as brand), `danger` red, `info` blue. Always pair color with an icon or text — never color alone.
+`success` green, `warning` **orange** (deliberately not amber), `danger` red, `info` blue. Errors also show an icon and message text.
 
-### Application stage chips
-| Stage | Chip |
+### Application stage chips (inset pills)
+| Stage | Chip | Icon |
+|---|---|---|
+| Applied | neutral | paper-plane |
+| Under review | blue | magnifier |
+| Shortlisted | violet | star |
+| Assessment | blue | clipboard |
+| Technical / HR interview | blue | calendar page |
+| Final review | violet | scales |
+| Offer issued | amber | envelope with seal |
+| Hired | green | handshake |
+| Rejected | red | closed folder |
+| Withdrawn | neutral, strikethrough | arrow-out |
+
+Job status: Draft neutral · Pending review amber · Published green · Closed neutral · Archived neutral (archive box) · Rejected red.
+Company verification: Verified = green chip with a seal/badge icon.
+
+## 4. Elevation & Relief
+
+Light source: **top-left**. Every raised level is a pair of shadows of equal blur — highlight offset up-left, shade offset down-right.
+
+| Token | Use |
 |---|---|
-| Applied | neutral |
-| Under review | blue |
-| Shortlisted | violet |
-| Assessment, Technical interview, HR interview | blue (with stage icon) |
-| Final review | violet |
-| Offer issued | amber |
-| Hired | green |
-| Rejected | red |
-| Withdrawn | neutral, strikethrough label |
+| `flat` | disabled controls, table rows, text |
+| `raised-xs` | Workspace buttons, kanban cards, icon buttons, nav bar, chips (unselected) |
+| `raised-sm` | Workspace panels and stat tiles, Spotlight primary pill |
+| `raised-md` | Spotlight job cards, dragged kanban card |
+| `raised-lg` | Spotlight feature cards, modals, bottom sheets, command menu |
+| `inset-sm` | inputs, pressed buttons, selected chips, status chips, toggle track, active sidebar item, kanban column |
+| `inset-md` | hero search bar, dropzones (resume upload), large wells |
+| `glow-primary` | amber CTAs |
 
-Job status chips: Draft neutral · Pending review amber · Published green · Closed neutral · Archived neutral · Rejected red.
-Company verification: Verified = green chip with check icon; Pending = amber; Unverified = no chip.
+Rules:
+- **Pressing = sinking.** A raised button animates to `inset-sm` while pressed (120 ms), then back.
+- **Don't nest relief more than two levels** (e.g. inset input inside raised card is fine; raised chip inside inset well inside raised card is not).
+- **Lists:** long lists render cards at `raised-sm` (not `md`) and wrap each item in a `RepaintBoundary`; tables are flat rows inside a single raised panel.
+- **Dark theme** uses the same offsets with `dark-highlight` / `dark-shade`; reduce the highlight opacity if it looks chalky.
+- **Images and logos** sit in an inset rounded "socket" so they look set into the surface.
 
-## 3. Typography
+## 5. Skeuomorphic metaphors
 
-- **Plus Jakarta Sans** (700–800) — Spotlight display and headings only. Tight negative tracking at large sizes.
-- **Inter** (400 / 500 / 600) — all UI, body, Workspace headings. Workspace never goes above 600.
-- **JetBrains Mono** (400) — IDs, audit log payloads, keyboard shortcuts.
+Use familiar objects where they make meaning clearer; keep them simple, monochrome line icons with soft relief — no photorealistic textures.
 
-All three are open-licensed (OFL) and are **bundled as assets** in the Flutter app — no runtime font fetching.
+| Concept | Metaphor |
+|---|---|
+| Save job | bookmark ribbon that fills amber when saved |
+| Resume / attachments | paper sheet with folded corner; paper-clip on attachments; dropzone looks like an inset tray |
+| Interviews | tear-off calendar page showing the day number |
+| Notifications | bell with amber dot |
+| Delete | trash can; destructive confirm dialog shows the can |
+| Archive | archive box |
+| Offer | envelope with seal |
+| Settings | physical toggles with a raised knob in an inset track |
+| Pipeline | paper cards in inset trays (kanban columns) |
+| Match score | a round dial (inset track, amber arc) |
+| Company verified | wax-seal style badge |
+| Search | magnifier inside an inset search well |
+| Profile completeness | segmented progress groove filling with amber |
 
-Mobile scaling (< 600 px): display 40 px, heading-1 34 px, heading-2 28 px, heading-3 22 px, heading-4 19 px. Body sizes do not shrink below 14 px. Respect the OS text-scale setting up to 200 % without clipping.
+## 6. Typography
 
-## 4. Layout
+- **Plus Jakarta Sans** (700–800): Spotlight display and headings.
+- **Inter** (400 / 500 / 600): all UI, body, and Workspace headings (max 600).
+- **JetBrains Mono** (400): IDs, audit payloads, keyboard shortcuts.
 
-- 4 px base grid; spacing tokens 4 / 8 / 12 / 16 / 24 / 32 / 48 / 96.
-- **Spotlight:** centered content column, max 1200 px; sections separated by 96 px (56 px on mobile), alternating `canvas` and `canvas-tint` bands; one `band-dark` per page at most (e.g. live job ticker or testimonial).
-- **Workspace:** full-width app shell — 240 px sidebar + 52 px top bar + content (max 1440 px). 24 px page padding, 16 px gaps between cards, 12 px inside dense cards.
+All are OFL and bundled with the app. Mobile (< 600 px): display 40, h1 34, h2 28, h3 22, h4 19. Body never below 14 px. Support OS text scaling to 200 %.
+Text is never embossed or debossed — type stays flat and crisp; relief belongs to surfaces only.
+
+## 7. Layout
+
+- 4 px grid; spacing 4 / 8 / 12 / 16 / 24 / 32 / 48 / 96.
+- Shadows need room: keep **≥ 16 px** between raised siblings in Workspace and **≥ 24 px** in Spotlight, and **≥ 24 px** page padding so shadows aren't clipped.
+- **Spotlight:** centered column max 1200 px; sections 96 px apart (56 px mobile), alternating `base` and `base-tint` bands.
+- **Workspace:** 240 px sidebar + 56 px top bar + content (max 1440 px), 24 px page padding.
 - Card grids: 3-up ≥ 1024 px, 2-up 600–1023, 1-up < 600.
 
-## 5. Elevation & Depth
-
-- **Spotlight:** depth comes from band contrast and soft shadows on floating cards only (`0 12px 32px rgba(20,17,15,0.06)`); the hero search bar gets `0 8px 24px rgba(20,17,15,0.08)`. Dark theme drops shadows and uses `dark-surface-1` + hairline instead.
-- **Workspace:** no shadows. Lift = next surface step + 1 px hairline. Menus/popovers use `surface-1` + `hairline-strong` (+ a 1 px top highlight `rgba(255,255,255,0.04)` in dark).
-- Modals: `scrim` at 48 % (light) / 64 % (dark).
-
-## 6. Shapes
-
-Spotlight is round: pills for CTAs, chips and the search bar; 16 px job cards; 24 px feature cards; 32 px hero/CTA panels.
-Workspace is crisp: 8 px buttons and inputs; 12 px cards; 4–6 px chips, rows and tags.
-Avatars and company logos: avatars circular; company logos 12 px rounded squares on a `surface-soft` tile.
-
-## 7. Components
+## 8. Components
 
 ### Spotlight
-- **Top nav** (64 px): logo left; Jobs · Companies · News · For employers; right: theme toggle, `Sign in` (secondary pill), `Get started` (primary pill). < 768 px: hamburger + `Get started` stays visible.
-- **Hero search bar**: pill, 56 px, two fields (role/keyword | location) + amber signature button "Search". On mobile the fields stack inside a 24 px-radius card.
-- **Filter chips**: horizontally scrollable row under the search bar; "All filters" opens a bottom sheet (mobile) or side panel (desktop). Results always render before the filter panel on mobile.
-- **Job card**: logo tile, title (heading-4 on desktop / ws-card-title on mobile), company + verified chip, 3 meta chips (location · type · salary with period), 2-line summary, posted-time caption, save (bookmark) icon button, and a **match ring** when the candidate has a profile. External jobs show a "via <source>" caption and an external-link icon on Apply.
-- **Job detail**: two-pane on ≥ 1024 px (sticky apply panel on the right); single column with a sticky bottom Apply bar on mobile.
-- **Candidate dashboard**: greeting + profile-completion ring; cards for Applications (stage chips), Upcoming interviews, Saved jobs, Recommended jobs.
-- **Empty states**: one line of copy, one action, a simple line illustration in `muted` with a single amber accent.
+- **Top nav** (64 px, `raised-xs`): logo; Jobs · Companies · News · For employers; theme toggle (sun/moon physical switch), `Sign in` (raised pill), `Get started` (amber pill). < 768 px: hamburger + `Get started`.
+- **Hero search**: `inset-md` pill well with outline, two fields (keyword | location) and an amber "Search" pill sitting inside the well.
+- **Filter chips**: raised pills; selected chips sink (`inset-sm`) and show an amber dot. "All filters" opens a bottom sheet (mobile) or side panel (desktop). On mobile, results always come before filters.
+- **Job card** (`raised-md`, 18 px radius): logo in an inset socket; title; company + verified seal; inset meta chips (location · type · salary with period); 2-line summary; posted-time caption; bookmark ribbon; match dial when the candidate has a profile. External jobs show "via <source>" and an external-link icon on Apply.
+- **Job detail**: two panes ≥ 1024 px with a raised sticky apply panel; mobile uses a raised sticky bottom Apply bar.
+- **Candidate dashboard**: greeting + profile-completeness groove; raised cards for Applications (stage chips), Upcoming interviews (calendar pages), Saved jobs, Recommended jobs.
+- **Empty states**: one sentence, one action, a simple embossed line illustration with one amber accent.
 
 ### Workspace
-- **Sidebar**: 32 px items, 16 px icons, `label` text; active item = `surface-2` fill + 2 px amber left indicator. Collapsible to a 56 px icon rail; becomes a drawer < 1024 px.
-- **Tables** (applicants, users, audit log): 44 px rows, hairline dividers, sticky header, sortable columns, row hover `surface-2`, bulk-select checkbox column, mono for IDs.
-- **Pipeline kanban**: one column per stage (288 px), column header = stage chip + count; cards show avatar, name, current title, match score, applied-ago, next interview. Drag-and-drop with keyboard alternative (focus card → `M` → choose stage). Horizontal scroll on tablet; on mobile, a stage selector replaces columns.
-- **Stat tiles**: label (caption, muted), value (ws-title), delta chip. Only real numbers — show "—" when there is no data.
-- **Command menu** (`Ctrl/⌘ K`): jump to job, candidate, company, or action.
-- **Forms**: labels above fields, helper text in `muted`, errors in `danger` with icon below the field; job editor is a two-column form with a live preview of the public job card.
+- **Sidebar** (on `base`): 36 px items; the active item sinks (`inset-sm`) and gets a 3 px amber bar on the left. Collapses to a 64 px icon rail; becomes a drawer < 1024 px.
+- **Tables**: one raised panel, flat 44 px rows, `hairline` dividers, row hover = `sunken`, sticky header, mono for IDs.
+- **Pipeline kanban**: each stage is an inset tray (288 px) with a stage chip + count; candidates are raised paper cards (avatar, name, title, match dial, applied-ago, next interview). Dragging lifts the card to `raised-md`. Keyboard alternative: focus card → `M` → choose stage. Mobile: stage selector instead of columns.
+- **Stat tiles** (`raised-sm`): caption label, ws-title value, delta chip. Real numbers only; "—" when no data.
+- **Command menu** (`Ctrl/⌘ K`): raised-lg panel with an inset search well.
+- **Forms**: labels above inset fields; helper text `muted`; errors `danger` + icon below the field; the job editor shows a live preview of the public job card.
 
 ### Shared
-- **Status chips** — see §2.
-- **Toasts** — bottom-center on mobile, bottom-right on desktop; ink background; 4 s; include Undo for destructive actions.
-- **Notifications panel** — right sheet; unread dot in amber; grouped by Today / Earlier.
-- **Skeletons** — `surface-2` blocks with a subtle shimmer; never show spinners for list loads.
-- **Focus ring** — 2 px `primary-strong` (light) / `primary` (dark), 2 px offset, on every interactive element.
+- **Toggles**: inset track, raised knob; track fills amber when on.
+- **Checkbox / radio**: inset well with outline; checked = amber fill with ink check / dot.
+- **Sliders** (salary range): inset groove, raised thumbs, amber filled segment.
+- **Status chips**: inset pills (see §3).
+- **Toasts**: ink background (flat), bottom-center mobile / bottom-right desktop, 4 s, Undo for destructive actions.
+- **Skeletons**: `sunken` blocks with a soft shimmer; no spinners for lists.
 
-## 8. Motion
+## 9. Motion
 
-Durations 120 ms (hover, press), 200 ms (chips, toggles), 280 ms (sheets, dialogs, page transitions). Easing: standard `cubic-bezier(0.2, 0, 0, 1)`. Realtime inserts (new applicant, new notification) fade + slide 8 px. Respect reduced-motion: replace movement with opacity only.
+120 ms press (raised → inset), 200 ms chips and toggles (knob slides with slight overshoot), 280 ms sheets, dialogs and page transitions; easing `cubic-bezier(0.2, 0, 0, 1)`. Shadows animate by interpolating offset and blur. Realtime inserts (new applicant, new notification) rise from flat to raised. Reduced-motion: no movement, opacity only.
 
-## 9. Responsive Behavior
+## 10. Responsive Behavior
 
 | Name | Width | Behavior |
 |---|---|---|
-| compact | < 600 | bottom navigation (candidate), drawer (workspace), single column, bottom sheets for filters and actions |
+| compact | < 600 | bottom navigation (candidate), drawer (workspace), single column, bottom sheets; shadows step down one level |
 | medium | 600 – 1023 | navigation rail, 2-up grids, kanban scrolls horizontally |
 | expanded | 1024 – 1439 | full sidebar, two-pane job search, 3-up grids |
-| large | ≥ 1440 | content capped (1200 Spotlight / 1440 Workspace), extra space becomes margin |
+| large | ≥ 1440 | content capped (1200 Spotlight / 1440 Workspace) |
 
-Touch targets ≥ 48 × 48 dp on touch devices; Workspace controls may be 36 px tall on pointer devices only.
-
-## 10. Accessibility
-
-- Every text pair in this file meets WCAG 2.1 AA (≥ 4.5:1; large text ≥ 3:1); focus rings ≥ 3:1.
-- Do not convey stage, status or errors by color alone.
-- Every icon-only button has a tooltip and a `Semantics` label.
-- Logical focus order; all Workspace actions reachable by keyboard; Esc closes overlays.
+Touch targets ≥ 48 × 48 dp; Workspace controls may be 38 px tall on pointer devices only.
 
 ## 11. Flutter Implementation Notes
 
-- Tokens live in `app/lib/core/theme/tokens.dart`, generated from this file's front matter; `AppTheme.light()` / `AppTheme.dark()` build Material 3 `ThemeData` and expose extra tokens through a `ThemeExtension<LuzTokens>` (surfaces ladder, chips, zones).
-- `ColorScheme` mapping: `primary` → primary, `onPrimary` → on-primary, `surface` → canvas, `surfaceContainerLow/…/Highest` → surface ladder, `outline` → hairline-strong, `outlineVariant` → hairline, `error` → danger.
-- A `Zone` inherited widget (`spotlight` | `workspace`) switches component defaults (radii, densities, button shapes) so the same `LuzButton`, `LuzCard`, `LuzChip` widgets render correctly in both zones.
-- `VisualDensity.compact` in Workspace on pointer devices; `standard` elsewhere.
+- Tokens: `app/lib/core/theme/tokens.dart` (generated from this front matter). `AppTheme.light()` / `AppTheme.dark()` build Material 3 `ThemeData` with `scaffoldBackgroundColor = base`, and a `ThemeExtension<LuzTokens>` carries `base`, `sunken`, `highlight`, `shade`, chip colours and the elevation shadow lists.
+- **Relief is implemented with `BoxShadow` pairs** (`LuzRelief.raised(level)` / `LuzRelief.inset(level)`). Inset shadows are not supported by `BoxShadow`, so `LuzInset` paints them with a `CustomPainter` (or the `flutter_inset_shadow` package).
+- Core widgets: `LuzSurface` (raised/inset/flat container), `LuzButton` (raised → inset on press, amber variant), `LuzIconButton`, `LuzTextField` (inset + outline), `LuzChip`, `LuzToggle`, `LuzDial`, `LuzCard`, `LuzStageChip`. A `Zone` inherited widget (`spotlight` | `workspace`) sets default depth, radius and density.
+- Respect `MediaQuery.highContrastOf(context)` → outline mode; `MediaQuery.disableAnimationsOf(context)` → no movement.
+- Performance: cap shadow blur at 24 px, prefer `raised-sm` in scrolling lists, wrap list items in `RepaintBoundary`.
 
 ## 12. Prompt Guide (for Stitch and coding agents)
 
-When generating a screen, state the **zone**, the **theme(s)**, and the **breakpoint**:
-- *Spotlight example:* "LuzHire job search page, Spotlight zone, light theme, desktop 1280 px: white nav, amber-tint hero band with pill search bar and amber Search button, filter chip row, 2-column layout with job cards (16 px radius, hairline border, match ring), right-hand job preview pane. Use DESIGN.md tokens only."
-- *Workspace example:* "LuzHire employer pipeline, Workspace zone, dark theme, desktop 1440 px: 240 px sidebar with amber active indicator, 52 px top bar, kanban with one column per stage using stage chips, compact cards with avatar, name, match score. No shadows; surface ladder + hairlines."
-- Always generate the light **and** dark variant, and a 390 px mobile variant.
-- Work one component at a time by its `components:` name; add variants as new entries.
-- Run `npx @google/design.md lint DESIGN.md` after editing this file.
+Always state **zone**, **theme**, **breakpoint**, and "accessible neumorphism":
+- *Spotlight:* "LuzHire job search, Spotlight zone, accessible neumorphism, light porcelain theme (#EEECE7), desktop 1280 px. Everything moulded from one surface colour with top-left light. Inset pill search well with outline and amber Search pill; raised filter chips (selected chips sink with amber dot); raised job cards (18 px radius) with inset logo socket, bookmark ribbon and match dial. Text high-contrast and flat. Use DESIGN.md tokens only."
+- *Workspace:* "LuzHire employer pipeline, Workspace zone, accessible neumorphism, dark graphite theme (#1D1F23), desktop 1440 px. Shallow relief: sidebar with sunken active item and amber bar; kanban stages as inset trays holding raised paper cards; flat table rows inside one raised panel."
+- Always produce light and dark variants and a 390 px mobile variant.
+- Work one component at a time by its `components:` name.
 
 ## 13. Do's and Don'ts
 
 **Do**
+- Keep one surface colour per theme; express hierarchy with relief, not new colours.
+- Pair every raised/inset state with a non-shadow cue where meaning is involved (label, outline, amber indicator).
 - Keep amber scarce: one signature amber CTA per screen.
-- Use ink (black) pills as the default primary CTA in Spotlight.
-- Use the surface ladder and hairlines for depth in Workspace.
+- Use honest skeuomorphic metaphors for icons; keep them simple line icons.
 - Show real data or an honest empty state.
-- Give every external job its source and an external-link icon.
 
 **Don't**
+- Rely on shadow alone to show a boundary, selection or state.
+- Emboss or deboss text, or use low-contrast grey-on-grey text.
+- Stack more than two relief levels, or use relief on every element of a dense table.
+- Use photorealistic textures (leather, wood, paper grain).
 - Put white text on amber, or use amber for warnings.
-- Use amber as a full section background (only the pale `canvas-tint`).
-- Add a second brand accent color.
-- Use pill buttons or big shadows inside Workspace.
 - Show invented metrics, placeholder company facts, or decorative "AI" percentages.
-- Copy Jobright's mint or Linear's lavender — they are references for rhythm and density, not brand.
 
 ## 14. Known Gaps
 
-- Illustration style (empty states, onboarding) still to be produced in Stitch.
-- Chart palette for analytics: to be defined (start from the chip hue families, ordered neutral → blue → violet → amber → green).
-- Email template styling (transactional emails) not yet specified.
+- Illustration set (embossed line style) still to be produced in Stitch.
+- Chart palette for analytics: start from chip hue families; bars and lines sit in an inset plot well.
+- Transactional email styling is flat (email clients can't render relief).

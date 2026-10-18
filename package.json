@@ -1,0 +1,23 @@
+{
+  "name": "luzhire",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "build": "node -e \"console.log('Flutter web is built in CI (app/build/web) before vercel build.')\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "db:start": "supabase start",
+    "db:reset": "supabase db reset",
+    "db:test": "supabase test db"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "supabase": "^2.121.0",
+    "typescript": "^7.0.2",
+    "vercel": "^64.5.0",
+    "vitest": "^5.0.5"
+  }
+}

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <base href="$FLUTTER_BASE_HREF">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="LuzHire — find verified jobs, apply in one place, and track every application in real time.">
+  <meta name="theme-color" content="#EEECE7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1D1F23" media="(prefers-color-scheme: dark)">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="LuzHire">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>LuzHire</title>
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Splash painted before the Flutter engine loads (DESIGN.md porcelain / graphite). -->
+  <style>
+    :root { --base: #EEECE7; --hi: #FFFFFF; --sh: #CBC5BA; --ink: #14110F; --amber: #FFB224; }
+    @media (prefers-color-scheme: dark) {
+      :root { --base: #1D1F23; --hi: #2A2D33; --sh: #0E0F11; --ink: #F2F2EF; }
+    }
+    html, body { margin: 0; height: 100%; background: var(--base); }
+    #splash {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 20px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--ink); transition: opacity .25s ease;
+    }
+    #splash .mark {
+      width: 84px; height: 84px; border-radius: 26px; background: var(--base);
+      box-shadow: -8px -8px 16px var(--hi), 8px 8px 16px var(--sh);
+      display: flex; align-items: center; justify-content: center;
+    }
+    #splash .dot {
+      width: 26px; height: 26px; border-radius: 50%; background: var(--amber);
+      box-shadow: 0 0 22px rgba(255,178,36,.55);
+      animation: pulse 1.4s ease-in-out infinite;
+    }
+    #splash .name { font-weight: 800; font-size: 20px; letter-spacing: -.3px; }
+    @keyframes pulse { 50% { transform: scale(.82); opacity: .8; } }
+    @media (prefers-reduced-motion: reduce) { #splash .dot { animation: none; } }
+  </style>
+</head>
+<body>
+  <div id="splash" role="status" aria-label="Loading LuzHire">
+    <div class="mark"><div class="dot"></div></div>
+    <div class="name">LuzHire</div>
+  </div>
+  <script>
+    // Remove the splash once Flutter renders its first frame.
+    window.addEventListener('flutter-first-frame', function () {
+      var s = document.getElementById('splash');
+      if (!s) return;
+      s.style.opacity = '0';
+      setTimeout(function () { s.remove(); }, 300);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

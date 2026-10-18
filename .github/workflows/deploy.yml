@@ -1,0 +1,54 @@
+name: Deploy (Vercel)
+
+# Vercel's build image has no Flutter, so we build here and deploy the prebuilt output.
+# Required repository secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID, APP_ENV_JSON
+# (APP_ENV_JSON = contents of app/env/production.json — public client config only).
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - name: Skip when Vercel is not configured yet
+        if: env.VERCEL_TOKEN == ''
+        run: echo "VERCEL_TOKEN secret not set — skipping deploy."
+      - uses: actions/checkout@v4
+        if: env.VERCEL_TOKEN != ''
+      - uses: actions/setup-node@v4
+        if: env.VERCEL_TOKEN != ''
+        with:
+          node-version: 22
+          cache: npm
+      - uses: subosito/flutter-action@v2
+        if: env.VERCEL_TOKEN != ''
+        with:
+          channel: stable
+          cache: true
+      - name: Build Flutter web
+        if: env.VERCEL_TOKEN != ''
+        working-directory: app
+        env:
+          APP_ENV_JSON: ${{ secrets.APP_ENV_JSON }}
+        run: |
+          printf '%s' "${APP_ENV_JSON:-$(cat env/example.json)}" > env/production.json
+          flutter pub get
+          flutter build web --wasm --release --no-web-resources-cdn --dart-define-from-file=env/production.json
+      - name: Deploy prebuilt output
+        if: env.VERCEL_TOKEN != ''
+        run: |
+          npm ci
+          npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
+          npx vercel build --prod --token="$VERCEL_TOKEN"
+          npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
