@@ -116,7 +116,7 @@ class LuzLogoSocket extends StatelessWidget {
   );
 }
 
-/// Segmented progress groove (e.g. profile completeness) filling with amber.
+/// Segmented progress groove (e.g. profile completeness) filling with orange.
 class LuzProgressGroove extends StatelessWidget {
   const LuzProgressGroove({
     super.key,
@@ -193,7 +193,7 @@ class LuzProgressGroove extends StatelessWidget {
 }
 
 /// Hero search well: inset pill with outline, keyword + location fields and
-/// an amber Search pill. Stacks into a card on narrow widths.
+/// an orange Search pill. Stacks into a card on narrow widths.
 class LuzSearchBar extends StatefulWidget {
   const LuzSearchBar({
     super.key,

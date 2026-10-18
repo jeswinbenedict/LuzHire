@@ -11,7 +11,7 @@ enum LuzButtonVariant {
   /// Moulded from the base surface (default primary action).
   neutral,
 
-  /// Lit amber pill; use once per screen for the signature action.
+  /// Lit orange pill; use once per screen for the signature action.
   accent,
 }
 
@@ -102,7 +102,7 @@ class LuzButton extends StatelessWidget {
           ),
         );
 
-        // Amber surfaces glow instead of casting the grey shadow pair.
+        // Orange surfaces glow instead of casting the grey shadow pair.
         if (isAccent && enabled && !pressed) {
           return DecoratedBox(
             decoration: BoxDecoration(
@@ -139,7 +139,7 @@ class LuzIconButton extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onPressed;
 
-  /// Selected icon buttons sink and turn amber (e.g. a saved bookmark).
+  /// Selected icon buttons sink and turn orange (e.g. a saved bookmark).
   final bool selected;
   final double size;
 

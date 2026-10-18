@@ -12,43 +12,39 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="LuzHire">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-  <link rel="icon" type="image/png" href="favicon.png"/>
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
 
   <title>LuzHire</title>
   <link rel="manifest" href="manifest.json">
 
-  <!-- Splash painted before the Flutter engine loads (DESIGN.md porcelain / graphite). -->
+  <!-- Splash painted before the Flutter engine loads (DESIGN.md porcelain / graphite + official mark). -->
   <style>
-    :root { --base: #EEECE7; --hi: #FFFFFF; --sh: #CBC5BA; --ink: #14110F; --amber: #FFB224; }
+    :root { --base: #EEECE7; --ink: #14110F; --edge: transparent; }
     @media (prefers-color-scheme: dark) {
-      :root { --base: #1D1F23; --hi: #2A2D33; --sh: #0E0F11; --ink: #F2F2EF; }
+      :root { --base: #1D1F23; --ink: #F2F2EF; --edge: rgba(255,255,255,.12); }
     }
     html, body { margin: 0; height: 100%; background: var(--base); }
     #splash {
-      position: fixed; inset: 0; display: flex; flex-direction: column;
-      align-items: center; justify-content: center; gap: 20px;
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; gap: 14px;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
       color: var(--ink); transition: opacity .25s ease;
     }
-    #splash .mark {
-      width: 84px; height: 84px; border-radius: 26px; background: var(--base);
-      box-shadow: -8px -8px 16px var(--hi), 8px 8px 16px var(--sh);
-      display: flex; align-items: center; justify-content: center;
-    }
-    #splash .dot {
-      width: 26px; height: 26px; border-radius: 50%; background: var(--amber);
-      box-shadow: 0 0 22px rgba(255,178,36,.55);
-      animation: pulse 1.4s ease-in-out infinite;
-    }
-    #splash .name { font-weight: 800; font-size: 20px; letter-spacing: -.3px; }
-    @keyframes pulse { 50% { transform: scale(.82); opacity: .8; } }
+    #splash svg { width: 56px; height: 56px; border-radius: 14px; box-shadow: 0 0 0 1px var(--edge); }
+    #splash .name { font-weight: 500; font-size: 32px; letter-spacing: -.4px; }
+    #splash .dot { animation: pulse 1.4s ease-in-out infinite; transform-origin: 190px 186.5px; }
+    @keyframes pulse { 50% { transform: scale(.82); } }
     @media (prefers-reduced-motion: reduce) { #splash .dot { animation: none; } }
   </style>
 </head>
 <body>
   <div id="splash" role="status" aria-label="Loading LuzHire">
-    <div class="mark"><div class="dot"></div></div>
+    <svg viewBox="0 0 264 264" aria-hidden="true">
+      <rect width="264" height="264" rx="64" fill="#131314"/>
+      <path d="M55.5 68.5V161.5A50 50 0 0 0 105.5 211.5H161.38A38 38 0 0 1 155.09 171.5H107.5A12 12 0 0 1 95.5 159.5V68.5A20 20 0 0 0 55.5 68.5Z" fill="#FFFFFF"/>
+      <circle class="dot" cx="190" cy="186.5" r="30" fill="#FE8022"/>
+    </svg>
     <div class="name">LuzHire</div>
   </div>
   <script>

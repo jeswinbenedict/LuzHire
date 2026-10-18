@@ -5,7 +5,7 @@ import '../theme/tokens.dart';
 import 'luz_pressable.dart';
 import 'luz_surface.dart';
 
-/// Filter chip: raised when off; sinks with an amber dot when selected
+/// Filter chip: raised when off; sinks with an orange dot when selected
 /// (DESIGN.md §2 rule 4: selection is never shown by relief alone).
 class LuzFilterChip extends StatelessWidget {
   const LuzFilterChip({
@@ -79,7 +79,7 @@ enum ApplicationStage {
   finalReview('Final review', LuzChipTone.violet, Icons.balance_outlined),
   offerIssued(
     'Offer issued',
-    LuzChipTone.amber,
+    LuzChipTone.orange,
     Icons.mark_email_unread_outlined,
   ),
   hired('Hired', LuzChipTone.green, Icons.handshake_outlined),

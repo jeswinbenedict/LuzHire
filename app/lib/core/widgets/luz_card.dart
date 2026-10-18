@@ -37,7 +37,7 @@ class LuzCard extends StatelessWidget {
   }
 }
 
-/// Match-score dial: inset groove with an amber arc and the value as text.
+/// Match-score dial: inset groove with an orange arc and the value as text.
 class LuzDial extends StatelessWidget {
   const LuzDial({
     super.key,

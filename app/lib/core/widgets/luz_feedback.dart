@@ -156,7 +156,7 @@ void showLuzToast(
           ? null
           : SnackBarAction(
               label: actionLabel,
-              // Toast is ink-on-light in dark theme, so the amber must darken.
+              // Toast is ink-on-light in dark theme, so the orange must darken.
               textColor: p.brightness == Brightness.dark
                   ? LuzBrand.primaryStrong
                   : LuzBrand.primary,

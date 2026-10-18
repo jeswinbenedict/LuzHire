@@ -9,6 +9,8 @@ import '../theme/theme_mode_provider.dart';
 import '../theme/tokens.dart';
 import '../widgets/widgets.dart';
 
+export '../brand/luz_logo.dart' show LuzLogo, LuzLogoMark;
+
 /// A navigation target shown in shells and the command menu.
 class LuzDestination {
   const LuzDestination({
@@ -42,65 +44,6 @@ int selectedIndexFor(List<LuzDestination> items, String location) {
     }
   }
   return best;
-}
-
-/// Brand mark: a lit amber dot set into a raised porcelain tile + wordmark.
-class LuzLogo extends StatelessWidget {
-  const LuzLogo({super.key, this.compact = false, this.onTap});
-  final bool compact;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final mark = LuzSurface(
-      depth: LuzDepth.raisedXs,
-      radius: 10,
-      child: SizedBox.square(
-        dimension: 34,
-        child: Center(
-          child: Container(
-            width: 12,
-            height: 12,
-            decoration: BoxDecoration(
-              color: LuzBrand.primary,
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: LuzBrand.primary.withValues(alpha: 0.6),
-                  blurRadius: 10,
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-    final content = Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        mark,
-        if (!compact) ...[
-          const SizedBox(width: 10),
-          Text(
-            'LuzHire',
-            style: context.luzText.h4.copyWith(
-              fontSize: 20,
-              letterSpacing: -0.4,
-            ),
-          ),
-        ],
-      ],
-    );
-    return Semantics(
-      label: 'LuzHire home',
-      button: onTap != null,
-      excludeSemantics: true,
-      child: MouseRegion(
-        cursor: onTap != null ? SystemMouseCursors.click : MouseCursor.defer,
-        child: GestureDetector(onTap: onTap, child: content),
-      ),
-    );
-  }
 }
 
 /// Sun/moon physical switch between light and dark.

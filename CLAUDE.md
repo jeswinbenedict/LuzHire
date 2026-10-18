@@ -35,7 +35,7 @@ On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH)
 
 ## Conventions
 - **Flutter:** feature-first (`lib/features/<feature>/{data,domain,presentation}`), shared code in `lib/core/`. Use the Riverpod providers for state. Models use freezed. Never hardcode colours, radii, shadows or text styles. Use `LuzTokens` / `context.luz` and the `Luz*` widgets in `lib/core/widgets/`.
-- **Neumorphism accessibility** (DESIGN.md §2): shadows never carry meaning alone. Inputs get an outline, selection gets an amber indicator, and focus gets a visible ring.
+- **Neumorphism accessibility** (DESIGN.md §2): shadows never carry meaning alone. Inputs get an outline, selection gets an orange indicator, and focus gets a visible ring.
 - **Database:** every invariant lives in Postgres (constraints, triggers, RLS). User IDs are Firebase UIDs (`text`). RLS uses `app.uid()` / `app.role()`, never `auth.uid()`.
 - **Secrets:** only public client config (Supabase URL, anon key, Firebase options) goes in `app/env/*.json`, and those files are gitignored except `example.json`. The service-role key and third-party keys live only in Vercel env vars.
 - Files in `api/` become Vercel Functions. Helpers go in `api/_lib/`, and tests stay out of `api/`.

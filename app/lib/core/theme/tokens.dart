@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 
 /// Brand colours shared by both themes.
 abstract final class LuzBrand {
-  static const primary = Color(0xFFFFB224);
-  static const primaryHover = Color(0xFFFFC453);
-  static const primaryPressed = Color(0xFFE89A0C);
+  static const primary = Color(0xFFFE8022); // logo dot
+  static const primaryHover = Color(0xFFFF9A4D);
+  static const primaryPressed = Color(0xFFE86D12);
   static const onPrimary = Color(0xFF14110F);
 
-  /// Amber that passes AA as text on light surfaces.
-  static const primaryStrong = Color(0xFF9A4605);
+  /// Brand orange that passes AA as text on light surfaces.
+  static const primaryStrong = Color(0xFF9A3F0A);
 }
 
 /// Background / foreground pair for an inset status chip.
@@ -27,7 +27,7 @@ class LuzChipColors {
       );
 }
 
-enum LuzChipTone { neutral, blue, violet, amber, green, red }
+enum LuzChipTone { neutral, blue, violet, orange, green, red }
 
 /// Per-theme palette. `base` is THE surface: page and raised elements share it.
 @immutable
@@ -66,7 +66,7 @@ class LuzPalette {
   final Color outline;
   final Color hairline;
 
-  /// Links, focus rings and active indicators (amber that passes AA here).
+  /// Links, focus rings and active indicators (brand orange that passes AA here).
   final Color accent;
   final Color success;
   final Color warning;
@@ -80,7 +80,7 @@ class LuzPalette {
     sunken: Color(0xFFE4E1DA),
     highlight: Color(0xFFFFFFFF),
     shade: Color(0xFFCBC5BA),
-    baseTint: Color(0xFFF6EAD2),
+    baseTint: Color(0xFFF7E6D8),
     ink: Color(0xFF14110F),
     inkMuted: Color(0xFF3D4148),
     muted: Color(0xFF5A5F66),
@@ -89,14 +89,14 @@ class LuzPalette {
     hairline: Color(0xFFDAD6CE),
     accent: LuzBrand.primaryStrong,
     success: Color(0xFF15803D),
-    warning: Color(0xFFC2410C),
+    warning: Color(0xFF854D0E),
     danger: Color(0xFFB91C1C),
     info: Color(0xFF1D4ED8),
     chips: {
       LuzChipTone.neutral: LuzChipColors(Color(0xFFE4E1DA), Color(0xFF4B5058)),
       LuzChipTone.blue: LuzChipColors(Color(0xFFE6EBF7), Color(0xFF1D4ED8)),
       LuzChipTone.violet: LuzChipColors(Color(0xFFECE5F7), Color(0xFF6D28D9)),
-      LuzChipTone.amber: LuzChipColors(Color(0xFFF7EBD0), Color(0xFF92400E)),
+      LuzChipTone.orange: LuzChipColors(Color(0xFFFBE4D3), Color(0xFF9A3412)),
       LuzChipTone.green: LuzChipColors(Color(0xFFE3F1E6), Color(0xFF166534)),
       LuzChipTone.red: LuzChipColors(Color(0xFFF6E3E1), Color(0xFFB91C1C)),
     },
@@ -108,7 +108,7 @@ class LuzPalette {
     sunken: Color(0xFF16171A),
     highlight: Color(0xFF2A2D33),
     shade: Color(0xFF0E0F11),
-    baseTint: Color(0xFF272116),
+    baseTint: Color(0xFF2A1F17),
     ink: Color(0xFFF2F2EF),
     inkMuted: Color(0xFFC9CCD1),
     muted: Color(0xFF9EA2AA),
@@ -117,14 +117,14 @@ class LuzPalette {
     hairline: Color(0xFF2B2E34),
     accent: LuzBrand.primary,
     success: Color(0xFF3DD68C),
-    warning: Color(0xFFFB923C),
+    warning: Color(0xFFFACC15),
     danger: Color(0xFFF87171),
     info: Color(0xFF93B4FF),
     chips: {
       LuzChipTone.neutral: LuzChipColors(Color(0xFF202227), Color(0xFFB9BDC4)),
       LuzChipTone.blue: LuzChipColors(Color(0xFF1A2236), Color(0xFF93B4FF)),
       LuzChipTone.violet: LuzChipColors(Color(0xFF241C38), Color(0xFFC4B0FF)),
-      LuzChipTone.amber: LuzChipColors(Color(0xFF332611), Color(0xFFFFC66B)),
+      LuzChipTone.orange: LuzChipColors(Color(0xFF3A2215), Color(0xFFFFB088)),
       LuzChipTone.green: LuzChipColors(Color(0xFF15291E), Color(0xFF7EE2A8)),
       LuzChipTone.red: LuzChipColors(Color(0xFF331A1A), Color(0xFFFCA5A5)),
     },

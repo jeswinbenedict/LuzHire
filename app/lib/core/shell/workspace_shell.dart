@@ -141,23 +141,36 @@ class _Sidebar extends StatelessWidget {
             padding: EdgeInsets.symmetric(
               horizontal: collapsed ? 19 : LuzSpace.md,
             ),
-            child: Row(
-              children: [
-                LuzLogo(compact: true, onTap: () => context.go('/')),
-                if (!collapsed) ...[
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('LuzHire', style: t.wsSection),
-                        Text(title, style: t.caption.copyWith(color: p.muted)),
-                      ],
-                    ),
+            child: collapsed
+                ? LuzLogo(
+                    size: 34,
+                    showWordmark: false,
+                    onTap: () => context.go('/'),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      LuzLogo(size: 30, onTap: () => context.go('/')),
+                      const SizedBox(height: LuzSpace.xs),
+                      // Which workspace you're in, set into the surface.
+                      LuzSurface(
+                        depth: LuzDepth.insetSm,
+                        radius: LuzRadius.pill,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 3,
+                        ),
+                        child: Text(
+                          '$title workspace',
+                          overflow: TextOverflow.ellipsis,
+                          style: t.caption.copyWith(
+                            color: p.inkMuted,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ],
-            ),
           ),
           const SizedBox(height: LuzSpace.lg),
           Expanded(
@@ -236,7 +249,7 @@ class _SidebarItem extends StatelessWidget {
           height: 40,
           child: Row(
             children: [
-              // Amber indicator bar: selection is never relief-only.
+              // Orange indicator bar: selection is never relief-only.
               AnimatedContainer(
                 duration: LuzMotion.toggle,
                 width: 3,

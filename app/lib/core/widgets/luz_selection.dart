@@ -8,7 +8,7 @@ import 'luz_surface.dart';
 import 'luz_zone.dart';
 
 /// Segmented control / tabs: an inset tray; the selected segment is raised
-/// and carries an amber underline (selection is never relief-only).
+/// and carries an orange underline (selection is never relief-only).
 class LuzSegmented<T> extends StatelessWidget {
   const LuzSegmented({
     super.key,
@@ -97,7 +97,7 @@ class LuzSegmented<T> extends StatelessWidget {
   }
 }
 
-/// Inset checkbox well with outline; checked = amber fill + ink tick.
+/// Inset checkbox well with outline; checked = orange fill + ink tick.
 class LuzCheckbox extends StatelessWidget {
   const LuzCheckbox({
     super.key,
@@ -119,7 +119,7 @@ class LuzCheckbox extends StatelessWidget {
   );
 }
 
-/// Inset radio well; selected = amber fill + ink dot.
+/// Inset radio well; selected = orange fill + ink dot.
 class LuzRadio<T> extends StatelessWidget {
   const LuzRadio({
     super.key,
@@ -215,7 +215,7 @@ class _LuzCheckRow extends StatelessWidget {
   }
 }
 
-/// Range slider: inset groove, raised thumbs, amber filled segment.
+/// Range slider: inset groove, raised thumbs, orange filled segment.
 /// Thumbs are focusable and move with arrow keys (Shift = 10 steps).
 class LuzRangeSlider extends StatefulWidget {
   const LuzRangeSlider({

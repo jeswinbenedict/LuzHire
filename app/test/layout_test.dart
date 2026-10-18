@@ -345,6 +345,6 @@ void main() {
     await tester.tap(find.text('Go'));
     await tester.pump();
     final action = tester.widget<SnackBarAction>(find.byType(SnackBarAction));
-    expect(action.textColor, isNot(equals(const Color(0xFFFFB224))));
+    expect(action.textColor, isNot(equals(const Color(0xFFFE8022))));
   });
 }

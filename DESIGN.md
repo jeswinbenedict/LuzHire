@@ -1,22 +1,22 @@
 ---
 version: alpha
 name: LuzHire
-description: LuzHire's design language is accessible neumorphism. Every element is moulded from one soft, warm "porcelain" surface (graphite in dark mode). Raised elements catch light from the top-left and cast a soft shade to the bottom-right; pressed or selected elements sink into the surface. Familiar real-world metaphors (bookmark ribbons, paper-clip attachments, calendar pages, paper cards, physical toggles) make actions obvious at a glance. "Luz" means light, so the single brand accent is a warm sunrise amber, used sparingly. Public and candidate screens (the "Spotlight" zone) borrow Jobright's friendly rhythm with generous, deeply moulded pills and cards. Employer and admin screens (the "Workspace" zone) borrow Linear's density and calm, with shallower relief. Both ship light and dark themes. Shadows never carry meaning on their own — text keeps full AA contrast, inputs keep a visible outline, and focus and selection always add amber.
+description: LuzHire's design language is accessible neumorphism. Every element is moulded from one soft, warm "porcelain" surface (graphite in dark mode). Raised elements catch light from the top-left and cast a soft shade to the bottom-right; pressed or selected elements sink into the surface. Familiar real-world metaphors (bookmark ribbons, paper-clip attachments, calendar pages, paper cards, physical toggles) make actions obvious at a glance. "Luz" means light, so the single brand accent is a warm sunrise orange (the logo dot), used sparingly. Public and candidate screens (the "Spotlight" zone) borrow Jobright's friendly rhythm with generous, deeply moulded pills and cards. Employer and admin screens (the "Workspace" zone) borrow Linear's density and calm, with shallower relief. Both ship light and dark themes. Shadows never carry meaning on their own — text keeps full AA contrast, inputs keep a visible outline, and focus and selection always add orange.
 
 colors:
   # ---------- brand (both themes) ----------
-  primary: "#FFB224"           # Luz amber: signature pill, brand mark, highlights, dark-theme links/focus
-  primary-hover: "#FFC453"
-  primary-pressed: "#E89A0C"
-  on-primary: "#14110F"        # text/icons on amber, never white
-  primary-strong: "#9A4605"    # amber that passes AA on light surfaces: links, focus ring, active indicators
+  primary: "#FE8022"           # Luz orange (logo dot): signature pill, brand mark, highlights, dark-theme links/focus
+  primary-hover: "#FF9A4D"
+  primary-pressed: "#E86D12"
+  on-primary: "#14110F"        # text/icons on orange, never white
+  primary-strong: "#9A3F0A"    # orange that passes AA on light surfaces: links, focus ring, active indicators
 
   # ---------- light theme (porcelain) ----------
   base: "#EEECE7"              # THE surface: page and every raised element share it
   sunken: "#E4E1DA"            # inset wells: inputs, pressed buttons, selected chips, tracks
   highlight: "#FFFFFF"         # top-left light shadow
   shade: "#CBC5BA"             # bottom-right dark shadow
-  base-tint: "#F6EAD2"         # amber-tinted band (Spotlight hero / CTA), still moulded
+  base-tint: "#F7E6D8"         # orange-tinted band (Spotlight hero / CTA), still moulded
   ink: "#14110F"
   ink-muted: "#3D4148"
   muted: "#5A5F66"
@@ -30,7 +30,7 @@ colors:
   dark-sunken: "#16171A"
   dark-highlight: "#2A2D33"
   dark-shade: "#0E0F11"
-  dark-base-tint: "#272116"
+  dark-base-tint: "#2A1F17"
   dark-ink: "#F2F2EF"
   dark-ink-muted: "#C9CCD1"
   dark-muted: "#9EA2AA"
@@ -41,8 +41,8 @@ colors:
   # ---------- semantic ----------
   success: "#15803D"
   dark-success: "#3DD68C"
-  warning: "#C2410C"           # orange, kept distinct from brand amber
-  dark-warning: "#FB923C"
+  warning: "#854D0E"           # dark yellow, kept distinct from the brand orange
+  dark-warning: "#FACC15"
   danger: "#B91C1C"
   dark-danger: "#F87171"
   info: "#1D4ED8"
@@ -56,8 +56,8 @@ colors:
   chip-blue-fg: "#1D4ED8"
   chip-violet-bg: "#ECE5F7"
   chip-violet-fg: "#6D28D9"
-  chip-amber-bg: "#F7EBD0"
-  chip-amber-fg: "#92400E"
+  chip-orange-bg: "#FBE4D3"
+  chip-orange-fg: "#9A3412"
   chip-green-bg: "#E3F1E6"
   chip-green-fg: "#166534"
   chip-red-bg: "#F6E3E1"
@@ -68,8 +68,8 @@ colors:
   dark-chip-blue-fg: "#93B4FF"
   dark-chip-violet-bg: "#241C38"
   dark-chip-violet-fg: "#C4B0FF"
-  dark-chip-amber-bg: "#332611"
-  dark-chip-amber-fg: "#FFC66B"
+  dark-chip-orange-bg: "#3A2215"
+  dark-chip-orange-fg: "#FFB088"
   dark-chip-green-bg: "#15291E"
   dark-chip-green-fg: "#7EE2A8"
   dark-chip-red-bg: "#331A1A"
@@ -85,7 +85,7 @@ elevation:
   raised-lg: "-12px -12px 24px {colors.highlight}, 12px 12px 24px {colors.shade}"
   inset-sm: "inset 2px 2px 4px {colors.shade}, inset -2px -2px 4px {colors.highlight}"
   inset-md: "inset 4px 4px 8px {colors.shade}, inset -4px -4px 8px {colors.highlight}"
-  glow-primary: "0 6px 16px rgba(255,178,36,0.35)"
+  glow-primary: "0 6px 16px rgba(254,128,34,0.35)"
 
 typography:
   display:
@@ -401,7 +401,35 @@ Two zones share one token set:
 
 Both zones support **light (porcelain) and dark (graphite)** themes. Default follows the OS; the user can override in settings.
 
-The brand is *light*: a single sunrise amber (`primary #FFB224`) for the brand mark, the one signature CTA per screen, match dials, active indicators, toggles in the "on" position, and the "Offer" stage. Everything else is moulded neutral.
+The brand is *light*: a single sunrise orange (the logo dot) (`primary #FE8022`) for the brand mark, the one signature CTA per screen, match dials, active indicators, toggles in the "on" position, and the "Offer" stage. Everything else is moulded neutral.
+
+## 1a. Logo
+
+The official logo is `brand/luzhire-logo-official.png`. It is a near-black rounded tile holding a white **L** and an orange dot, plus the **LuzHire** wordmark. The app uses a vector rebuild of it (`brand/luzhire-mark.svg`, `LuzLogo` / `LuzLogoMark` in Flutter), fitted to the official artwork with under 1 % pixel difference.
+
+| Element | Value |
+|---|---|
+| Tile | `#131314`, 264-unit grid, corner radius 64 |
+| Letter | `#FFFFFF` |
+| Dot | `#FE8022`, which is also the brand `primary` |
+| Wordmark | Inter 500, font size 0.75 × mark height, gap 0.26 × mark height, ink in light theme and reversed ink in dark |
+
+Rules
+- Never recolour, stretch, rotate, outline, emboss or add neumorphic relief to the mark. The logo stays flat on every surface.
+- Keep clear space of at least ¼ of the mark height on all sides.
+- In dark theme the tile gets a 1 px `rgba(255,255,255,.12)` hairline so it stays defined on graphite. Nothing else changes.
+- Minimum sizes: mark 16 px (favicon), full logo with wordmark 24 px mark height.
+- The logo ignores OS text scaling. In tight spaces it scales down as a whole and never wraps.
+
+| Placement | Asset |
+|---|---|
+| Spotlight top nav / compact bar | `LuzLogo(size: 34)` |
+| Workspace sidebar | `LuzLogo(size: 30)`; mark only (34) in the collapsed rail |
+| Web favicon | `app/web/favicon.svg` + `favicon.png` (48) |
+| PWA / Apple touch | `app/web/icons/` (192, 512, maskable full-bleed, 180) |
+| Android launcher | legacy `mipmap-*/ic_launcher.png` + adaptive icon (`#131314` background, centred foreground) |
+| iOS app icon | `AppIcon.appiconset`, opaque full-bleed squares |
+| Web pre-load splash | inline SVG mark in `app/web/index.html` |
 
 ## 2. Accessibility rules for neumorphism (non-negotiable)
 
@@ -410,7 +438,7 @@ Pure neumorphism fails WCAG because shapes are defined only by faint shadows. Lu
 1. **Text always meets AA** (≥ 4.5:1; large text ≥ 3:1) against `base`, `sunken` and `base-tint`. All pairs in this file have been checked.
 2. **Inputs, checkboxes, radios and the search bar have a 1 px `outline`** (≥ 3:1 against `base`) in addition to the inset shadow.
 3. **Buttons are identified by their label/icon**, not by relief alone. Icon-only buttons always have a tooltip and a semantics label.
-4. **Selected / active state = inset + amber indicator** (a 3 px amber bar, amber icon, or amber dot) — never inset alone.
+4. **Selected / active state = inset + orange indicator** (a 3 px orange bar, orange icon, or orange dot) — never inset alone.
 5. **Focus ring**: 2 px `primary-strong` (light) / `primary` (dark), 3 px offset, on every interactive element.
 6. **Disabled = flat** (no shadow) + `disabled` text, so it is clearly different from both raised and pressed.
 7. **High-contrast mode**: when the OS requests high contrast (`MediaQuery.highContrast`), replace shadows with a 1.5 px `outline` border on every raised element.
@@ -419,21 +447,21 @@ Pure neumorphism fails WCAG because shapes are defined only by faint shadows. Lu
 ## 3. Colors
 
 ### Light — porcelain
-`base #EEECE7` is the page **and** the fill of every raised element. `sunken #E4E1DA` fills wells (inputs, pressed buttons, kanban columns, chip backgrounds). Shadows: `highlight #FFFFFF` (top-left) and `shade #CBC5BA` (bottom-right). `base-tint #F6EAD2` is an amber-warmed band for the Spotlight hero and CTA sections.
-Text: `ink #14110F` (15.9:1), `ink-muted #3D4148` (8.7:1), `muted #5A5F66` (5.5:1 on base, 4.9:1 on sunken). Links and indicators: `primary-strong #9A4605` (5.5:1 on base, 4.9:1 on sunken).
+`base #EEECE7` is the page **and** the fill of every raised element. `sunken #E4E1DA` fills wells (inputs, pressed buttons, kanban columns, chip backgrounds). Shadows: `highlight #FFFFFF` (top-left) and `shade #CBC5BA` (bottom-right). `base-tint #F7E6D8` is an orange-warmed band for the Spotlight hero and CTA sections.
+Text: `ink #14110F` (15.9:1), `ink-muted #3D4148` (8.7:1), `muted #5A5F66` (5.5:1 on base, 4.9:1 on sunken). Links and indicators: `primary-strong #9A3F0A` (5.8:1 on base, 5.2:1 on sunken).
 
 ### Dark — graphite
-`dark-base #1D1F23`, `dark-sunken #16171A`, `dark-highlight #2A2D33`, `dark-shade #0E0F11`, `dark-base-tint #272116`.
-Text: `dark-ink #F2F2EF` (14.7:1), `dark-ink-muted #C9CCD1`, `dark-muted #9EA2AA` (6.5:1). Links, focus and indicators use plain `primary` amber (9.2:1).
+`dark-base #1D1F23`, `dark-sunken #16171A`, `dark-highlight #2A2D33`, `dark-shade #0E0F11`, `dark-base-tint #2A1F17`.
+Text: `dark-ink #F2F2EF` (14.7:1), `dark-ink-muted #C9CCD1`, `dark-muted #9EA2AA` (6.5:1). Links, focus and indicators use plain `primary` orange (6.5:1).
 
 ### Brand
-Text on amber is always `on-primary #14110F` (10.4:1). Never white on amber. Amber surfaces glow (`glow-primary`) instead of using the grey shadow pair, so they look lit rather than moulded.
+Text on orange is always `on-primary #14110F` (7.5:1). Never white on orange. Orange surfaces glow (`glow-primary`) instead of using the grey shadow pair, so they look lit rather than moulded.
 
 ### Theme mapping
 Reference light token names in components; the theme layer swaps to the `dark-` twin: `base`, `sunken`, `highlight`, `shade`, `base-tint`, `ink`, `ink-muted`, `muted`, `disabled`, `outline`, `hairline`, all semantic colours and all chip colours. `primary-strong` maps to `primary` in dark.
 
 ### Semantic
-`success` green, `warning` **orange** (deliberately not amber), `danger` red, `info` blue. Errors also show an icon and message text.
+`success` green, `warning` **yellow** (deliberately not orange), `danger` red, `info` blue. Errors also show an icon and message text.
 
 ### Application stage chips (inset pills)
 | Stage | Chip | Icon |
@@ -444,12 +472,12 @@ Reference light token names in components; the theme layer swaps to the `dark-` 
 | Assessment | blue | clipboard |
 | Technical / HR interview | blue | calendar page |
 | Final review | violet | scales |
-| Offer issued | amber | envelope with seal |
+| Offer issued | orange | envelope with seal |
 | Hired | green | handshake |
 | Rejected | red | closed folder |
 | Withdrawn | neutral, strikethrough | arrow-out |
 
-Job status: Draft neutral · Pending review amber · Published green · Closed neutral · Archived neutral (archive box) · Rejected red.
+Job status: Draft neutral · Pending review orange · Published green · Closed neutral · Archived neutral (archive box) · Rejected red.
 Company verification: Verified = green chip with a seal/badge icon.
 
 ## 4. Elevation & Relief
@@ -465,7 +493,7 @@ Light source: **top-left**. Every raised level is a pair of shadows of equal blu
 | `raised-lg` | Spotlight feature cards, modals, bottom sheets, command menu |
 | `inset-sm` | inputs, pressed buttons, selected chips, status chips, toggle track, active sidebar item, kanban column |
 | `inset-md` | hero search bar, dropzones (resume upload), large wells |
-| `glow-primary` | amber CTAs |
+| `glow-primary` | orange CTAs |
 
 Rules:
 - **Pressing = sinking.** A raised button animates to `inset-sm` while pressed (120 ms), then back.
@@ -480,19 +508,19 @@ Use familiar objects where they make meaning clearer; keep them simple, monochro
 
 | Concept | Metaphor |
 |---|---|
-| Save job | bookmark ribbon that fills amber when saved |
+| Save job | bookmark ribbon that fills orange when saved |
 | Resume / attachments | paper sheet with folded corner; paper-clip on attachments; dropzone looks like an inset tray |
 | Interviews | tear-off calendar page showing the day number |
-| Notifications | bell with amber dot |
+| Notifications | bell with orange dot |
 | Delete | trash can; destructive confirm dialog shows the can |
 | Archive | archive box |
 | Offer | envelope with seal |
 | Settings | physical toggles with a raised knob in an inset track |
 | Pipeline | paper cards in inset trays (kanban columns) |
-| Match score | a round dial (inset track, amber arc) |
+| Match score | a round dial (inset track, orange arc) |
 | Company verified | wax-seal style badge |
 | Search | magnifier inside an inset search well |
-| Profile completeness | segmented progress groove filling with amber |
+| Profile completeness | segmented progress groove filling with orange |
 
 ## 6. Typography
 
@@ -514,16 +542,16 @@ Text is never embossed or debossed — type stays flat and crisp; relief belongs
 ## 8. Components
 
 ### Spotlight
-- **Top nav** (64 px, `raised-xs`): logo; Jobs · Companies · News · For employers; theme toggle (sun/moon physical switch), `Sign in` (raised pill), `Get started` (amber pill). < 768 px: hamburger + `Get started`.
-- **Hero search**: `inset-md` pill well with outline, two fields (keyword | location) and an amber "Search" pill sitting inside the well.
-- **Filter chips**: raised pills; selected chips sink (`inset-sm`) and show an amber dot. "All filters" opens a bottom sheet (mobile) or side panel (desktop). On mobile, results always come before filters.
+- **Top nav** (64 px, `raised-xs`): logo; Jobs · Companies · News · For employers; theme toggle (sun/moon physical switch), `Sign in` (raised pill), `Get started` (orange pill). < 768 px: hamburger + `Get started`.
+- **Hero search**: `inset-md` pill well with outline, two fields (keyword | location) and an orange "Search" pill sitting inside the well.
+- **Filter chips**: raised pills; selected chips sink (`inset-sm`) and show an orange dot. "All filters" opens a bottom sheet (mobile) or side panel (desktop). On mobile, results always come before filters.
 - **Job card** (`raised-md`, 18 px radius): logo in an inset socket; title; company + verified seal; inset meta chips (location · type · salary with period); 2-line summary; posted-time caption; bookmark ribbon; match dial when the candidate has a profile. External jobs show "via <source>" and an external-link icon on Apply.
 - **Job detail**: two panes ≥ 1024 px with a raised sticky apply panel; mobile uses a raised sticky bottom Apply bar.
 - **Candidate dashboard**: greeting + profile-completeness groove; raised cards for Applications (stage chips), Upcoming interviews (calendar pages), Saved jobs, Recommended jobs.
-- **Empty states**: one sentence, one action, a simple embossed line illustration with one amber accent.
+- **Empty states**: one sentence, one action, a simple embossed line illustration with one orange accent.
 
 ### Workspace
-- **Sidebar** (on `base`): 36 px items; the active item sinks (`inset-sm`) and gets a 3 px amber bar on the left. Collapses to a 64 px icon rail; becomes a drawer < 1024 px.
+- **Sidebar** (on `base`): 36 px items; the active item sinks (`inset-sm`) and gets a 3 px orange bar on the left. Collapses to a 64 px icon rail; becomes a drawer < 1024 px.
 - **Tables**: one raised panel, flat 44 px rows, `hairline` dividers, row hover = `sunken`, sticky header, mono for IDs.
 - **Pipeline kanban**: each stage is an inset tray (288 px) with a stage chip + count; candidates are raised paper cards (avatar, name, title, match dial, applied-ago, next interview). Dragging lifts the card to `raised-md`. Keyboard alternative: focus card → `M` → choose stage. Mobile: stage selector instead of columns.
 - **Stat tiles** (`raised-sm`): caption label, ws-title value, delta chip. Real numbers only; "—" when no data.
@@ -531,9 +559,9 @@ Text is never embossed or debossed — type stays flat and crisp; relief belongs
 - **Forms**: labels above inset fields; helper text `muted`; errors `danger` + icon below the field; the job editor shows a live preview of the public job card.
 
 ### Shared
-- **Toggles**: inset track, raised knob; track fills amber when on.
-- **Checkbox / radio**: inset well with outline; checked = amber fill with ink check / dot.
-- **Sliders** (salary range): inset groove, raised thumbs, amber filled segment.
+- **Toggles**: inset track, raised knob; track fills orange when on.
+- **Checkbox / radio**: inset well with outline; checked = orange fill with ink check / dot.
+- **Sliders** (salary range): inset groove, raised thumbs, orange filled segment.
 - **Status chips**: inset pills (see §3).
 - **Toasts**: ink background (flat), bottom-center mobile / bottom-right desktop, 4 s, Undo for destructive actions.
 - **Skeletons**: `sunken` blocks with a soft shimmer; no spinners for lists.
@@ -557,15 +585,15 @@ Touch targets ≥ 48 × 48 dp; Workspace controls may be 38 px tall on pointer d
 
 - Tokens: `app/lib/core/theme/tokens.dart` (generated from this front matter). `AppTheme.light()` / `AppTheme.dark()` build Material 3 `ThemeData` with `scaffoldBackgroundColor = base`, and a `ThemeExtension<LuzTokens>` carries `base`, `sunken`, `highlight`, `shade`, chip colours and the elevation shadow lists.
 - **Relief is implemented with `BoxShadow` pairs** (`LuzRelief.raised(level)` / `LuzRelief.inset(level)`). Inset shadows are not supported by `BoxShadow`, so `LuzInset` paints them with a `CustomPainter` (or the `flutter_inset_shadow` package).
-- Core widgets: `LuzSurface` (raised/inset/flat container), `LuzButton` (raised → inset on press, amber variant), `LuzIconButton`, `LuzTextField` (inset + outline), `LuzChip`, `LuzToggle`, `LuzDial`, `LuzCard`, `LuzStageChip`. A `Zone` inherited widget (`spotlight` | `workspace`) sets default depth, radius and density.
+- Core widgets: `LuzSurface` (raised/inset/flat container), `LuzButton` (raised → inset on press, orange variant), `LuzIconButton`, `LuzTextField` (inset + outline), `LuzChip`, `LuzToggle`, `LuzDial`, `LuzCard`, `LuzStageChip`. A `Zone` inherited widget (`spotlight` | `workspace`) sets default depth, radius and density.
 - Respect `MediaQuery.highContrastOf(context)` → outline mode; `MediaQuery.disableAnimationsOf(context)` → no movement.
 - Performance: cap shadow blur at 24 px, prefer `raised-sm` in scrolling lists, wrap list items in `RepaintBoundary`.
 
 ## 12. Prompt Guide (for Stitch and coding agents)
 
 Always state **zone**, **theme**, **breakpoint**, and "accessible neumorphism":
-- *Spotlight:* "LuzHire job search, Spotlight zone, accessible neumorphism, light porcelain theme (#EEECE7), desktop 1280 px. Everything moulded from one surface colour with top-left light. Inset pill search well with outline and amber Search pill; raised filter chips (selected chips sink with amber dot); raised job cards (18 px radius) with inset logo socket, bookmark ribbon and match dial. Text high-contrast and flat. Use DESIGN.md tokens only."
-- *Workspace:* "LuzHire employer pipeline, Workspace zone, accessible neumorphism, dark graphite theme (#1D1F23), desktop 1440 px. Shallow relief: sidebar with sunken active item and amber bar; kanban stages as inset trays holding raised paper cards; flat table rows inside one raised panel."
+- *Spotlight:* "LuzHire job search, Spotlight zone, accessible neumorphism, light porcelain theme (#EEECE7), desktop 1280 px. Everything moulded from one surface colour with top-left light. Inset pill search well with outline and orange Search pill; raised filter chips (selected chips sink with orange dot); raised job cards (18 px radius) with inset logo socket, bookmark ribbon and match dial. Text high-contrast and flat. Use DESIGN.md tokens only."
+- *Workspace:* "LuzHire employer pipeline, Workspace zone, accessible neumorphism, dark graphite theme (#1D1F23), desktop 1440 px. Shallow relief: sidebar with sunken active item and orange bar; kanban stages as inset trays holding raised paper cards; flat table rows inside one raised panel."
 - Always produce light and dark variants and a 390 px mobile variant.
 - Work one component at a time by its `components:` name.
 
@@ -573,8 +601,8 @@ Always state **zone**, **theme**, **breakpoint**, and "accessible neumorphism":
 
 **Do**
 - Keep one surface colour per theme; express hierarchy with relief, not new colours.
-- Pair every raised/inset state with a non-shadow cue where meaning is involved (label, outline, amber indicator).
-- Keep amber scarce: one signature amber CTA per screen.
+- Pair every raised/inset state with a non-shadow cue where meaning is involved (label, outline, orange indicator).
+- Keep orange scarce: one signature orange CTA per screen.
 - Use honest skeuomorphic metaphors for icons; keep them simple line icons.
 - Show real data or an honest empty state.
 
@@ -583,7 +611,7 @@ Always state **zone**, **theme**, **breakpoint**, and "accessible neumorphism":
 - Emboss or deboss text, or use low-contrast grey-on-grey text.
 - Stack more than two relief levels, or use relief on every element of a dense table.
 - Use photorealistic textures (leather, wood, paper grain).
-- Put white text on amber, or use amber for warnings.
+- Put white text on orange, or use orange for warnings.
 - Show invented metrics, placeholder company facts, or decorative "AI" percentages.
 
 ## 14. Known Gaps

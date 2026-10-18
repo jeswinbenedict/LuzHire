@@ -8,7 +8,7 @@ import 'luz_surface.dart';
 import 'luz_zone.dart';
 
 /// Inset text field with the mandatory 1 px outline (DESIGN.md §2 rule 2).
-/// The outline turns amber and thickens while focused, and turns red on error.
+/// The outline turns orange and thickens while focused, and turns red on error.
 class LuzTextField extends StatefulWidget {
   const LuzTextField({
     super.key,
@@ -134,7 +134,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
   }
 }
 
-/// Physical toggle: inset track, raised knob, amber track when on.
+/// Physical toggle: inset track, raised knob, orange track when on.
 class LuzToggle extends StatelessWidget {
   const LuzToggle({
     super.key,

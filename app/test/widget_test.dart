@@ -98,7 +98,7 @@ void main() {
     expect(
       find.byType(Container),
       findsOneWidget,
-      reason: 'amber dot indicator',
+      reason: 'orange dot indicator',
     );
   });
 

@@ -453,7 +453,7 @@ On upload, extract text (pdf-parse / mammoth) and produce **suggested** skills, 
 
 ## 8. Design system with Google Stitch MCP
 
-**The design system is defined in [`/DESIGN.md`](../DESIGN.md)** (Stitch DESIGN.md format). It has two zones: *Spotlight* for public and candidate screens (Jobright-inspired) and *Workspace* for employer and admin screens (Linear-inspired), with LuzHire's own amber brand, and light and dark themes. Every Stitch prompt and every Flutter widget must use its tokens.
+**The design system is defined in [`/DESIGN.md`](../DESIGN.md)** (Stitch DESIGN.md format). It has two zones: *Spotlight* for public and candidate screens (Jobright-inspired) and *Workspace* for employer and admin screens (Linear-inspired), with LuzHire's own brand (logo orange), and light and dark themes. Every Stitch prompt and every Flutter widget must use its tokens.
 
 Stitch generates screen designs and HTML/CSS, not Flutter widgets, so use it as the design source and translate:
 1. Connect the Stitch MCP server in Claude Code (`claude mcp add ...` with the details you'll provide).
