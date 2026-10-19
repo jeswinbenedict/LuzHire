@@ -18,7 +18,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Built and tested (branch `phase-4-job-board`). Still needed: live "new jobs" banner; real jobs in the cloud database |
-| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
+| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Built and tested (branch `phase-5-candidate-portal`). Still needed: apply migration `20261019120000` to the cloud; live check with a real employer (Phase 6) |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | ⬜ |
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
@@ -137,7 +137,20 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 **Done when:** search p95 < 300 ms on seed data; all states verified at three widths in both themes.
 
-## Phase 5 — Candidate portal
+## Phase 5 — Candidate portal 🟡
+**Done on `phase-5-candidate-portal`** (from the Stitch candidate-dashboard designs):
+- Dashboard `/me`: greeting, profile-strength groove, real-count tiles (active applications, upcoming interviews, saved jobs, offers to answer), recent applications with stage steppers, upcoming interviews and a live notification list (mark read / mark all read, tap to open the application). Full list at `/me/notifications`.
+- Profile builder `/me/profile`: about-you form (name, headline, location, phone, bio, LinkedIn/GitHub/portfolio with validation), photo upload (avatars bucket), skills (add, remove, suggestions), experience and education with add/edit/delete forms, and "next steps" that mirror the database completion score.
+- Resumes: PDF/DOCX upload up to 5 MB to the private bucket, primary resume (atomic `set_primary_resume` RPC, new migration `20261019120000_candidate_portal.sql`), view through a 10-minute signed link, delete.
+- Apply flow: from the job page, pick a resume (primary preselected), upload one inline, or apply without one, plus an optional cover letter (6,000 characters). Database errors (duplicate, deadline, closed) show in the form. The job page then shows "Applied · <stage>".
+- Live tracker `/me/applications` (Realtime): filters (all, in progress, offers, closed) and per application a stepper, timeline from `application_events`, interviews, offer (amount, start date, letter, accept/decline with confirmation), what was sent, and withdraw.
+- Interviews `/me/interviews`: upcoming and past, calendar-page date, mode, join link, add to Google Calendar.
+- The Ctrl/⌘ K command menu now lists only the pages the signed-in role may open.
+- 14 widget tests (Realtime stage change, apply, withdraw, accept offer, profile validation, menu roles) and 8 pgTAP assertions (111 app tests, 65 database assertions).
+
+**Deferred:** drag-and-drop resume tray on web (file picker only for now), resume parsing (`resumes.parsed`), and `.ics` downloads (Google Calendar link instead). The "< 1 s" stage-change check needs the employer pipeline (Phase 6).
+
+**Original scope:**
 - Dashboard (completeness groove, applications, upcoming interviews, saved, recommended).
 - Profile builder (headline, bio, links, skills, education, experience) with completion %.
 - Resume upload (drag-and-drop tray on web, file picker on mobile), preview, primary resume.

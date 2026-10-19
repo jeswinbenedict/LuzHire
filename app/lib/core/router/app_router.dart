@@ -7,6 +7,10 @@ import '../../features/auth/presentation/account_flow_pages.dart';
 import '../../features/auth/presentation/sign_in_page.dart';
 import '../../features/auth/presentation/sign_up_page.dart';
 import '../../features/candidate/candidate_area.dart';
+import '../../features/candidate/presentation/applications_pages.dart';
+import '../../features/candidate/presentation/dashboard_page.dart';
+import '../../features/candidate/presentation/interviews_page.dart';
+import '../../features/candidate/presentation/profile_page.dart';
 import '../../features/companies/presentation/companies_pages.dart';
 import '../../features/design_gallery/gallery_page.dart';
 import '../../features/home/home_page.dart';
@@ -105,31 +109,29 @@ final _routes = <RouteBase>[
         builder: (context, state, child) =>
             CandidateArea(location: state.uri.path, child: child),
         routes: [
-          _placeholder(
-            '/me',
-            'Your dashboard',
-            'Phase 5',
-            Icons.space_dashboard_outlined,
+          GoRoute(
+            path: '/me',
+            builder: (_, _) => const CandidateDashboardPage(),
           ),
-          _placeholder(
-            '/me/applications',
-            'Applications',
-            'Phase 5',
-            Icons.send_outlined,
+          GoRoute(
+            path: '/me/applications',
+            builder: (_, _) => const ApplicationsPage(),
+          ),
+          GoRoute(
+            path: '/me/applications/:id',
+            builder: (_, s) =>
+                ApplicationDetailPage(id: s.pathParameters['id']!),
+          ),
+          GoRoute(
+            path: '/me/notifications',
+            builder: (_, _) => const NotificationsPage(),
           ),
           GoRoute(path: '/me/saved', builder: (_, _) => const SavedJobsPage()),
-          _placeholder(
-            '/me/interviews',
-            'Interviews',
-            'Phase 5',
-            Icons.event_outlined,
+          GoRoute(
+            path: '/me/interviews',
+            builder: (_, _) => const InterviewsPage(),
           ),
-          _placeholder(
-            '/me/profile',
-            'Profile & resume',
-            'Phase 5',
-            Icons.badge_outlined,
-          ),
+          GoRoute(path: '/me/profile', builder: (_, _) => const ProfilePage()),
         ],
       ),
     ],

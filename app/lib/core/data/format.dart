@@ -6,9 +6,23 @@ import 'models.dart';
 /// "₹12–18 L / year", "$40–50 / hour", "€55k / year", or null when no salary.
 /// Every salary shows its period, so mistakes like "$18–22 /yr" for an hourly
 /// wage are visible at a glance.
-String? formatSalary(Job job) {
-  if (!job.hasSalary) return null;
-  final cur = job.salaryCurrency ?? '';
+String? formatSalary(Job job) => formatMoney(
+  job.salaryMin,
+  job.salaryMax,
+  job.salaryCurrency,
+  job.salaryPeriod,
+);
+
+/// Shared by job salaries and offers: a range (or single amount) with its
+/// currency symbol and period; null when there is no amount.
+String? formatMoney(
+  double? lo,
+  double? hi,
+  String? currency,
+  SalaryPeriod? salaryPeriod,
+) {
+  if (lo == null && hi == null) return null;
+  final cur = currency ?? '';
   final symbol = switch (cur) {
     'INR' => '₹',
     'USD' => r'$',
@@ -25,8 +39,6 @@ String? formatSalary(Job job) {
     return _trim(v);
   }
 
-  final lo = job.salaryMin;
-  final hi = job.salaryMax;
   final range = switch ((lo, hi)) {
     (final a?, final b?) when a != b =>
       '$symbol${_stripUnit(amount(a), amount(b))}–${amount(b)}',
@@ -34,7 +46,7 @@ String? formatSalary(Job job) {
     (_, final b?) => 'Up to $symbol${amount(b)}',
     _ => '',
   };
-  final period = job.salaryPeriod?.label;
+  final period = salaryPeriod?.label;
   return period == null ? range : '$range / $period';
 }
 

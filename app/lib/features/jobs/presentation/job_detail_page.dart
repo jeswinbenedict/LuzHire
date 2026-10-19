@@ -15,6 +15,8 @@ import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../auth/application/auth_controller.dart';
 import '../../auth/domain/auth_state.dart';
+import '../../candidate/application/candidate_providers.dart';
+import '../../candidate/presentation/apply_sheet.dart';
 import '../application/job_board_providers.dart';
 import '../data/jobs_repository.dart';
 import 'job_search_page.dart' show JobBoardError;
@@ -417,8 +419,9 @@ class _Facts extends StatelessWidget {
   }
 }
 
-/// Apply: external jobs open the source site; native jobs need a candidate
-/// account (the in-app application form arrives with the candidate portal).
+/// Apply: external jobs open the source site; native jobs open the apply
+/// form for candidates, show the stage once applied, and ask visitors to
+/// sign in.
 class ApplyButton extends ConsumerWidget {
   const ApplyButton({super.key, required this.job});
   final Job job;
@@ -444,22 +447,36 @@ class ApplyButton extends ConsumerWidget {
 
     final role = auth is SignedIn ? auth.user.appRole : null;
     final here = '/jobs/${job.slug}';
+    final pastDeadline =
+        job.deadline != null &&
+        job.deadline!.isBefore(DateUtils.dateOnly(DateTime.now()));
+
+    if (auth is SignedIn && role == AppRole.candidate) {
+      final existing = ref.watch(myApplicationForJobProvider(job.id));
+      if (existing != null) {
+        return LuzButton(
+          label: 'Applied · ${existing.stage.label}',
+          icon: Icons.check_circle_outline,
+          expand: true,
+          onPressed: () => context.go('/me/applications/${existing.id}'),
+        );
+      }
+      return LuzButton.accent(
+        label: pastDeadline ? 'Applications closed' : 'Apply now',
+        icon: Icons.send_outlined,
+        expand: true,
+        onPressed: open && !pastDeadline
+            ? () => showApplySheet(context, job)
+            : null,
+      );
+    }
+
     return LuzButton.accent(
-      label: switch (auth) {
-        SignedIn() when role != AppRole.candidate => 'Candidates apply here',
-        SignedIn() => 'Apply now',
-        _ => 'Sign in to apply',
-      },
+      label: auth is SignedIn ? 'Candidates apply here' : 'Sign in to apply',
       icon: Icons.send_outlined,
       expand: true,
-      onPressed: !open || (auth is SignedIn && role != AppRole.candidate)
+      onPressed: !open || auth is SignedIn
           ? null
-          : auth is SignedIn
-          ? () => showLuzToast(
-              context,
-              'Online applications open with the candidate portal, coming next.',
-              icon: Icons.info_outline,
-            )
           : () => context.go(
               Uri(path: '/sign-in', queryParameters: {'from': here}).toString(),
             ),

@@ -4,6 +4,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../../core/data/failures.dart';
 import '../../../core/data/models.dart';
 import '../../../core/data/supabase_providers.dart';
+import '../../auth/application/auth_controller.dart';
+import '../../jobs/data/jobs_repository.dart' show notConfigured;
 
 /// In-app notifications are created by database triggers; clients only read
 /// them and mark them read (FR-11).
@@ -41,6 +43,9 @@ class NotificationsRepository {
       guardDb(() => _db.from('notifications').delete().eq('id', id));
 }
 
-final notificationsRepositoryProvider = Provider<NotificationsRepository>(
-  (ref) => NotificationsRepository(ref.watch(supabaseClientProvider)),
-);
+final notificationsRepositoryProvider = Provider<NotificationsRepository>((
+  ref,
+) {
+  if (!ref.watch(appConfigProvider).isSupabaseConfigured) throw notConfigured;
+  return NotificationsRepository(ref.watch(supabaseClientProvider));
+});

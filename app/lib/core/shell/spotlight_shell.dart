@@ -80,7 +80,8 @@ class SpotlightShell extends ConsumerWidget {
     return LuzZone(
       kind: LuzZoneKind.spotlight,
       child: LuzAppShortcuts(
-        onCommandMenu: () => showCommandMenu(context, allDestinations),
+        onCommandMenu: () =>
+            showCommandMenu(context, menuDestinations(context)),
         onFocusSearch: () => context.go('/jobs'),
         child: Scaffold(
           body: SafeArea(
@@ -157,7 +158,8 @@ class _TopNav extends StatelessWidget {
               ),
               const SizedBox(width: LuzSpace.sm),
               LuzPressable(
-                onPressed: () => showCommandMenu(context, allDestinations),
+                onPressed: () =>
+                    showCommandMenu(context, menuDestinations(context)),
                 radius: LuzRadius.pill,
                 tooltip: 'Search pages (${commandKeyLabel(context)})',
                 semanticLabel: 'Search pages',

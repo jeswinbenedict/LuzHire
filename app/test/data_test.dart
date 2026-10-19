@@ -65,6 +65,9 @@ void main() {
     same('salary_period', SalaryPeriod.values);
     same('application_stage', ApplicationStage.values);
     same('verification', Verification.values);
+    same('interview_mode', InterviewMode.values);
+    same('interview_status', InterviewStatus.values);
+    same('offer_status', OfferStatus.values);
   });
 
   group('Job', () {

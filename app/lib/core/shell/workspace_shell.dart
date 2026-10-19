@@ -6,7 +6,6 @@ import '../layout/breakpoints.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import '../widgets/widgets.dart';
-import 'destinations.dart';
 import 'shell_common.dart';
 
 /// Shell for employer + admin screens (Workspace zone).
@@ -63,7 +62,8 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
     return LuzZone(
       kind: LuzZoneKind.workspace,
       child: LuzAppShortcuts(
-        onCommandMenu: () => showCommandMenu(context, allDestinations),
+        onCommandMenu: () =>
+            showCommandMenu(context, menuDestinations(context)),
         child: Scaffold(
           key: _scaffoldKey,
           drawer: bp.isCompact
@@ -340,7 +340,8 @@ class _TopBar extends StatelessWidget {
             ),
             if (!compact) ...[
               LuzPressable(
-                onPressed: () => showCommandMenu(context, allDestinations),
+                onPressed: () =>
+                    showCommandMenu(context, menuDestinations(context)),
                 radius: LuzRadius.sm,
                 semanticLabel: 'Search pages',
                 builder: (context, pressed, _) => LuzSurface(
@@ -375,7 +376,8 @@ class _TopBar extends StatelessWidget {
                 icon: Icons.search,
                 tooltip: 'Search pages',
                 size: 40,
-                onPressed: () => showCommandMenu(context, allDestinations),
+                onPressed: () =>
+                    showCommandMenu(context, menuDestinations(context)),
               ),
               const SizedBox(width: LuzSpace.sm),
             ],

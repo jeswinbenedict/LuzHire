@@ -2,6 +2,8 @@
 // supabase/migrations/20261018120000_foundation.sql.
 // test/data_test.dart fails if the two ever drift apart.
 
+import 'package:flutter/material.dart' show IconData, Icons;
+
 /// Common contract: every enum maps to/from its database value.
 mixin DbEnum on Enum {
   String get dbValue;
@@ -126,4 +128,44 @@ enum Verification with DbEnum {
   @override
   final String dbValue;
   static Verification fromDb(String? v) => _fromDb(values, v, unverified);
+}
+
+enum InterviewMode with DbEnum {
+  video('video', 'Video call', Icons.videocam_outlined),
+  phone('phone', 'Phone call', Icons.call_outlined),
+  onsite('onsite', 'In person', Icons.apartment_outlined);
+
+  const InterviewMode(this.dbValue, this.label, this.icon);
+  @override
+  final String dbValue;
+  final String label;
+  final IconData icon;
+  static InterviewMode fromDb(String? v) => _fromDb(values, v, video);
+}
+
+enum InterviewStatus with DbEnum {
+  scheduled('scheduled', 'Scheduled'),
+  completed('completed', 'Completed'),
+  cancelled('cancelled', 'Cancelled'),
+  noShow('no_show', 'Missed');
+
+  const InterviewStatus(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static InterviewStatus fromDb(String? v) => _fromDb(values, v, scheduled);
+}
+
+enum OfferStatus with DbEnum {
+  issued('issued', 'Awaiting your reply'),
+  accepted('accepted', 'Accepted'),
+  declined('declined', 'Declined'),
+  withdrawn('withdrawn', 'Withdrawn'),
+  expired('expired', 'Expired');
+
+  const OfferStatus(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static OfferStatus fromDb(String? v) => _fromDb(values, v, issued);
 }

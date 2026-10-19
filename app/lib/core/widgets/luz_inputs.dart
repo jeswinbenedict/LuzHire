@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
@@ -27,6 +28,8 @@ class LuzTextField extends StatefulWidget {
     this.enabled = true,
     this.suffix,
     this.autofocus = false,
+    this.maxLines = 1,
+    this.maxLength,
   });
 
   final String label;
@@ -46,6 +49,12 @@ class LuzTextField extends StatefulWidget {
   /// Trailing widget inside the field (e.g. show/hide password).
   final Widget? suffix;
   final bool autofocus;
+
+  /// > 1 makes a multi-line field that grows up to this many lines.
+  final int maxLines;
+
+  /// Hard limit on characters (matches the database check constraints).
+  final int? maxLength;
 
   @override
   State<LuzTextField> createState() => _LuzTextFieldState();
@@ -73,6 +82,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
     final zone = LuzZone.of(context);
     final hasError = widget.error != null;
     final focused = _focus.hasFocus;
+    final multiline = widget.maxLines > 1;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,10 +95,20 @@ class _LuzTextFieldState extends State<LuzTextField> {
           radius: zone.inputRadius,
           outline: hasError ? p.danger : (focused ? p.accent : p.outline),
           outlineWidth: (focused || hasError) ? 2 : 1,
-          padding: const EdgeInsets.symmetric(horizontal: LuzSpace.md),
-          child: SizedBox(
-            height: zone.isWorkspace && context.isPointer ? 38 : 50,
+          padding: EdgeInsets.symmetric(
+            horizontal: LuzSpace.md,
+            vertical: multiline ? LuzSpace.sm : 0,
+          ),
+          child: ConstrainedBox(
+            constraints: multiline
+                ? const BoxConstraints(minHeight: 96)
+                : BoxConstraints.tightFor(
+                    height: zone.isWorkspace && context.isPointer ? 38 : 50,
+                  ),
             child: Row(
+              crossAxisAlignment: multiline
+                  ? CrossAxisAlignment.start
+                  : CrossAxisAlignment.center,
               children: [
                 if (widget.prefixIcon != null) ...[
                   Icon(widget.prefixIcon, size: 18, color: p.muted),
@@ -106,6 +126,11 @@ class _LuzTextFieldState extends State<LuzTextField> {
                     onChanged: widget.onChanged,
                     onSubmitted: widget.onSubmitted,
                     autofillHints: widget.autofillHints,
+                    minLines: multiline ? 3 : 1,
+                    maxLines: widget.maxLines,
+                    inputFormatters: widget.maxLength == null
+                        ? null
+                        : [LengthLimitingTextInputFormatter(widget.maxLength)],
                     style: t.body.copyWith(color: p.ink),
                     decoration: InputDecoration.collapsed(
                       hintText: widget.hint,

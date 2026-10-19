@@ -11,6 +11,7 @@ import '../theme/app_theme.dart';
 import '../theme/theme_mode_provider.dart';
 import '../theme/tokens.dart';
 import '../widgets/widgets.dart';
+import 'destinations.dart';
 
 export '../brand/luz_logo.dart' show LuzLogo, LuzLogoMark;
 
@@ -145,6 +146,15 @@ String commandKeyLabel(BuildContext context) =>
     context.usesCommandKey ? '⌘K' : 'Ctrl K';
 
 /// Command menu (Ctrl/⌘ K): type to filter destinations, arrows + Enter to go.
+/// Command-menu entries for whoever is signed in.
+List<LuzDestination> menuDestinations(BuildContext context) {
+  final auth = ProviderScope.containerOf(
+    context,
+    listen: false,
+  ).read(authControllerProvider);
+  return destinationsFor(auth is SignedIn ? auth.user.appRole : null);
+}
+
 Future<void> showCommandMenu(
   BuildContext context,
   List<LuzDestination> destinations,

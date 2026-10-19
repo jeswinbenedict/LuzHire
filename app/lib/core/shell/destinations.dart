@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
+import '../data/enums.dart';
 import 'shell_common.dart';
 
 /// Public + candidate (Spotlight) destinations.
@@ -176,12 +178,14 @@ const devDestinations = [
   ),
 ];
 
-/// Everything reachable from the command menu.
-/// Role filtering arrives with auth in Phase 3.
-const allDestinations = [
+/// What the command menu offers: public pages, plus the areas [role] may
+/// open (the router enforces the same rules). The design gallery is listed
+/// only in debug builds.
+List<LuzDestination> destinationsFor(AppRole? role) => [
   ...spotlightDestinations,
-  ...candidateDestinations,
-  ...employerDestinations,
-  ...adminDestinations,
-  ...devDestinations,
+  if (role == AppRole.candidate) ...candidateDestinations,
+  if (role == AppRole.employer || role == AppRole.admin)
+    ...employerDestinations,
+  if (role == AppRole.admin) ...adminDestinations,
+  if (kDebugMode) ...devDestinations,
 ];

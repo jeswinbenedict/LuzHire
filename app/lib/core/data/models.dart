@@ -164,6 +164,7 @@ class Profile {
     this.headline,
     this.bio,
     this.location,
+    this.phone,
     this.avatarPath,
     this.links = const {},
     this.profileCompletion = 0,
@@ -176,6 +177,7 @@ class Profile {
   final String? headline;
   final String? bio;
   final String? location;
+  final String? phone;
   final String? avatarPath;
   final Map<String, String> links;
   final int profileCompletion;
@@ -188,6 +190,7 @@ class Profile {
     headline: j['headline'] as String?,
     bio: j['bio'] as String?,
     location: j['location'] as String?,
+    phone: j['phone'] as String?,
     avatarPath: j['avatar_path'] as String?,
     links: ((j['links'] as Map?) ?? const {}).map(
       (k, v) => MapEntry(k as String, '$v'),
@@ -267,5 +270,234 @@ class AppNotification {
     data: ((j['data'] as Map?) ?? const {}).cast<String, dynamic>(),
     createdAt: DateTime.parse(j['created_at'] as String),
     readAt: _date(j['read_at']),
+  );
+}
+
+DateTime? _day(Object? v) => v == null ? null : DateTime.parse(v as String);
+
+/// "2026-10-19" for date columns.
+String? dbDate(DateTime? d) => d == null
+    ? null
+    : '${d.year.toString().padLeft(4, '0')}-'
+          '${d.month.toString().padLeft(2, '0')}-'
+          '${d.day.toString().padLeft(2, '0')}';
+
+/// Mirrors public.educations.
+@immutable
+class Education {
+  const Education({
+    required this.id,
+    required this.institution,
+    this.degree,
+    this.field,
+    this.startDate,
+    this.endDate,
+    this.grade,
+  });
+
+  final String id;
+  final String institution;
+  final String? degree;
+  final String? field;
+  final DateTime? startDate;
+  final DateTime? endDate;
+  final String? grade;
+
+  factory Education.fromJson(Json j) => Education(
+    id: j['id'] as String,
+    institution: j['institution'] as String,
+    degree: j['degree'] as String?,
+    field: j['field'] as String?,
+    startDate: _day(j['start_date']),
+    endDate: _day(j['end_date']),
+    grade: j['grade'] as String?,
+  );
+
+  Json toRow() => {
+    'institution': institution.trim(),
+    'degree': _blank(degree),
+    'field': _blank(field),
+    'start_date': dbDate(startDate),
+    'end_date': dbDate(endDate),
+    'grade': _blank(grade),
+  };
+}
+
+/// Mirrors public.experiences.
+@immutable
+class Experience {
+  const Experience({
+    required this.id,
+    required this.company,
+    required this.title,
+    this.startDate,
+    this.endDate,
+    this.description,
+  });
+
+  final String id;
+  final String company;
+  final String title;
+  final DateTime? startDate;
+
+  /// Null while this is the current role.
+  final DateTime? endDate;
+  final String? description;
+
+  factory Experience.fromJson(Json j) => Experience(
+    id: j['id'] as String,
+    company: j['company'] as String,
+    title: j['title'] as String,
+    startDate: _day(j['start_date']),
+    endDate: _day(j['end_date']),
+    description: j['description'] as String?,
+  );
+
+  Json toRow() => {
+    'company': company.trim(),
+    'title': title.trim(),
+    'start_date': dbDate(startDate),
+    'end_date': dbDate(endDate),
+    'description': _blank(description),
+  };
+}
+
+String? _blank(String? v) => (v == null || v.trim().isEmpty) ? null : v.trim();
+
+/// Mirrors public.resumes.
+@immutable
+class Resume {
+  const Resume({
+    required this.id,
+    required this.storagePath,
+    required this.fileName,
+    required this.isPrimary,
+    required this.createdAt,
+  });
+
+  final String id;
+  final String storagePath;
+  final String fileName;
+  final bool isPrimary;
+  final DateTime createdAt;
+
+  factory Resume.fromJson(Json j) => Resume(
+    id: j['id'] as String,
+    storagePath: j['storage_path'] as String,
+    fileName: j['file_name'] as String,
+    isPrimary: j['is_primary'] as bool? ?? false,
+    createdAt: DateTime.parse(j['created_at'] as String),
+  );
+}
+
+/// One row of public.application_events (the application timeline).
+@immutable
+class ApplicationEvent {
+  const ApplicationEvent({
+    required this.id,
+    required this.toStage,
+    required this.createdAt,
+    this.fromStage,
+    this.note,
+  });
+
+  final int id;
+  final ApplicationStage? fromStage;
+  final ApplicationStage toStage;
+  final DateTime createdAt;
+  final String? note;
+
+  factory ApplicationEvent.fromJson(Json j) => ApplicationEvent(
+    id: (j['id'] as num).toInt(),
+    fromStage: j['from_stage'] == null
+        ? null
+        : ApplicationStage.fromDb(j['from_stage'] as String),
+    toStage: ApplicationStage.fromDb(j['to_stage'] as String?),
+    createdAt: DateTime.parse(j['created_at'] as String),
+    note: j['note'] as String?,
+  );
+}
+
+/// Candidate view of an interview (public.candidate_interviews: no private
+/// notes or feedback).
+@immutable
+class Interview {
+  const Interview({
+    required this.id,
+    required this.applicationId,
+    required this.jobId,
+    required this.scheduledAt,
+    required this.durationMin,
+    required this.mode,
+    required this.status,
+    this.meetingUrl,
+    this.location,
+  });
+
+  final String id;
+  final String applicationId;
+  final String jobId;
+  final DateTime scheduledAt;
+  final int durationMin;
+  final InterviewMode mode;
+  final InterviewStatus status;
+  final String? meetingUrl;
+  final String? location;
+
+  DateTime get endsAt => scheduledAt.add(Duration(minutes: durationMin));
+
+  factory Interview.fromJson(Json j) => Interview(
+    id: j['id'] as String,
+    applicationId: j['application_id'] as String,
+    jobId: j['job_id'] as String,
+    scheduledAt: DateTime.parse(j['scheduled_at'] as String),
+    durationMin: (j['duration_min'] as num?)?.toInt() ?? 45,
+    mode: InterviewMode.fromDb(j['mode'] as String?),
+    status: InterviewStatus.fromDb(j['status'] as String?),
+    meetingUrl: j['meeting_url'] as String?,
+    location: j['location'] as String?,
+  );
+}
+
+/// Mirrors public.offers.
+@immutable
+class Offer {
+  const Offer({
+    required this.id,
+    required this.applicationId,
+    required this.status,
+    this.salary,
+    this.currency,
+    this.salaryPeriod,
+    this.startDate,
+    this.letterPath,
+    this.expiresAt,
+    this.respondedAt,
+  });
+
+  final String id;
+  final String applicationId;
+  final OfferStatus status;
+  final double? salary;
+  final String? currency;
+  final SalaryPeriod? salaryPeriod;
+  final DateTime? startDate;
+  final String? letterPath;
+  final DateTime? expiresAt;
+  final DateTime? respondedAt;
+
+  bool get awaitingReply => status == OfferStatus.issued;
+
+  factory Offer.fromJson(Json j) => Offer(
+    id: j['id'] as String,
+    applicationId: j['application_id'] as String,
+    status: OfferStatus.fromDb(j['status'] as String?),
+    salary: _num(j['salary']),
+    currency: j['currency'] as String?,
+    salaryPeriod: SalaryPeriod.fromDbOrNull(j['salary_period'] as String?),
+    startDate: _day(j['start_date']),
+    letterPath: j['letter_path'] as String?,
+    expiresAt: _date(j['expires_at']),
+    respondedAt: _date(j['responded_at']),
   );
 }
