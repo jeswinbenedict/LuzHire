@@ -182,7 +182,9 @@ const devDestinations = [
 /// open (the router enforces the same rules). The design gallery is listed
 /// only in debug builds.
 List<LuzDestination> destinationsFor(AppRole? role) => [
-  ...spotlightDestinations,
+  // "My LuzHire" (/me) is the candidate home; others don't get it.
+  for (final d in spotlightDestinations)
+    if (d.group != 'Candidate' || role == AppRole.candidate) d,
   if (role == AppRole.candidate) ...candidateDestinations,
   if (role == AppRole.employer || role == AppRole.admin)
     ...employerDestinations,

@@ -292,6 +292,7 @@ void main() {
       expect(items, containsAll(['Jobs', 'Companies']));
       expect(items, isNot(contains('Pipeline')));
       expect(items, isNot(contains('Profile & resume')));
+      expect(items, isNot(contains('My LuzHire')));
     });
 
     testWidgets('candidates see their portal but not the workspace', (
@@ -308,6 +309,7 @@ void main() {
       final items = await menuItems(tester, AppRole.employer);
       expect(items, contains('Pipeline'));
       expect(items, isNot(contains('Profile & resume')));
+      expect(items, isNot(contains('My LuzHire')));
     });
   });
 }
