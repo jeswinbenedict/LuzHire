@@ -152,7 +152,7 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
             const OrDivider(),
             LuzButton(
               label: 'Continue with Google',
-              icon: Icons.account_circle_outlined,
+              leading: const GoogleLogo(),
               expand: true,
               onPressed: enabled
                   ? () => _go(

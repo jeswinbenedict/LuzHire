@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:luzhire/app.dart';
 import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/failures.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
+import 'package:luzhire/features/auth/presentation/auth_layout.dart';
 
 import 'support/fakes.dart';
 
@@ -25,6 +27,23 @@ Future<void> tapButton(WidgetTester tester, String label) async {
 }
 
 void main() {
+  testWidgets('Google buttons show the official Google mark', (tester) async {
+    for (final page in ['/sign-in', '/sign-up']) {
+      await pumpLuzHire(tester, location: page);
+      final button = find.widgetWithText(LuzButton, 'Continue with Google');
+      expect(button, findsOneWidget, reason: page);
+      expect(
+        find.descendant(of: button, matching: find.byType(GoogleLogo)),
+        findsOneWidget,
+        reason: page,
+      );
+      expect(
+        find.descendant(of: button, matching: find.byType(SvgPicture)),
+        findsOneWidget,
+      );
+    }
+  });
+
   testWidgets('sign up as a job seeker → verify email → dashboard', (
     tester,
   ) async {

@@ -22,6 +22,7 @@ class LuzButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.leading,
     this.variant = LuzButtonVariant.neutral,
     this.expand = false,
   });
@@ -31,12 +32,16 @@ class LuzButton extends StatelessWidget {
     required this.label,
     required this.onPressed,
     this.icon,
+    this.leading,
     this.expand = false,
   }) : variant = LuzButtonVariant.accent;
 
   final String label;
   final VoidCallback? onPressed;
   final IconData? icon;
+
+  /// Custom graphic before the label (e.g. a brand logo); wins over [icon].
+  final Widget? leading;
   final LuzButtonVariant variant;
   final bool expand;
 
@@ -73,7 +78,10 @@ class LuzButton extends StatelessWidget {
           mainAxisSize: expand ? MainAxisSize.max : MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (icon != null) ...[
+            if (leading != null) ...[
+              Opacity(opacity: enabled ? 1 : 0.5, child: leading),
+              const SizedBox(width: LuzSpace.sm),
+            ] else if (icon != null) ...[
               Icon(icon, size: zone.isWorkspace ? 16 : 18, color: fg),
               const SizedBox(width: LuzSpace.xs),
             ],

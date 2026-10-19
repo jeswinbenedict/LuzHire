@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/brand/luz_logo.dart';
 import '../../../core/data/failures.dart';
@@ -292,4 +293,19 @@ Future<String?> runAuthAction(Future<void> Function() action) async {
   } catch (e) {
     return mapDbError(e).message;
   }
+}
+
+/// Google's official "G" mark, unaltered, for "Continue with Google"
+/// (per Google's sign-in branding guidelines: full colour, ~18 px).
+class GoogleLogo extends StatelessWidget {
+  const GoogleLogo({super.key, this.size = 18});
+  final double size;
+
+  @override
+  Widget build(BuildContext context) => SvgPicture.asset(
+    'assets/brand/google_g.svg',
+    width: size,
+    height: size,
+    excludeFromSemantics: true, // the button label already says "Google"
+  );
 }
