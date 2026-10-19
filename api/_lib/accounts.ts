@@ -104,7 +104,14 @@ export async function changeRole(
 async function verify(deps: AccountDeps, idToken: string): Promise<VerifiedToken> {
   try {
     return await deps.verifyIdToken(idToken);
-  } catch {
-    throw new HttpError(401, 'invalid_token', 'Your session is invalid. Sign in again.');
+  } catch (error) {
+    // Only a token Firebase rejected (auth/* codes) is the caller's fault.
+    // Missing config (503) and other failures must not look like "sign in again".
+    if (error instanceof HttpError) throw error;
+    const code = (error as { code?: unknown } | null)?.code;
+    if (typeof code === 'string' && code.startsWith('auth/')) {
+      throw new HttpError(401, 'invalid_token', 'Your session is invalid. Sign in again.');
+    }
+    throw error;
   }
 }

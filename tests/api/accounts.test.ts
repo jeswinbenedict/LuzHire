@@ -9,7 +9,7 @@ function fakeDeps(tokens: Record<string, VerifiedToken>) {
   const deps: AccountDeps = {
     async verifyIdToken(t) {
       const tok = tokens[t];
-      if (!tok) throw new Error('bad token');
+      if (!tok) throw Object.assign(new Error('bad token'), { code: 'auth/argument-error' });
       return tok;
     },
     async setClaims(uid, claims) { calls.push(['setClaims', uid, claims]); },
@@ -72,6 +72,18 @@ describe('bootstrapAccount', () => {
     const { deps } = fakeDeps(tokens);
     await expectHttp(bootstrapAccount(deps, 'nope', { role: 'candidate' }), 401, 'invalid_token');
     await expectHttp(bootstrapAccount(deps, 'noEmail', { role: 'candidate' }), 400, 'email_required');
+  });
+
+  it('reports server misconfiguration instead of blaming the token', async () => {
+    const { deps } = fakeDeps(tokens);
+    deps.verifyIdToken = async () => {
+      throw new HttpError(503, 'not_configured', 'Server is missing FIREBASE_SERVICE_ACCOUNT.');
+    };
+    await expectHttp(bootstrapAccount(deps, 'x', { role: 'candidate' }), 503, 'not_configured');
+    deps.verifyIdToken = async () => {
+      throw new SyntaxError('Unexpected token in JSON');
+    };
+    await expect(bootstrapAccount(deps, 'x', { role: 'candidate' })).rejects.toThrow(SyntaxError);
   });
 });
 
