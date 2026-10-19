@@ -53,16 +53,12 @@ In the Vercel project → **Settings → Environment Variables** (Production + P
 
 | Name | Value |
 |---|---|
-| 🔴 `FIREBASE_SERVICE_ACCOUNT` | the service-account JSON from step 1.6, **base64-encoded** (see below) |
+| 🔴 `FIREBASE_SERVICE_ACCOUNT` | the service-account JSON from step 1.6: open the file in Notepad, copy everything and paste it (base64 also works) |
 | 🔴 `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role / secret key |
 | 🟢 `SUPABASE_URL` | Supabase Project URL |
 | 🟢 `ALLOWED_ORIGINS` | optional, e.g. a staging domain; localhost is allowed automatically outside production |
 
-To base64-encode the JSON on Windows (PowerShell, in the folder with the downloaded file):
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes("luzhire-firebase-adminsdk.json")) | Set-Clipboard
-```
-Then paste into the Vercel value field and delete the downloaded file.
+Set each secret for **Production and Preview** (not Development). Check that it appears in the list after saving, then delete the downloaded JSON file.
 
 ## 4. GitHub (deploy settings)
 
