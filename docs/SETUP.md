@@ -45,6 +45,7 @@ This turns on sign-in (Phase 3) and the cloud database (Phase 2). It takes about
    npx supabase db push
    ```
    The project ref is the `xxxx` in `https://xxxx.supabase.co`. Do **not** run `seed.sql` on the cloud project. It holds demo data for local development only.
+   (No CLI access? Paste the migration files, in order, into the dashboard SQL editor and also insert their versions into `supabase_migrations.schema_migrations`. That is how the LuzHire cloud project was set up; see docs/ROADMAP.md, Phase 2.)
 
 ## 3. Vercel (API secrets)
 

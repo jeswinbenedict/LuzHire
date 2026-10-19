@@ -15,7 +15,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 |---|---|---|---|---|
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
-| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | 🟡 Built and tested locally. Still needed: CI run on GitHub, apply to cloud project |
+| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | 🟡 Built and tested with fakes. Still needed: your config values (docs/SETUP.md) and a live test |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
@@ -73,7 +73,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **Done when:** every component is in the gallery with tests; shells adapt correctly at all four breakpoints on web, Android emulator and an iOS layout check; the site is live on a `*.vercel.app` URL.
 **You provide:** a Vercel account (sign in with GitHub as jeswinbenedict) and a Vercel token, plus a session restart so the Stitch tools load.
 
-## Phase 2 — Backend foundation (Supabase)
+## Phase 2 — Backend foundation (Supabase) ✅
 **Done on `phase-2-backend`:**
 - 7 migrations: auth-claim helpers, enums, profiles + candidate data, companies + members, jobs (full-text + trigram search, moderation, slugs), notifications/announcements/reports/news, append-only audit log, application pipeline (state machine, events, interviews, offers, saved jobs), RLS on every table, storage buckets + policies, `search_jobs` RPC, realtime publication
 - Business rules enforced in Postgres: duplicate applications are impossible, the deadline is enforced, stages can't be skipped, only candidates withdraw, offer acceptance marks the candidate hired, application counter, notifications, verification-gated publishing, and no self-promotion to admin
@@ -82,7 +82,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - 57 pgTAP assertions in `supabase/tests/database/`, run locally in PGlite (`npm run db:check`, no Docker needed) and in CI with the real Supabase stack
 - Dart data layer: enums mirrored from SQL (a test catches drift), models, salary/time formatting, repositories for jobs, saved jobs, applications and notifications
 
-**Still to do:** first green CI run of the `database` job, then `supabase link` + `supabase db push` to the cloud project (needs your Supabase project).
+**Cloud project (done 2026-10-19):** all 7 migrations were applied to `bvwvabpykvyxkifievqf` in one transaction from the Supabase SQL editor and recorded in `supabase_migrations.schema_migrations`, so a later `supabase db push` only sends new migrations. Verified there: 21 tables, all with RLS, 46 table policies, 13 storage policies, 4 buckets, 31 triggers, and realtime on notifications, applications, offers and saved_jobs. The demo seed stays local-only (docs/SETUP.md).
 
 **Original scope:**
 - Migrations: enums, all tables from ARCHITECTURE §6 (profiles, educations, experiences, skills, resumes, companies, company_members, jobs, job_skills, applications, stage transitions, application_events, interviews, offers, saved_jobs, notifications, announcements, reports, audit_logs, news_articles).

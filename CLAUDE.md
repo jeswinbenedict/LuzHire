@@ -50,6 +50,6 @@ On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH)
 The phase plan, status, definition of done and owner inputs are in **`docs/ROADMAP.md`**. Update it at the end of every phase.
 - [x] Phase 0: Foundation
 - [x] Phase 1: Design system & adaptive shell. Components, layout kit, shells, Stitch designs (`docs/design/`) and the live Vercel deploy
-- [~] Phase 2: Backend foundation. Schema, RLS, storage, search, seed, 57 pgTAP assertions and the Dart data layer are done (branch `phase-2-backend`). Still to do: CI database job green, push to cloud project
+- [x] Phase 2: Backend foundation. Schema, RLS, storage, search, seed, 57 pgTAP assertions and the Dart data layer are done (branch `phase-2-backend`). CI green and applied to the cloud project
 - [~] Phase 3: Auth. API, screens, guards and tests are done (branch `phase-3-auth`). Still to do: real Firebase/Supabase config (docs/SETUP.md) and a live test
 - [ ] Phases 4–11: see ROADMAP
