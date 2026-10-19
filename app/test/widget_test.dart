@@ -23,11 +23,11 @@ void main() {
     addTearDown(tester.view.reset);
     await tester.pumpWidget(const ProviderScope(child: LuzHireApp()));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Verified jobs.'), findsOneWidget);
+    expect(find.text('Find work that fits your life'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Switch to dark theme'));
     await tester.pumpAndSettle();
-    final ctx = tester.element(find.textContaining('Verified jobs.'));
+    final ctx = tester.element(find.text('Find work that fits your life'));
     expect(Theme.of(ctx).brightness, Brightness.dark);
     expect(ctx.luz.base, LuzPalette.dark.base);
   });

@@ -14,7 +14,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | # | Phase | Outcome | Needs from you | Status |
 |---|---|---|---|---|
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
-| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components, layout kit and shells done. Still needed: Stitch designs, Vercel |
+| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | 🟡 Built and tested locally. Still needed: CI run on GitHub, apply to cloud project |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | 🟡 Built and tested with fakes. Still needed: your config values (docs/SETUP.md) and a live test |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
@@ -48,7 +48,7 @@ Deployment is **continuous**, not left to the end. From Phase 1 onward every pus
 ## Phase 0 — Foundation ✅
 Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app for web, Android and iOS with Riverpod and go_router, `/api/health` Vercel function with a test, Supabase CLI init, `vercel.json`, CI workflow (analyze, test, WASM build) and prebuilt-deploy workflow, `CLAUDE.md`, `.gitattributes` and `.gitignore`.
 
-## Phase 1 — Design system & adaptive shell 🟡
+## Phase 1 — Design system & adaptive shell ✅
 **Done:** tokens, light/dark themes, relief painter, `LuzSurface`, `LuzButton`, `LuzIconButton`, `LuzTextField`, `LuzToggle`, `LuzFilterChip`, `LuzStatusChip`, `LuzCard`, `LuzDial`, design gallery, widget tests.
 **Done on `phase-1-design-shell`:**
 - Layout kit: `LuzBreakpoint`, `LuzContent`, `LuzGrid`, `LuzTwoPane`, `LuzInputModeScope` (touch vs pointer density)
@@ -57,7 +57,12 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Shells: Spotlight (top nav ≥ 900 px; top bar + bottom nav + menu sheet below that) and Workspace (sidebar ≥ 1024 px, rail 600–1023, drawer below), routes for every section with phase placeholders, home hero
 - 25 widget tests covering breakpoints, shells at each width, shortcuts, modal, slider, table and density
 
-**Remaining (original list kept for reference)**
+**Done on `phase-1-stitch-designs`:**
+- Stitch project built from DESIGN.md: 11 light screens (home, job search, job detail, candidate dashboard on desktop and mobile; employer pipeline and admin queue on desktop) and 4 dark variants, saved with their HTML exports and a usage guide in `docs/design/`
+- Home page rebuilt from the Stitch design: centred hero, popular-search chips, discipline tiles and an employer band (no invented statistics), with layout tests at 360, 768 and 1440 px
+- Live on Vercel since Phase 3 (prebuilt deploy from GitHub Actions plus a smoke test)
+
+**Original scope (kept for reference)**
 - **Adaptive layout kit:** `LuzBreakpoint` helper (compact/medium/expanded/large), `AdaptiveScaffold` that swaps bottom nav ↔ navigation rail ↔ sidebar, two-pane list/detail layout, max-width content containers.
 - **Platform adaptivity:** pointer vs touch density (`VisualDensity`), hover only on pointer devices, keyboard shortcuts (`Ctrl/⌘ K`, `/` to search, `Esc`), `SafeArea`, platform back handling (`PopScope`), adaptive dialogs (dialog on wide screens, bottom sheet on phones), text-scale and reduced-motion support.
 - **More components:** `LuzBottomSheet`, `LuzDialog`, `LuzSkeleton`, `LuzEmptyState`, `LuzToast`, `LuzTabs`/segmented control, `LuzCheckbox`/`LuzRadio`, `LuzSlider` (salary range), `LuzAvatar`/logo socket, `LuzProgressGroove`, `LuzSearchBar` (hero), `LuzDataTable` (Workspace), `LuzKanbanColumn`.

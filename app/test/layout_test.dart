@@ -199,6 +199,41 @@ void main() {
     });
   });
 
+  group('Home (Stitch design)', () {
+    for (final width in [360.0, 768.0, 1440.0]) {
+      testWidgets('lays out at ${width.toInt()} px', (tester) async {
+        setWindow(tester, width);
+        await pumpApp(tester);
+        expect(find.text('Find work that fits your life'), findsOneWidget);
+        expect(find.text('Explore by discipline'), findsOneWidget);
+        await tester.scrollUntilVisible(
+          find.text('Post a job'),
+          300,
+          scrollable: find.byType(Scrollable).first,
+        );
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    testWidgets('chips and discipline tiles open a job search', (tester) async {
+      setWindow(tester, 1280);
+      await pumpApp(tester);
+      final router = GoRouter.of(tester.element(find.byType(Scaffold).first));
+
+      await tester.tap(find.text('Remote'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.toString(), '/jobs?q=Remote');
+
+      router.go('/');
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.text('Data & AI'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Data & AI'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.toString(), '/jobs?q=data');
+    });
+  });
+
   group('Adaptive modal', () {
     Future<void> open(WidgetTester tester) async {
       await tester.pumpWidget(
