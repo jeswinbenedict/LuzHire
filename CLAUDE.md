@@ -11,7 +11,7 @@ Read these first:
 | Client (web, Android, iOS) | Flutter / Dart, Riverpod, go_router | `app/` |
 | Auth | Firebase Authentication (custom claims `role`, `app_role`) | — |
 | Data / realtime / storage | Supabase (Postgres + RLS, Realtime, Storage) | `supabase/` |
-| Server functions | TypeScript on Vercel Functions (Node 22) | `api/` (tests in `tests/api/`) |
+| Server functions | TypeScript on Vercel Functions (Node 24) | `api/` (tests in `tests/api/`) |
 | Hosting | Vercel (Flutter web is prebuilt in GitHub Actions) | `vercel.json`, `.github/workflows/` |
 
 ## Commands
