@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "22.x"
+    "node": "24.x"
   },
   "scripts": {
     "build": "node -e \"console.log('Flutter web is built in CI (app/build/web) before vercel build.')\"",
