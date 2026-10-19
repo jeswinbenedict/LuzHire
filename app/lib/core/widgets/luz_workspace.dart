@@ -295,7 +295,15 @@ class LuzKanbanColumn extends StatelessWidget {
               padding: const EdgeInsets.fromLTRB(6, 6, 6, 10),
               child: Row(
                 children: [
-                  header,
+                  // Long stage names shrink instead of overflowing.
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerLeft,
+                      child: header,
+                    ),
+                  ),
+                  const SizedBox(width: LuzSpace.xs),
                   const Spacer(),
                   Text(
                     '$count',

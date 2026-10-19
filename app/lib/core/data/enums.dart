@@ -169,3 +169,18 @@ enum OfferStatus with DbEnum {
   final String label;
   static OfferStatus fromDb(String? v) => _fromDb(values, v, issued);
 }
+
+enum MemberRole with DbEnum {
+  owner('owner', 'Owner'),
+  recruiter('recruiter', 'Recruiter'),
+  viewer('viewer', 'Viewer');
+
+  const MemberRole(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+
+  /// Owners and recruiters can edit jobs, move candidates and book interviews.
+  bool get canEdit => this != viewer;
+  static MemberRole fromDb(String? v) => _fromDb(values, v, viewer);
+}

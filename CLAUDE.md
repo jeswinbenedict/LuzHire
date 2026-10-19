@@ -54,4 +54,5 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [x] Phase 3: Auth. API, screens, guards and tests, live on Vercel with Firebase + Supabase (real sign-up verified)
 - [~] Phase 4: Public job board. Search, detail, companies and saved jobs are done (branch `phase-4-job-board`). Still to do: live new-jobs banner, real data
 - [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are done (branch `phase-5-candidate-portal`). Still to do: cloud migration, live check with an employer
-- [ ] Phases 6–11: see ROADMAP
+- [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are done (branch `phase-6-employer-workspace`). Still to do: cloud migration, live end-to-end hire
+- [ ] Phases 7–11: see ROADMAP

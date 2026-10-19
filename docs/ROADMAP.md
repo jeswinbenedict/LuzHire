@@ -19,7 +19,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Built and tested (branch `phase-4-job-board`). Still needed: live "new jobs" banner; real jobs in the cloud database |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Built and tested (branch `phase-5-candidate-portal`). Still needed: apply migration `20261019120000` to the cloud; live check with a real employer (Phase 6) |
-| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
+| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Built and tested (branch `phase-6-employer-workspace`). Still needed: apply migration `20261019130000` to the cloud; end-to-end hire with real accounts |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | ⬜ |
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | ⬜ |
@@ -159,7 +159,20 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 **Done when:** an employer stage change appears on the candidate screen in < 1 s.
 
-## Phase 6 — Employer workspace
+## Phase 6 — Employer workspace 🟡
+**Done on `phase-6-employer-workspace`** (Linear-style Workspace zone, from the Stitch pipeline design):
+- Onboarding: an employer without a company creates one (becoming its owner) or accepts a team invitation.
+- Company & team `/employer/company`: profile form (name, industry, size, website, HQ, about, benefits), logo upload, a verification card ("Request verification" for owners), team list with roles (owners switch recruiter/viewer or remove members), and email invitations with revoke. New migration `20261019130000_employer_workspace.sql`: `company_invites` with RLS, `accept_company_invite` RPC and `app.email()`.
+- Jobs `/employer/jobs`: sortable table (status, applicants, posted), and an editor (`/employer/jobs/new`, `/employer/jobs/:id`) with a live search-card preview, validation (title, salary range, deadline), skills, publish, draft, close, reopen, archive and delete-draft. Unverified companies' jobs go to "Pending review" (enforced in Postgres) and the toast explains it.
+- Pipeline `/employer/pipeline?job=…`: realtime kanban with all stages. Drag and drop on desktop (long-press on touch) accepts only the moves the database allows, and dropping on "Offer issued" opens the offer form. The candidate panel (side panel ≥ 1200 px, full screen below) has "Move to" buttons (keyboard path), confirm-before-reject, resume via signed link, cover letter, skills, experience, education, links, history, interviews (complete / no-show / cancel) and the offer (withdraw).
+- Interviews: schedule form (date, time, length, video/phone/in-person with link or address, private notes the candidate never sees) and a company-wide list `/employer/interviews`.
+- Offers: amount, currency, period, start date, reply-by date and an optional PDF letter (offer-letters bucket). Only from HR interview or final review, matching the transition table.
+- Overview `/employer` and Analytics `/employer/analytics`: real counts only, from `company_hiring_stats` (runs under the caller's RLS). Funnel, applications per week, average time to hire, and job status counts.
+- Viewer role: read-only everywhere. 13 widget tests (onboarding, invites, review flow, live move, drag rules, interview and offer forms, viewer, analytics) and 12 pgTAP assertions (125 app tests, 77 database assertions).
+
+**Still to do:** a full hire with real accounts on the live site, and team switching for people in several companies (the switcher exists on the company page).
+
+**Original scope:**
 - Company profile + verification request; team invites (owner, recruiter, viewer).
 - Job editor (draft → publish / pending review) with live card preview.
 - Pipeline kanban per job (drag-and-drop + keyboard move, Realtime broadcast), candidate drawer (profile, resume via signed URL, history), bulk actions.

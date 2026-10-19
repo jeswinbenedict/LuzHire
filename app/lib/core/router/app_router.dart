@@ -13,6 +13,10 @@ import '../../features/candidate/presentation/interviews_page.dart';
 import '../../features/candidate/presentation/profile_page.dart';
 import '../../features/companies/presentation/companies_pages.dart';
 import '../../features/design_gallery/gallery_page.dart';
+import '../../features/employer/presentation/company_page.dart';
+import '../../features/employer/presentation/jobs_pages.dart';
+import '../../features/employer/presentation/pipeline_page.dart';
+import '../../features/employer/presentation/workspace_pages.dart';
 import '../../features/home/home_page.dart';
 import '../../features/jobs/data/jobs_repository.dart';
 import '../../features/jobs/presentation/job_detail_page.dart';
@@ -146,8 +150,20 @@ final _routes = <RouteBase>[
       child: child,
     ),
     routes: [
-      for (final d in employerDestinations)
-        _placeholder(d.path, d.label, 'Phase 6', d.icon),
+      _page('/employer', (_) => const EmployerOverviewPage()),
+      _page('/employer/jobs', (_) => const EmployerJobsPage()),
+      _page('/employer/jobs/new', (_) => const JobEditorPage()),
+      _page(
+        '/employer/jobs/:id',
+        (s) => JobEditorPage(jobId: s.pathParameters['id']),
+      ),
+      _page(
+        '/employer/pipeline',
+        (s) => PipelinePage(jobId: s.uri.queryParameters['job']),
+      ),
+      _page('/employer/interviews', (_) => const EmployerInterviewsPage()),
+      _page('/employer/analytics', (_) => const EmployerAnalyticsPage()),
+      _page('/employer/company', (_) => const EmployerCompanyPage()),
     ],
   ),
 
@@ -165,6 +181,13 @@ final _routes = <RouteBase>[
     ],
   ),
 ];
+
+/// Workspace pages switch without a transition, like the placeholders did.
+GoRoute _page(String path, Widget Function(GoRouterState s) build) => GoRoute(
+  path: path,
+  pageBuilder: (context, state) =>
+      NoTransitionPage(key: state.pageKey, child: build(state)),
+);
 
 GoRoute _placeholder(String path, String title, String phase, IconData icon) =>
     GoRoute(

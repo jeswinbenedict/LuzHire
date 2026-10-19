@@ -432,6 +432,7 @@ class Interview {
     required this.status,
     this.meetingUrl,
     this.location,
+    this.notes,
   });
 
   final String id;
@@ -444,18 +445,24 @@ class Interview {
   final String? meetingUrl;
   final String? location;
 
+  /// Hiring-team notes; never present on the candidate's view.
+  final String? notes;
+
   DateTime get endsAt => scheduledAt.add(Duration(minutes: durationMin));
 
+  /// Accepts the candidate view (job_id column) and the employer query
+  /// (`applications(job_id)` embedded).
   factory Interview.fromJson(Json j) => Interview(
     id: j['id'] as String,
     applicationId: j['application_id'] as String,
-    jobId: j['job_id'] as String,
+    jobId: (j['job_id'] ?? (j['applications'] as Map?)?['job_id']) as String,
     scheduledAt: DateTime.parse(j['scheduled_at'] as String),
     durationMin: (j['duration_min'] as num?)?.toInt() ?? 45,
     mode: InterviewMode.fromDb(j['mode'] as String?),
     status: InterviewStatus.fromDb(j['status'] as String?),
     meetingUrl: j['meeting_url'] as String?,
     location: j['location'] as String?,
+    notes: j['notes'] as String?,
   );
 }
 
@@ -499,5 +506,99 @@ class Offer {
     letterPath: j['letter_path'] as String?,
     expiresAt: _date(j['expires_at']),
     respondedAt: _date(j['responded_at']),
+  );
+}
+
+/// A teammate (public.company_members + their profile).
+@immutable
+class CompanyMember {
+  const CompanyMember({
+    required this.userId,
+    required this.role,
+    required this.displayName,
+    required this.email,
+  });
+
+  final String userId;
+  final MemberRole role;
+  final String displayName;
+  final String email;
+
+  factory CompanyMember.fromJson(Json j) {
+    final p = (j['profiles'] as Map?) ?? const {};
+    return CompanyMember(
+      userId: j['user_id'] as String,
+      role: MemberRole.fromDb(j['member_role'] as String?),
+      displayName: (p['display_name'] as String?) ?? 'Teammate',
+      email: (p['email'] as String?) ?? '',
+    );
+  }
+}
+
+/// Mirrors public.company_invites.
+@immutable
+class CompanyInvite {
+  const CompanyInvite({
+    required this.id,
+    required this.companyId,
+    required this.email,
+    required this.role,
+    required this.createdAt,
+    this.companyName,
+  });
+
+  final String id;
+  final String companyId;
+  final String email;
+  final MemberRole role;
+  final DateTime createdAt;
+
+  /// Present when selected with `companies(name)`.
+  final String? companyName;
+
+  factory CompanyInvite.fromJson(Json j) => CompanyInvite(
+    id: j['id'] as String,
+    companyId: j['company_id'] as String,
+    email: j['email'] as String,
+    role: MemberRole.fromDb(j['member_role'] as String?),
+    createdAt: DateTime.parse(j['created_at'] as String),
+    companyName: (j['companies'] as Map?)?['name'] as String?,
+  );
+}
+
+/// Result of public.company_hiring_stats.
+@immutable
+class HiringStats {
+  const HiringStats({
+    required this.stages,
+    required this.jobs,
+    required this.applicationsByWeek,
+    this.avgDaysToHire,
+  });
+
+  final Map<ApplicationStage, int> stages;
+  final Map<String, int> jobs;
+  final List<({DateTime week, int count})> applicationsByWeek;
+  final double? avgDaysToHire;
+
+  int get totalApplications => stages.values.fold(0, (a, b) => a + b);
+
+  factory HiringStats.fromJson(Json j) => HiringStats(
+    stages: {
+      for (final e in ((j['stages'] as Map?) ?? const {}).entries)
+        ApplicationStage.fromDb(e.key as String): (e.value as num).toInt(),
+    },
+    jobs: {
+      for (final e in ((j['jobs'] as Map?) ?? const {}).entries)
+        e.key as String: (e.value as num).toInt(),
+    },
+    applicationsByWeek: [
+      for (final w in (j['applications_by_week'] as List?) ?? const [])
+        (
+          week: DateTime.parse((w as Map)['week'] as String),
+          count: (w['count'] as num).toInt(),
+        ),
+    ],
+    avgDaysToHire: _num(j['avg_days_to_hire']),
   );
 }
