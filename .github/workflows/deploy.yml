@@ -48,9 +48,9 @@ jobs:
             echo "::warning title=No app config::APP_ENV_JSON is not set; the site will build without sign-in."
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         if: steps.config.outputs.ready == 'true'
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         if: steps.config.outputs.ready == 'true'
         with:
           node-version: 22
@@ -81,10 +81,12 @@ jobs:
           echo "### 🚀 Deployed" >> "$GITHUB_STEP_SUMMARY"
           echo "$url" >> "$GITHUB_STEP_SUMMARY"
 
+      # Test the public production address. (The per-deployment URL is behind
+      # Vercel's deployment protection and answers 302 → login.)
       - name: Smoke test
         if: steps.config.outputs.ready == 'true'
         env:
-          URL: ${{ steps.deploy.outputs.url }}
+          URL: ${{ vars.PRODUCTION_URL || 'https://luzhire.vercel.app' }}
         run: |
           check() {
             code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 3 --retry-all-errors "$URL$1")
@@ -93,5 +95,12 @@ jobs:
           }
           check /
           check /api/health
-          check /jobs          # SPA deep link served by the rewrite
+          check /jobs                # deep links must load the app, not 404
+          check /employer/pipeline
           check /favicon.svg
+          # The live site must be the commit we just deployed.
+          for attempt in 1 2 3 4 5 6; do
+            curl -s "$URL/api/health" | grep -q "\"commit\":\"${GITHUB_SHA::7}\"" && { echo "live commit: ${GITHUB_SHA::7}"; exit 0; }
+            sleep 5
+          done
+          echo "::error::/api/health is not serving ${GITHUB_SHA::7}"; exit 1

@@ -6,7 +6,6 @@
   },
   "buildCommand": "npm run build",
   "outputDirectory": "app/build/web",
-  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/((?!api/).*)",
