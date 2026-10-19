@@ -16,7 +16,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
-| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | 🟡 Built and tested with fakes. Still needed: your config values (docs/SETUP.md) and a live test |
+| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
@@ -97,7 +97,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **Done when:** `supabase db reset` + `supabase test db` pass in CI; migrations are applied to the cloud project.
 **You provide:** a Supabase project (free tier is fine for development). Send its **project URL and anon key** only; you'll enter the DB password and service-role key yourself as secrets.
 
-## Phase 3 — Authentication & roles
+## Phase 3 — Authentication & roles ✅
 **Done on `phase-3-auth`:**
 - API: `POST /api/auth/bootstrap` sets `role=authenticated` + `app_role` claims and creates the profile. It is idempotent and never grants admin. `POST /api/admin/users/:id/role` is admin-only: it updates claims and profile, signs the user out, and writes an audit entry. CORS allows localhost outside production. 10 Vitest tests.
 - Flutter: `AppConfig` from dart-defines (public values only), Firebase + Supabase start-up with the Firebase ID token as Supabase `accessToken` (anon until claims exist), and an `AuthGateway` (Firebase or disabled), `AuthController` and `AccountApi`.
@@ -105,7 +105,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Router guards: role areas (`/me` candidate, `/employer` employer+admin, `/admin` admin), return-to-`from` with open-redirect protection, a verify-email hold, and choose-role. Shells show an avatar menu or "Finish setup" depending on state.
 - Tests: 11 redirect unit tests and 11 end-to-end auth journeys (fakes), 70 app tests in total.
 
-**Still to do:** you follow `docs/SETUP.md`, then I add `env/local.json` and we test a real sign-up on web (and Android if you register the app).
+**Live (2026-10-19):** a real employer sign-up on luzhire.vercel.app called `/api/auth/bootstrap` (200) and created the matching `profiles` row in the cloud database. Fixes found on the way: firebase-admin needs `jose` 5 on Vercel's runtime (package.json override), only Firebase `auth/*` errors map to 401 (misconfiguration now shows as 503), and `FIREBASE_SERVICE_ACCOUNT` is accepted as raw or base64 JSON. Android sign-in still needs the Android app registered in Firebase (Phase 11, optional store builds).
 
 **Original scope:**
 - Firebase project; Email/Password + Google providers; Flutter `firebase_core` / `firebase_auth` for web, Android and iOS.
