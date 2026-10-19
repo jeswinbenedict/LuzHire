@@ -4,7 +4,7 @@
     "start_url": ".",
     "display": "standalone",
     "background_color": "#EEECE7",
-    "theme_color": "#FFB224",
+    "theme_color": "#EEECE7",
     "description": "Find verified jobs and track every application in real time.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,

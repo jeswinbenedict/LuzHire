@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
@@ -7,7 +8,7 @@ import 'luz_surface.dart';
 import 'luz_zone.dart';
 
 /// Inset text field with the mandatory 1 px outline (DESIGN.md §2 rule 2).
-/// The outline turns amber and thickens while focused, and turns red on error.
+/// The outline turns orange and thickens while focused, and turns red on error.
 class LuzTextField extends StatefulWidget {
   const LuzTextField({
     super.key,
@@ -24,6 +25,8 @@ class LuzTextField extends StatefulWidget {
     this.onSubmitted,
     this.autofillHints,
     this.enabled = true,
+    this.suffix,
+    this.autofocus = false,
   });
 
   final String label;
@@ -39,6 +42,10 @@ class LuzTextField extends StatefulWidget {
   final ValueChanged<String>? onSubmitted;
   final Iterable<String>? autofillHints;
   final bool enabled;
+
+  /// Trailing widget inside the field (e.g. show/hide password).
+  final Widget? suffix;
+  final bool autofocus;
 
   @override
   State<LuzTextField> createState() => _LuzTextFieldState();
@@ -80,7 +87,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
           outlineWidth: (focused || hasError) ? 2 : 1,
           padding: const EdgeInsets.symmetric(horizontal: LuzSpace.md),
           child: SizedBox(
-            height: zone.isWorkspace ? 38 : 50,
+            height: zone.isWorkspace && context.isPointer ? 38 : 50,
             child: Row(
               children: [
                 if (widget.prefixIcon != null) ...[
@@ -92,6 +99,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
                     controller: widget.controller,
                     focusNode: _focus,
                     enabled: widget.enabled,
+                    autofocus: widget.autofocus,
                     obscureText: widget.obscureText,
                     keyboardType: widget.keyboardType,
                     textInputAction: widget.textInputAction,
@@ -105,6 +113,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
                     ).copyWith(semanticCounterText: ''),
                   ),
                 ),
+                ?widget.suffix,
               ],
             ),
           ),
@@ -133,7 +142,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
   }
 }
 
-/// Physical toggle: inset track, raised knob, amber track when on.
+/// Physical toggle: inset track, raised knob, orange track when on.
 class LuzToggle extends StatelessWidget {
   const LuzToggle({
     super.key,

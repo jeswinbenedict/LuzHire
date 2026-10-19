@@ -32,5 +32,9 @@ extension LuzZoneDefaults on LuzZoneKind {
   double get cardRadius => isWorkspace ? LuzRadius.md : LuzRadius.lg;
   double get cardDepth => isWorkspace ? LuzDepth.raisedSm : LuzDepth.raisedMd;
   double get inputRadius => isWorkspace ? LuzRadius.sm : LuzRadius.lg;
-  double get controlHeight => isWorkspace ? 38 : 48;
+
+  /// Dense 38 px controls only in Workspace with a mouse/trackpad;
+  /// touch always gets ≥ 48 dp targets (DESIGN.md §10).
+  double controlHeight({required bool pointer}) =>
+      isWorkspace && pointer ? 38 : 48;
 }

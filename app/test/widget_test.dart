@@ -17,16 +17,17 @@ Widget _wrap(Widget child, {ThemeData? theme, bool highContrast = false}) =>
     );
 
 void main() {
-  testWidgets('app boots into the design gallery and toggles theme', (
-    tester,
-  ) async {
+  testWidgets('app boots to home and toggles theme', (tester) async {
+    tester.view.physicalSize = const Size(1280, 900);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
     await tester.pumpWidget(const ProviderScope(child: LuzHireApp()));
     await tester.pumpAndSettle();
-    expect(find.text('LuzHire design system'), findsOneWidget);
+    expect(find.textContaining('Verified jobs.'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Switch to dark theme'));
     await tester.pumpAndSettle();
-    final ctx = tester.element(find.text('LuzHire design system'));
+    final ctx = tester.element(find.textContaining('Verified jobs.'));
     expect(Theme.of(ctx).brightness, Brightness.dark);
     expect(ctx.luz.base, LuzPalette.dark.base);
   });
@@ -97,7 +98,7 @@ void main() {
     expect(
       find.byType(Container),
       findsOneWidget,
-      reason: 'amber dot indicator',
+      reason: 'orange dot indicator',
     );
   });
 

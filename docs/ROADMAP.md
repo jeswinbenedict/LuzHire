@@ -14,9 +14,9 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | # | Phase | Outcome | Needs from you | Status |
 |---|---|---|---|---|
 | 0 | Foundation | Monorepo, Flutter app, API, Supabase CLI, CI | — | ✅ Done (CI green on `b36df0c`) |
-| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components done |
-| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ⬜ |
-| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ⬜ |
+| 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | 🟡 Components, layout kit and shells done. Still needed: Stitch designs, Vercel |
+| 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | 🟡 Built and tested locally. Still needed: CI run on GitHub, apply to cloud project |
+| 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | 🟡 Built and tested with fakes. Still needed: your config values (docs/SETUP.md) and a live test |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
@@ -50,8 +50,14 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 ## Phase 1 — Design system & adaptive shell 🟡
 **Done:** tokens, light/dark themes, relief painter, `LuzSurface`, `LuzButton`, `LuzIconButton`, `LuzTextField`, `LuzToggle`, `LuzFilterChip`, `LuzStatusChip`, `LuzCard`, `LuzDial`, design gallery, widget tests.
+**Done on `phase-1-design-shell`:**
+- Layout kit: `LuzBreakpoint`, `LuzContent`, `LuzGrid`, `LuzTwoPane`, `LuzInputModeScope` (touch vs pointer density)
+- Adaptivity: path URLs (deep links), text scaling clamped at 200 %, Ctrl/⌘ K command menu (works while typing), "/" to search, adaptive modal (sheet on phones, dialog elsewhere)
+- Components: modal/sheet/confirm, skeleton, empty state, toast, segmented tabs, checkbox, radio, range slider, avatar, logo socket, progress groove, hero search bar, data table, kanban column
+- Shells: Spotlight (top nav ≥ 900 px; top bar + bottom nav + menu sheet below that) and Workspace (sidebar ≥ 1024 px, rail 600–1023, drawer below), routes for every section with phase placeholders, home hero
+- 25 widget tests covering breakpoints, shells at each width, shortcuts, modal, slider, table and density
 
-**Remaining**
+**Remaining (original list kept for reference)**
 - **Adaptive layout kit:** `LuzBreakpoint` helper (compact/medium/expanded/large), `AdaptiveScaffold` that swaps bottom nav ↔ navigation rail ↔ sidebar, two-pane list/detail layout, max-width content containers.
 - **Platform adaptivity:** pointer vs touch density (`VisualDensity`), hover only on pointer devices, keyboard shortcuts (`Ctrl/⌘ K`, `/` to search, `Esc`), `SafeArea`, platform back handling (`PopScope`), adaptive dialogs (dialog on wide screens, bottom sheet on phones), text-scale and reduced-motion support.
 - **More components:** `LuzBottomSheet`, `LuzDialog`, `LuzSkeleton`, `LuzEmptyState`, `LuzToast`, `LuzTabs`/segmented control, `LuzCheckbox`/`LuzRadio`, `LuzSlider` (salary range), `LuzAvatar`/logo socket, `LuzProgressGroove`, `LuzSearchBar` (hero), `LuzDataTable` (Workspace), `LuzKanbanColumn`.
@@ -63,6 +69,17 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** a Vercel account (sign in with GitHub as jeswinbenedict) and a Vercel token, plus a session restart so the Stitch tools load.
 
 ## Phase 2 — Backend foundation (Supabase)
+**Done on `phase-2-backend`:**
+- 7 migrations: auth-claim helpers, enums, profiles + candidate data, companies + members, jobs (full-text + trigram search, moderation, slugs), notifications/announcements/reports/news, append-only audit log, application pipeline (state machine, events, interviews, offers, saved jobs), RLS on every table, storage buckets + policies, `search_jobs` RPC, realtime publication
+- Business rules enforced in Postgres: duplicate applications are impossible, the deadline is enforced, stages can't be skipped, only candidates withdraw, offer acceptance marks the candidate hired, application counter, notifications, verification-gated publishing, and no self-promotion to admin
+- Privacy: employers see a candidate only after that candidate applies, resumes are readable only by the owner or the hiring team for that application, and candidates read interviews through a view without private notes
+- `seed.sql`: 24 fictional companies, 240 jobs, demo accounts
+- 57 pgTAP assertions in `supabase/tests/database/`, run locally in PGlite (`npm run db:check`, no Docker needed) and in CI with the real Supabase stack
+- Dart data layer: enums mirrored from SQL (a test catches drift), models, salary/time formatting, repositories for jobs, saved jobs, applications and notifications
+
+**Still to do:** first green CI run of the `database` job, then `supabase link` + `supabase db push` to the cloud project (needs your Supabase project).
+
+**Original scope:**
 - Migrations: enums, all tables from ARCHITECTURE §6 (profiles, educations, experiences, skills, resumes, companies, company_members, jobs, job_skills, applications, stage transitions, application_events, interviews, offers, saved_jobs, notifications, announcements, reports, audit_logs, news_articles).
 - Triggers: application counter, apply guard (published, deadline, verified email), stage-transition guard + history, notification fan-out, job moderation, audit log, `updated_at`, profile completion.
 - RLS policies for every table; `app.uid()` / `app.role()` helpers; append-only audit log.
@@ -76,6 +93,16 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** a Supabase project (free tier is fine for development). Send its **project URL and anon key** only; you'll enter the DB password and service-role key yourself as secrets.
 
 ## Phase 3 — Authentication & roles
+**Done on `phase-3-auth`:**
+- API: `POST /api/auth/bootstrap` sets `role=authenticated` + `app_role` claims and creates the profile. It is idempotent and never grants admin. `POST /api/admin/users/:id/role` is admin-only: it updates claims and profile, signs the user out, and writes an audit entry. CORS allows localhost outside production. 10 Vitest tests.
+- Flutter: `AppConfig` from dart-defines (public values only), Firebase + Supabase start-up with the Firebase ID token as Supabase `accessToken` (anon until claims exist), and an `AuthGateway` (Firebase or disabled), `AuthController` and `AccountApi`.
+- Screens: sign in, sign up (role choice, `?role=employer`), verify email (resend cooldown), forgot password (no account enumeration), choose role (first Google sign-in), no access, account (theme and sign out), and session loading.
+- Router guards: role areas (`/me` candidate, `/employer` employer+admin, `/admin` admin), return-to-`from` with open-redirect protection, a verify-email hold, and choose-role. Shells show an avatar menu or "Finish setup" depending on state.
+- Tests: 11 redirect unit tests and 11 end-to-end auth journeys (fakes), 70 app tests in total.
+
+**Still to do:** you follow `docs/SETUP.md`, then I add `env/local.json` and we test a real sign-up on web (and Android if you register the app).
+
+**Original scope:**
 - Firebase project; Email/Password + Google providers; Flutter `firebase_core` / `firebase_auth` for web, Android and iOS.
 - Supabase Third-Party Auth (Firebase) configured; `accessToken` callback in `Supabase.initialize`.
 - `/api/auth/bootstrap` (Firebase Admin SDK on Vercel): sets `role: authenticated` and `app_role`, creates the profile row; `/api/admin/users/:id/role`.

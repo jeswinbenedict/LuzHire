@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
@@ -10,7 +11,7 @@ enum LuzButtonVariant {
   /// Moulded from the base surface (default primary action).
   neutral,
 
-  /// Lit amber pill; use once per screen for the signature action.
+  /// Lit orange pill; use once per screen for the signature action.
   accent,
 }
 
@@ -96,12 +97,12 @@ class LuzButton extends StatelessWidget {
           color: fill,
           padding: EdgeInsets.symmetric(horizontal: zone.isWorkspace ? 14 : 24),
           child: SizedBox(
-            height: zone.controlHeight,
+            height: zone.controlHeight(pointer: context.isPointer),
             child: Center(widthFactor: 1, child: content),
           ),
         );
 
-        // Amber surfaces glow instead of casting the grey shadow pair.
+        // Orange surfaces glow instead of casting the grey shadow pair.
         if (isAccent && enabled && !pressed) {
           return DecoratedBox(
             decoration: BoxDecoration(
@@ -138,7 +139,7 @@ class LuzIconButton extends StatelessWidget {
   final String tooltip;
   final VoidCallback? onPressed;
 
-  /// Selected icon buttons sink and turn amber (e.g. a saved bookmark).
+  /// Selected icon buttons sink and turn orange (e.g. a saved bookmark).
   final bool selected;
   final double size;
 
@@ -169,6 +170,42 @@ class LuzIconButton extends StatelessWidget {
                 : selected
                 ? p.accent
                 : p.inkMuted,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Inline text link (accent colour, underline on hover/focus).
+class LuzTextLink extends StatelessWidget {
+  const LuzTextLink({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.style,
+  });
+
+  final String label;
+  final VoidCallback? onPressed;
+  final TextStyle? style;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    return LuzPressable(
+      onPressed: onPressed,
+      radius: LuzRadius.xs,
+      semanticLabel: label,
+      builder: (context, pressed, hovered) => Padding(
+        padding: const EdgeInsets.symmetric(vertical: 2),
+        child: Text(
+          label,
+          style: (style ?? context.luzText.label).copyWith(
+            color: p.accent,
+            fontWeight: FontWeight.w600,
+            decoration: hovered || pressed ? TextDecoration.underline : null,
+            decorationColor: p.accent,
           ),
         ),
       ),

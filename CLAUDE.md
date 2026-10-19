@@ -18,7 +18,7 @@ Read these first:
 ```bash
 # Flutter app (run from app/)
 flutter pub get
-flutter run -d chrome --dart-define-from-file=env/local.json
+flutter run -d chrome --dart-define-from-file=env/local.json   # env/local.json: see docs/SETUP.md (git-ignored)
 flutter analyze
 flutter test
 dart format lib test
@@ -30,13 +30,14 @@ npm test
 npx supabase start        # local Postgres/Realtime/Storage (needs Docker)
 npx supabase db reset     # apply migrations + seed
 npx supabase test db      # pgTAP RLS tests
+npm run db:check          # same migrations + pgTAP tests in PGlite, no Docker needed
 ```
 On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH).
 
 ## Conventions
 - **Flutter:** feature-first (`lib/features/<feature>/{data,domain,presentation}`), shared code in `lib/core/`. Use the Riverpod providers for state. Models use freezed. Never hardcode colours, radii, shadows or text styles. Use `LuzTokens` / `context.luz` and the `Luz*` widgets in `lib/core/widgets/`.
-- **Neumorphism accessibility** (DESIGN.md §2): shadows never carry meaning alone. Inputs get an outline, selection gets an amber indicator, and focus gets a visible ring.
-- **Database:** every invariant lives in Postgres (constraints, triggers, RLS). User IDs are Firebase UIDs (`text`). RLS uses `app.uid()` / `app.role()`, never `auth.uid()`.
+- **Neumorphism accessibility** (DESIGN.md §2): shadows never carry meaning alone. Inputs get an outline, selection gets an orange indicator, and focus gets a visible ring.
+- **Database:** every invariant lives in Postgres (constraints, triggers, RLS). User IDs are Firebase UIDs (`text`). RLS uses `app.uid()` / `app.role()`, never `auth.uid()`. Trigger functions that call `app.is_privileged()` must NOT be `SECURITY DEFINER` (inside them `current_user` is the owner). Add a pgTAP test for every new policy or rule, and keep Dart enums in `lib/core/data/enums.dart` in sync with SQL enums (a test enforces this).
 - **Secrets:** only public client config (Supabase URL, anon key, Firebase options) goes in `app/env/*.json`, and those files are gitignored except `example.json`. The service-role key and third-party keys live only in Vercel env vars.
 - Files in `api/` become Vercel Functions. Helpers go in `api/_lib/`, and tests stay out of `api/`.
 
@@ -48,5 +49,7 @@ On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH)
 ## Status
 The phase plan, status, definition of done and owner inputs are in **`docs/ROADMAP.md`**. Update it at the end of every phase.
 - [x] Phase 0: Foundation
-- [~] Phase 1: Design system & adaptive shell. Components and gallery are done. Still to do: adaptive layout kit, app shells, more components, Stitch screens, first Vercel deploy
-- [ ] Phases 2–11: see ROADMAP
+- [~] Phase 1: Design system & adaptive shell. Components, layout kit, shells and routes are done (branch `phase-1-design-shell`). Still to do: Stitch screens, first Vercel deploy
+- [~] Phase 2: Backend foundation. Schema, RLS, storage, search, seed, 57 pgTAP assertions and the Dart data layer are done (branch `phase-2-backend`). Still to do: CI database job green, push to cloud project
+- [~] Phase 3: Auth. API, screens, guards and tests are done (branch `phase-3-auth`). Still to do: real Firebase/Supabase config (docs/SETUP.md) and a live test
+- [ ] Phases 4–11: see ROADMAP

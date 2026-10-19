@@ -342,8 +342,12 @@ enabled = false
 
 # Use Firebase Auth as a third-party provider alongside Supabase Auth.
 [auth.third_party.firebase]
+# LuzHire signs users in with Firebase. For the cloud project enable this in
+# Dashboard > Authentication > Third-party Auth. To use it with the local stack,
+# set FIREBASE_PROJECT_ID in supabase/.env, uncomment project_id and set enabled = true.
+# (Kept off by default so CI's `supabase start` needs no Firebase project.)
 enabled = false
-# project_id = "my-firebase-project"
+# project_id = "env(FIREBASE_PROJECT_ID)"
 
 # Use Auth0 as a third-party provider alongside Supabase Auth.
 [auth.third_party.auth0]

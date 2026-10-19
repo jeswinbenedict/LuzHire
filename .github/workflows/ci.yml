@@ -3,7 +3,7 @@ name: CI
 on:
   pull_request:
   push:
-    branches: [main]
+    branches: [main, 'phase-*']
 
 concurrency:
   group: ci-${{ github.ref }}
@@ -22,6 +22,25 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+
+  database:
+    name: Database (migrations, RLS, pgTAP)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # Fast check in PGlite (same command developers run without Docker).
+      - run: npm run db:check
+      # The real thing: full local Supabase stack + genuine pgTAP.
+      - run: npx supabase start
+      - run: npx supabase test db
+      - run: npx supabase db lint --level error
+      - if: always()
+        run: npx supabase stop --no-backup
 
   app:
     name: App (Flutter)
