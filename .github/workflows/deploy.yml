@@ -1,8 +1,15 @@
 name: Deploy (Vercel)
 
-# Vercel's build image has no Flutter, so we build here and deploy the prebuilt output.
-# Required repository secrets: VERCEL_TOKEN, VERCEL_ORG_ID, VERCEL_PROJECT_ID, APP_ENV_JSON
-# (APP_ENV_JSON = contents of app/env/production.json — public client config only).
+# Vercel's build machines have no Flutter, so this workflow builds the app and
+# uploads the prebuilt output. (Vercel's own Git builds are disabled in
+# vercel.json → git.deploymentEnabled = false.)
+#
+# Configuration (GitHub → Settings → Secrets and variables → Actions):
+#   Secret   VERCEL_TOKEN       Vercel access token (the only real secret)
+#   Variable VERCEL_ORG_ID      team_… (Vercel team id; not secret)
+#   Variable VERCEL_PROJECT_ID  prj_…  (Vercel project id; not secret)
+#   Variable APP_ENV_JSON       public client config (see docs/SETUP.md §4)
+# Older setups that stored the ids / APP_ENV_JSON as secrets still work.
 
 on:
   push:
@@ -18,37 +25,73 @@ jobs:
     runs-on: ubuntu-latest
     env:
       VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+      VERCEL_ORG_ID: ${{ vars.VERCEL_ORG_ID || secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ vars.VERCEL_PROJECT_ID || secrets.VERCEL_PROJECT_ID }}
+      APP_ENV_JSON: ${{ vars.APP_ENV_JSON || secrets.APP_ENV_JSON }}
     steps:
-      - name: Skip when Vercel is not configured yet
-        if: env.VERCEL_TOKEN == ''
-        run: echo "VERCEL_TOKEN secret not set — skipping deploy."
+      - name: Check deploy configuration
+        id: config
+        run: |
+          missing=""
+          [ -z "$VERCEL_TOKEN" ] && missing="$missing VERCEL_TOKEN(secret)"
+          [ -z "$VERCEL_ORG_ID" ] && missing="$missing VERCEL_ORG_ID"
+          [ -z "$VERCEL_PROJECT_ID" ] && missing="$missing VERCEL_PROJECT_ID"
+          if [ -n "$missing" ]; then
+            echo "::warning title=Deploy skipped::Not deployed — missing:$missing. See docs/SETUP.md §4."
+            echo "### ⚠️ Deploy skipped" >> "$GITHUB_STEP_SUMMARY"
+            echo "Missing:$missing (docs/SETUP.md §4)." >> "$GITHUB_STEP_SUMMARY"
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+          if [ -z "$APP_ENV_JSON" ]; then
+            echo "::warning title=No app config::APP_ENV_JSON is not set; the site will build without sign-in."
+          fi
+
       - uses: actions/checkout@v4
-        if: env.VERCEL_TOKEN != ''
+        if: steps.config.outputs.ready == 'true'
       - uses: actions/setup-node@v4
-        if: env.VERCEL_TOKEN != ''
+        if: steps.config.outputs.ready == 'true'
         with:
           node-version: 22
           cache: npm
       - uses: subosito/flutter-action@v2
-        if: env.VERCEL_TOKEN != ''
+        if: steps.config.outputs.ready == 'true'
         with:
           channel: stable
           cache: true
+
       - name: Build Flutter web
-        if: env.VERCEL_TOKEN != ''
+        if: steps.config.outputs.ready == 'true'
         working-directory: app
-        env:
-          APP_ENV_JSON: ${{ secrets.APP_ENV_JSON }}
         run: |
           printf '%s' "${APP_ENV_JSON:-$(cat env/example.json)}" > env/production.json
           flutter pub get
           flutter build web --wasm --release --no-web-resources-cdn --dart-define-from-file=env/production.json
+
       - name: Deploy prebuilt output
-        if: env.VERCEL_TOKEN != ''
+        id: deploy
+        if: steps.config.outputs.ready == 'true'
         run: |
           npm ci
           npx vercel pull --yes --environment=production --token="$VERCEL_TOKEN"
           npx vercel build --prod --token="$VERCEL_TOKEN"
-          npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN"
+          url=$(npx vercel deploy --prebuilt --prod --token="$VERCEL_TOKEN")
+          echo "url=$url" >> "$GITHUB_OUTPUT"
+          echo "### 🚀 Deployed" >> "$GITHUB_STEP_SUMMARY"
+          echo "$url" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Smoke test
+        if: steps.config.outputs.ready == 'true'
+        env:
+          URL: ${{ steps.deploy.outputs.url }}
+        run: |
+          check() {
+            code=$(curl -s -o /dev/null -w '%{http_code}' --retry 5 --retry-delay 3 --retry-all-errors "$URL$1")
+            echo "$1 -> $code"
+            [ "$code" = "200" ] || { echo "::error::$1 returned $code"; exit 1; }
+          }
+          check /
+          check /api/health
+          check /jobs          # SPA deep link served by the rewrite
+          check /favicon.svg

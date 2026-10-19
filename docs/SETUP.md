@@ -63,10 +63,18 @@ To base64-encode the JSON on Windows (PowerShell, in the folder with the downloa
 ```
 Then paste into the Vercel value field and delete the downloaded file.
 
-## 4. GitHub (app build config)
+## 4. GitHub (deploy settings)
 
-The deploy workflow builds the Flutter app with public config from the secret `APP_ENV_JSON`.
-In GitHub → repo → **Settings → Secrets and variables → Actions → New secret** `APP_ENV_JSON`:
+Vercel's servers can't build Flutter, so `.github/workflows/deploy.yml` builds the app on GitHub and uploads it. Vercel's own Git builds are switched off in `vercel.json`.
+In GitHub → repo → **Settings → Secrets and variables → Actions**:
+
+| Kind | Name | Value |
+|---|---|---|
+| 🔴 **Secret** | `VERCEL_TOKEN` | Vercel → Account Settings → Tokens → Create (scope: your team, no expiry or long) |
+| 🟢 Variable | `VERCEL_ORG_ID` | Vercel team ID (`team_…`, Team Settings → General) |
+| 🟢 Variable | `VERCEL_PROJECT_ID` | Vercel project ID (`prj_…`, Project Settings → General) |
+| 🟢 Variable | `APP_ENV_JSON` | the public client config below |
+
 ```json
 {
   "APP_ENV": "production",
@@ -77,14 +85,15 @@ In GitHub → repo → **Settings → Secrets and variables → Actions → New 
   "FIREBASE_PROJECT_ID": "…",
   "FIREBASE_MESSAGING_SENDER_ID": "…",
   "FIREBASE_AUTH_DOMAIN": "….firebaseapp.com",
-  "FIREBASE_STORAGE_BUCKET": "….appspot.com",
+  "FIREBASE_STORAGE_BUCKET": "….firebasestorage.app",
   "FIREBASE_WEB_APP_ID": "1:…:web:…",
   "FIREBASE_ANDROID_APP_ID": "",
   "FIREBASE_IOS_APP_ID": "",
   "FIREBASE_IOS_BUNDLE_ID": "dev.luzhire.luzhire"
 }
 ```
-For local development I'll create the same file as `app/env/local.json`, which is git-ignored.
+If anything is missing, the Deploy job shows a **"Deploy skipped"** warning instead of silently passing. After every deploy, it smoke-tests `/`, `/api/health`, `/jobs` and `/favicon.svg` on the live URL.
+For local development the same file lives at `app/env/local.json` (git-ignored).
 
 ## 5. First admin account
 
@@ -95,4 +104,4 @@ Sign-up never grants admin. After your own account exists (sign up normally as a
 ### Checklist: what to send me
 - [ ] 🟢 Firebase web config (6 values from step 1.4)
 - [ ] 🟢 Supabase Project URL + publishable/anon key
-- [ ] ✅ Confirm: Firebase providers enabled, Supabase Third-party Auth added, `supabase db push` done, Vercel secrets added
+- [ ] ✅ Confirm: Firebase providers enabled, Supabase Third-party Auth added, `supabase db push` done, Vercel secrets added, GitHub `VERCEL_TOKEN` secret added
