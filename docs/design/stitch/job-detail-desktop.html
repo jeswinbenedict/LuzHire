@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire - Senior Flutter Developer at Nimbus Labs</title>
+<!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms and Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "primary-strong": "#9A3F0A",
+            "tertiary-fixed": "#c5e7ff",
+            "dark-shade": "#0E0F11",
+            "on-background": "#241913",
+            "on-primary": "#14110F",
+            "dark-disabled": "#63676E",
+            "on-tertiary-fixed": "#001e2d",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "outline": "#85817A",
+            "on-secondary-fixed": "#301400",
+            "surface-container-low": "#fff1ea",
+            "on-tertiary-container": "#003e57",
+            "on-surface": "#241913",
+            "surface-tint": "#9a4600",
+            "surface-dim": "#ecd6cb",
+            "on-error-container": "#93000a",
+            "surface-container-high": "#fae4d9",
+            "outline-variant": "#dfc0b1",
+            "highlight": "#FFFFFF",
+            "inverse-primary": "#ffb68c",
+            "surface-bright": "#fff8f5",
+            "dark-highlight": "#2A2D33",
+            "inverse-surface": "#3b2e26",
+            "tertiary-container": "#00afed",
+            "on-primary-fixed": "#321200",
+            "secondary-fixed": "#ffdcc6",
+            "on-primary-fixed-variant": "#753400",
+            "on-surface-variant": "#574236",
+            "dark-base": "#1D1F23",
+            "inverse-on-surface": "#ffede5",
+            "dark-base-tint": "#2A1F17",
+            "hairline": "#DAD6CE",
+            "secondary-fixed-dim": "#ffb785",
+            "on-secondary-fixed-variant": "#713700",
+            "primary-fixed-dim": "#ffb68c",
+            "shade": "#CBC5BA",
+            "dark-hairline": "#2B2E34",
+            "muted": "#5A5F66",
+            "secondary-container": "#fc984b",
+            "base": "#EEECE7",
+            "primary-fixed": "#ffdbc9",
+            "on-secondary-container": "#6c3400",
+            "primary-pressed": "#E86D12",
+            "error": "#ba1a1a",
+            "dark-outline": "#6E737B",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "ink-muted": "#3D4148",
+            "on-error": "#ffffff",
+            "background": "#fff8f5",
+            "error-container": "#ffdad6",
+            "on-secondary": "#ffffff",
+            "surface-container-lowest": "#ffffff",
+            "surface-container": "#ffeadf",
+            "dark-muted": "#9EA2AA",
+            "sunken": "#E4E1DA",
+            "disabled": "#9A9EA6",
+            "dark-sunken": "#16171A",
+            "surface": "#fff8f5",
+            "on-tertiary": "#ffffff",
+            "base-tint": "#F7E6D8",
+            "surface-container-highest": "#f4ded3",
+            "secondary": "#954a00",
+            "dark-ink": "#F2F2EF",
+            "dark-ink-muted": "#C9CCD1",
+            "primary": "#9a4600",
+            "tertiary": "#00658b",
+            "primary-container": "#fe8022",
+            "on-primary-container": "#602a00",
+            "ink": "#14110F",
+            "surface-variant": "#f4ded3"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-md": "16px",
+            "space-xs": "8px",
+            "space-lg": "24px",
+            "space-xxl": "48px",
+            "gutter": "16px",
+            "space-section": "96px",
+            "space-sm": "12px",
+            "space-xxs": "4px",
+            "space-xl": "32px",
+            "margin": "24px"
+          },
+          "fontFamily": {
+            "headline-3": ["Plus Jakarta Sans", "sans-serif"],
+            "button-sm": ["Inter", "sans-serif"],
+            "headline-2": ["Plus Jakarta Sans", "sans-serif"],
+            "body-lg": ["Inter", "sans-serif"],
+            "button": ["Inter", "sans-serif"],
+            "body-sm": ["Inter", "sans-serif"],
+            "ws-title": ["Inter", "sans-serif"],
+            "label": ["Inter", "sans-serif"],
+            "headline-4": ["Plus Jakarta Sans", "sans-serif"],
+            "mono": ["JetBrains Mono", "monospace"],
+            "ws-card-title": ["Inter", "sans-serif"],
+            "eyebrow": ["Inter", "sans-serif"],
+            "ws-section": ["Inter", "sans-serif"],
+            "body-md": ["Inter", "sans-serif"],
+            "caption": ["Inter", "sans-serif"],
+            "headline-1": ["Plus Jakarta Sans", "sans-serif"],
+            "display": ["Plus Jakarta Sans", "sans-serif"]
+          },
+          "fontSize": {
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Neumorphic tactile shadows with #EEECE7 base, #FFFFFF highlight (-top-left), #CBC5BA shade (+bottom-right) */
+    .neu-raised-xs {
+      box-shadow: -3px -3px 7px #FFFFFF, 3px 3px 7px #CBC5BA;
+    }
+    .neu-raised-sm {
+      box-shadow: -5px -5px 10px #FFFFFF, 5px 5px 10px #CBC5BA;
+    }
+    .neu-raised-md {
+      box-shadow: -8px -8px 16px #FFFFFF, 8px 8px 16px #CBC5BA;
+    }
+    .neu-raised-lg {
+      box-shadow: -12px -12px 24px #FFFFFF, 12px 12px 24px #CBC5BA;
+    }
+    .neu-inset-sm {
+      box-shadow: inset -2px -2px 5px #FFFFFF, inset 2px 2px 5px #CBC5BA;
+    }
+    .neu-inset-md {
+      box-shadow: inset -4px -4px 8px #FFFFFF, inset 4px 4px 8px #CBC5BA;
+    }
+    .neu-toggle-track {
+      box-shadow: inset -2px -2px 5px #FFFFFF, inset 2px 2px 5px #CBC5BA;
+    }
+    .neu-btn-primary {
+      box-shadow: -4px -4px 10px #FFFFFF, 4px 4px 10px #CBC5BA, 0 0 16px rgba(154, 63, 10, 0.35);
+    }
+    .neu-btn-primary:active {
+      box-shadow: inset -3px -3px 6px rgba(255, 255, 255, 0.3), inset 3px 3px 6px rgba(0, 0, 0, 0.3);
+      transform: scale(0.985);
+    }
+    .neu-btn-raised:active {
+      box-shadow: inset -2px -2px 5px #FFFFFF, inset 2px 2px 5px #CBC5BA;
+      transform: scale(0.98);
+    }
+  </style>
+</head>
+<body class="bg-base text-on-surface antialiased min-h-screen flex flex-col font-body-md text-body-md selection:bg-primary-fixed selection:text-ink">
+<!-- TOP APP BAR (Shared Component: TopNavBar) -->
+<header class="sticky top-0 z-50 bg-base border-b border-hairline neu-raised-xs transition-all duration-200">
+<div class="w-full px-space-lg mx-auto flex items-center justify-between h-16 max-w-7xl">
+<!-- Brand Logo & Nav Group -->
+<div class="flex items-center gap-space-xl">
+<a class="flex items-center gap-space-xs group" href="#">
+<div class="w-9 h-9 rounded-xl bg-[#131314] flex items-center justify-center relative shadow-sm transition-transform group-hover:scale-105">
+<span class="font-headline-3 text-headline-4 text-highlight font-extrabold tracking-tight">L</span>
+<span class="w-2 h-2 rounded-full bg-primary-container absolute bottom-2 right-2 ring-2 ring-[#131314]"></span>
+</div>
+<span class="font-headline-3 text-headline-3 text-ink font-bold tracking-tight">LuzHire</span>
+</a>
+<!-- Desktop Navigation Links -->
+<nav class="hidden md:flex items-center gap-space-lg text-body-sm font-label">
+<!-- Active Tab: Jobs -->
+<a class="text-primary font-semibold border-b-2 border-primary pb-1 flex items-center gap-1 transition-colors" href="#">
+<span>Jobs</span>
+</a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors pb-1 border-b-2 border-transparent" href="#">
+            Companies
+          </a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors pb-1 border-b-2 border-transparent" href="#">
+            News
+          </a>
+<a class="text-on-surface-variant font-medium hover:text-on-surface transition-colors pb-1 border-b-2 border-transparent" href="#">
+            For Employers
+          </a>
+</nav>
+</div>
+<!-- Trailing Action Cluster -->
+<div class="flex items-center gap-space-md">
+<!-- Tactile Light Mode Physical Switch -->
+<button aria-label="Toggle theme" class="w-12 h-6 rounded-full bg-base neu-toggle-track p-0.5 flex items-center relative cursor-pointer" onclick="this.classList.toggle('justify-end')" type="button">
+<span class="w-5 h-5 rounded-full bg-base neu-raised-xs flex items-center justify-center text-primary-strong">
+<span class="material-symbols-outlined text-[14px]">light_mode</span>
+</span>
+</button>
+<!-- Notification Bell -->
+<button aria-label="Notifications" class="w-9 h-9 rounded-full bg-base neu-raised-xs hover:bg-surface-container-low flex items-center justify-center text-ink transition-transform active:scale-95" type="button">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+</button>
+<!-- Secondary Action: Sign In -->
+<a class="hidden sm:inline-flex items-center justify-center px-4 py-2 rounded-full bg-base neu-raised-xs hover:bg-surface-container-low text-ink font-button-sm text-button-sm transition-transform active:scale-95" href="#">
+          Sign In
+        </a>
+<!-- Primary Action: Post a Job -->
+<a class="inline-flex items-center justify-center px-4 py-2 rounded-full bg-primary text-white font-button-sm text-button-sm neu-btn-primary transition-transform hover:opacity-95 active:scale-95" href="#">
+          Post a Job
+        </a>
+</div>
+</div>
+</header>
+<!-- BREADCRUMB & METADATA BAR -->
+<div class="w-full bg-base border-b border-hairline/60 py-3">
+<div class="max-w-[1200px] mx-auto px-4 sm:px-6 flex items-center justify-between">
+<nav aria-label="Breadcrumb" class="flex items-center gap-2 text-caption font-caption text-on-surface-variant">
+<a class="hover:text-primary transition-colors flex items-center gap-1" href="#">
+<span class="material-symbols-outlined text-[16px]">work</span>
+<span>Jobs</span>
+</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<a class="hover:text-primary transition-colors" href="#">Engineering</a>
+<span class="material-symbols-outlined text-[14px] text-outline">chevron_right</span>
+<span class="text-ink font-semibold truncate max-w-[200px] sm:max-w-none">Senior Flutter Developer</span>
+</nav>
+<div class="hidden sm:flex items-center gap-2 text-caption font-caption text-on-surface-variant">
+<span class="flex h-2 w-2 rounded-full bg-emerald-600"></span>
+<span>Actively Hiring in Bengaluru</span>
+</div>
+</div>
+</div>
+<!-- MAIN CANVAS -->
+<main class="flex-grow max-w-[1200px] w-full mx-auto px-4 sm:px-6 py-space-xl">
+<!-- TWO-PANE LAYOUT (740px + 380px grid) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl items-start">
+<!-- ================= LEFT COLUMN (~740px) ================= -->
+<div class="lg:col-span-8 flex flex-col gap-space-lg">
+<!-- 1. JOB HEADER CARD (radius 18px, neu-raised-md) -->
+<section class="rounded-[18px] bg-base neu-raised-md p-6 sm:p-8 relative overflow-hidden border border-hairline/40">
+<div class="flex flex-col sm:flex-row items-start justify-between gap-6 pb-6 border-b border-hairline/60">
+<div class="flex items-start gap-4 sm:gap-5">
+<!-- Inset socket holding Nimbus Labs logo -->
+<div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-base neu-inset-md flex items-center justify-center p-3.5 flex-shrink-0">
+<div class="w-full h-full rounded-xl bg-gradient-to-tr from-cyan-600 via-primary to-primary-container flex items-center justify-center shadow-inner">
+<span class="material-symbols-outlined text-white text-[32px]">cloud</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2.5 flex-wrap">
+<span class="font-headline-4 text-headline-4 text-ink font-bold">Nimbus Labs</span>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-300">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    Verified Employer
+                  </span>
+</div>
+<h1 class="font-headline-2 text-[26px] sm:text-headline-2 text-ink font-bold mt-1 tracking-tight">
+                  Senior Flutter Developer
+                </h1>
+<div class="flex items-center gap-3 text-caption font-caption text-on-surface-variant mt-2 flex-wrap">
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-primary">location_on</span>
+                    Bengaluru (Hybrid)
+                  </span>
+<span>•</span>
+<span class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+                    Posted 2 days ago
+                  </span>
+<span>•</span>
+<span class="text-tertiary font-medium">Over 140 views</span>
+</div>
+</div>
+</div>
+<!-- Quick match circular dial (88% Profile Match) -->
+<div class="flex sm:flex-col items-center justify-center gap-2 bg-base neu-raised-xs p-3 rounded-2xl self-start sm:self-auto flex-shrink-0">
+<div class="relative w-14 h-14 flex items-center justify-center">
+<svg class="w-14 h-14 transform -rotate-90" viewbox="0 0 36 36">
+<!-- Inset track -->
+<path class="text-hairline stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<!-- Orange Arc 88% -->
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-mono text-[13px] font-bold text-ink">88%</span>
+</div>
+</div>
+<div class="text-center">
+<span class="text-[11px] font-eyebrow tracking-wider uppercase text-on-surface-variant block">Match</span>
+</div>
+</div>
+</div>
+<!-- Inset Meta Chips Bar -->
+<div class="pt-5 flex flex-wrap gap-2.5">
+<span class="px-3 py-1.5 rounded-lg bg-base neu-inset-sm font-label text-caption text-ink font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">badge</span>
+              Full-time
+            </span>
+<span class="px-3 py-1.5 rounded-lg bg-base neu-inset-sm font-label text-caption text-ink font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">trending_up</span>
+              Senior Level
+            </span>
+<span class="px-3 py-1.5 rounded-lg bg-base neu-inset-sm font-label text-caption text-ink font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">apartment</span>
+              Bengaluru, KA
+            </span>
+<span class="px-3 py-1.5 rounded-lg bg-base neu-inset-sm font-mono text-caption text-primary-strong font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px]">payments</span>
+              ₹24–32 LPA
+            </span>
+<span class="px-3 py-1.5 rounded-lg bg-base neu-inset-sm font-label text-caption text-ink font-medium flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">calendar_today</span>
+              In-office 3 days/week
+            </span>
+</div>
+</section>
+<!-- 2. ABOUT THE ROLE -->
+<section class="rounded-[18px] bg-base neu-raised-sm p-6 sm:p-8 border border-hairline/40">
+<div class="flex items-center gap-2 mb-4">
+<span class="w-1.5 h-5 bg-primary-container rounded-full"></span>
+<h2 class="font-headline-4 text-headline-4 text-ink">About the Role</h2>
+</div>
+<p class="font-body-md text-on-surface-variant leading-relaxed mb-4">
+            Nimbus Labs is on a transformative mission to construct lightning-fast, ultra-resilient financial technology and smart-logistics infrastructure powering millions of daily merchants across India and Southeast Asia. 
+          </p>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+            As our <strong class="text-ink font-semibold">Senior Flutter Developer</strong>, you will take ownership of our core mobile client applications, bridging sleek material &amp; Cupertino UX metaphors with heavy-duty native platform channels. You will work side-by-side with principal systems architects, offline storage engineers, and cross-functional product squads to pioneer fluid 60-120fps interactions and robust transaction pipelines under unstable network environments.
+          </p>
+</section>
+<!-- 3. KEY RESPONSIBILITIES -->
+<section class="rounded-[18px] bg-base neu-raised-sm p-6 sm:p-8 border border-hairline/40">
+<div class="flex items-center gap-2 mb-5">
+<span class="w-1.5 h-5 bg-primary-container rounded-full"></span>
+<h2 class="font-headline-4 text-headline-4 text-ink">Key Responsibilities</h2>
+</div>
+<ul class="space-y-4">
+<li class="flex items-start gap-3.5">
+<div class="w-6 h-6 rounded-lg bg-base neu-inset-sm flex items-center justify-center flex-shrink-0 mt-0.5 text-primary">
+<span class="material-symbols-outlined text-[14px]">architecture</span>
+</div>
+<span class="font-body-md text-on-surface">Architect, build, and scale high-performance multi-platform Flutter apps with a strong focus on modular code reuse and testability.</span>
+</li>
+<li class="flex items-start gap-3.5">
+<div class="w-6 h-6 rounded-lg bg-base neu-inset-sm flex items-center justify-center flex-shrink-0 mt-0.5 text-primary">
+<span class="material-symbols-outlined text-[14px]">sync_alt</span>
+</div>
+<span class="font-body-md text-on-surface">Integrate native platform channels (<span class="font-mono text-sm bg-base px-1.5 py-0.5 rounded border border-hairline">Kotlin</span> / <span class="font-mono text-sm bg-base px-1.5 py-0.5 rounded border border-hairline">Swift</span>) for low-latency biometric authentication, encrypted hardware key storage, and custom UPI payments flows.</span>
+</li>
+<li class="flex items-start gap-3.5">
+<div class="w-6 h-6 rounded-lg bg-base neu-inset-sm flex items-center justify-center flex-shrink-0 mt-0.5 text-primary">
+<span class="material-symbols-outlined text-[14px]">palette</span>
+</div>
+<span class="font-body-md text-on-surface">Collaborate closely with UX designers to deliver fluid 60fps micro-interactions, responsive tactile layouts, and robust offline-first persistence engines.</span>
+</li>
+<li class="flex items-start gap-3.5">
+<div class="w-6 h-6 rounded-lg bg-base neu-inset-sm flex items-center justify-center flex-shrink-0 mt-0.5 text-primary">
+<span class="material-symbols-outlined text-[14px]">groups</span>
+</div>
+<span class="font-body-md text-on-surface">Mentor junior engineers, participate in thorough peer code reviews, and champion clean architecture principles across Bloc and Riverpod state paradigms.</span>
+</li>
+</ul>
+</section>
+<!-- 4. REQUIREMENTS & EXPERIENCE -->
+<section class="rounded-[18px] bg-base neu-raised-sm p-6 sm:p-8 border border-hairline/40">
+<div class="flex items-center gap-2 mb-5">
+<span class="w-1.5 h-5 bg-primary-container rounded-full"></span>
+<h2 class="font-headline-4 text-headline-4 text-ink">Requirements &amp; Experience</h2>
+</div>
+<div class="space-y-3.5">
+<div class="p-4 rounded-xl bg-base neu-inset-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<p class="font-body-md text-on-surface"><strong class="text-ink">5+ years</strong> building production-grade mobile applications, with at least <strong class="text-ink">3+ years dedicated Flutter &amp; Dart</strong> development.</p>
+</div>
+<div class="p-4 rounded-xl bg-base neu-inset-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<p class="font-body-md text-on-surface">Deep expertise in modern state management (Riverpod/Bloc), asynchronous streams, complex rendering pipelines, and automated end-to-end testing.</p>
+</div>
+<div class="p-4 rounded-xl bg-base neu-inset-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-primary text-[20px] mt-0.5">check_circle</span>
+<p class="font-body-md text-on-surface">Hands-on experience with native Android/iOS bridging, performance profiling (DevTools), and automated CI/CD pipelines (Fastlane, GitHub Actions).</p>
+</div>
+</div>
+</section>
+<!-- 5. SKILLS REQUIRED -->
+<section class="rounded-[18px] bg-base neu-raised-sm p-6 sm:p-8 border border-hairline/40">
+<div class="flex items-center gap-2 mb-5">
+<span class="w-1.5 h-5 bg-primary-container rounded-full"></span>
+<h2 class="font-headline-4 text-headline-4 text-ink">Skills Required</h2>
+</div>
+<div class="flex flex-wrap gap-2.5">
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Flutter</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Dart</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Riverpod</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">RESTful APIs</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Clean Architecture</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">CI/CD &amp; Fastlane</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Native Channels (Kotlin/Swift)</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Firebase</span>
+<span class="px-3.5 py-1.5 rounded-full bg-base neu-inset-sm font-label text-body-sm text-ink font-semibold border border-hairline/50">Unit &amp; Widget Testing</span>
+</div>
+</section>
+<!-- 6. BENEFITS & PERKS (Bento mini-cards) -->
+<section class="rounded-[18px] bg-base neu-raised-sm p-6 sm:p-8 border border-hairline/40">
+<div class="flex items-center gap-2 mb-5">
+<span class="w-1.5 h-5 bg-primary-container rounded-full"></span>
+<h2 class="font-headline-4 text-headline-4 text-ink">Benefits &amp; Perks</h2>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Perk 1 -->
+<div class="p-5 rounded-2xl bg-base neu-raised-xs border border-hairline/60 flex items-start gap-4">
+<div class="w-11 h-11 rounded-xl bg-base neu-inset-sm flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">health_and_safety</span>
+</div>
+<div>
+<h3 class="font-headline-4 text-base font-bold text-ink">Comprehensive Health</h3>
+<p class="font-body-sm text-caption text-on-surface-variant mt-1">₹10L zero-deductible policy covering spouse, children, and parents.</p>
+</div>
+</div>
+<!-- Perk 2 -->
+<div class="p-5 rounded-2xl bg-base neu-raised-xs border border-hairline/60 flex items-start gap-4">
+<div class="w-11 h-11 rounded-xl bg-base neu-inset-sm flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">school</span>
+</div>
+<div>
+<h3 class="font-headline-4 text-base font-bold text-ink">Learning Stipend</h3>
+<p class="font-body-sm text-caption text-on-surface-variant mt-1">₹75,000 per calendar year for technical certifications and conferences.</p>
+</div>
+</div>
+<!-- Perk 3 -->
+<div class="p-5 rounded-2xl bg-base neu-raised-xs border border-hairline/60 flex items-start gap-4">
+<div class="w-11 h-11 rounded-xl bg-base neu-inset-sm flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">laptop_mac</span>
+</div>
+<div>
+<h3 class="font-headline-4 text-base font-bold text-ink">Top-Tier Hardware</h3>
+<p class="font-body-sm text-caption text-on-surface-variant mt-1">Latest M3 Pro MacBook + 4K LG UltraFine display and ergonomic setup.</p>
+</div>
+</div>
+<!-- Perk 4 -->
+<div class="p-5 rounded-2xl bg-base neu-raised-xs border border-hairline/60 flex items-start gap-4">
+<div class="w-11 h-11 rounded-xl bg-base neu-inset-sm flex items-center justify-center text-primary flex-shrink-0">
+<span class="material-symbols-outlined text-[24px]">home_work</span>
+</div>
+<div>
+<h3 class="font-headline-4 text-base font-bold text-ink">Flexible Hybrid Model</h3>
+<p class="font-body-sm text-caption text-on-surface-variant mt-1">2 days remote per week with core collaboration hours (11am – 4pm).</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- ================= RIGHT COLUMN (STICKY APPLY PANEL ~380px) ================= -->
+<aside class="lg:col-span-4 sticky top-24 flex flex-col gap-space-lg">
+<div class="rounded-[20px] bg-base neu-raised-md p-6 border border-hairline/40 flex flex-col gap-5">
+<!-- Compensation Headline -->
+<div>
+<span class="font-eyebrow text-eyebrow uppercase text-on-surface-variant block mb-1">Annual Compensation</span>
+<div class="font-mono text-2xl font-bold text-ink tracking-tight">
+              ₹24,00,000 – ₹32,00,000
+            </div>
+<p class="font-caption text-caption text-on-surface-variant mt-0.5">
+              per annum (LPA) + 0.15% Equity Options
+            </p>
+</div>
+<div class="h-px w-full bg-hairline/70"></div>
+<!-- Application CTAs -->
+<div class="flex flex-col gap-3">
+<!-- Primary Action: Apply Now (High-contrast sunrise orange) -->
+<button class="w-full py-3.5 px-6 rounded-full bg-primary-strong text-white font-button text-button neu-btn-primary flex items-center justify-center gap-2 font-bold tracking-wide transition-all" type="button">
+<span>Apply Now</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<!-- Secondary Actions -->
+<div class="flex items-center gap-2.5">
+<!-- Bookmark Button with Ribbon Metaphor -->
+<button class="flex-1 py-2.5 px-4 rounded-full bg-base neu-raised-xs neu-btn-raised flex items-center justify-center gap-2 font-label text-body-sm text-ink transition-all" id="bookmarkBtn" onclick="this.classList.toggle('text-primary-container'); this.querySelector('.material-symbols-outlined').toggleAttribute('data-filled')" type="button">
+<span class="material-symbols-outlined text-[18px]">bookmark</span>
+<span class="font-medium">Save Job</span>
+</button>
+<!-- Share Button -->
+<button aria-label="Share Job" class="w-11 h-11 rounded-full bg-base neu-raised-xs neu-btn-raised flex items-center justify-center text-ink flex-shrink-0 transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">share</span>
+</button>
+</div>
+</div>
+<!-- Application Countdown Well (Inset Track) -->
+<div class="p-3.5 rounded-xl bg-base neu-inset-sm border border-hairline/40 flex items-center gap-3">
+<div class="w-9 h-9 rounded-lg bg-base neu-raised-xs flex flex-col items-center justify-center text-ink border border-hairline/30 flex-shrink-0">
+<span class="text-[9px] font-bold text-primary-strong uppercase leading-none">NOV</span>
+<span class="font-mono text-[13px] font-extrabold leading-tight">15</span>
+</div>
+<div class="flex-grow">
+<div class="flex items-center justify-between">
+<span class="font-label text-caption font-semibold text-ink">Application Deadline</span>
+<span class="font-mono text-[11px] text-primary-strong font-bold">5 days left</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-hairline/80 mt-1.5 overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 72%;"></div>
+</div>
+</div>
+</div>
+<!-- Applicant Counter Well -->
+<div class="p-3.5 rounded-xl bg-base neu-inset-sm border border-hairline/40 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<!-- Overlapping Avatars -->
+<div class="flex -space-x-2 overflow-hidden">
+<div class="inline-block h-7 w-7 rounded-full ring-2 ring-base bg-[#E0D8CB] flex items-center justify-center text-[10px] font-bold text-ink">AK</div>
+<div class="inline-block h-7 w-7 rounded-full ring-2 ring-base bg-[#D5CCC0] flex items-center justify-center text-[10px] font-bold text-ink">PS</div>
+<div class="inline-block h-7 w-7 rounded-full ring-2 ring-base bg-secondary-fixed flex items-center justify-center text-[10px] font-bold text-on-secondary-fixed">MR</div>
+</div>
+<div>
+<span class="font-mono text-body-sm font-bold text-ink block">42 candidates</span>
+<span class="font-caption text-caption text-on-surface-variant">have submitted profiles</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline text-[18px]">group</span>
+</div>
+<!-- Recruiter Response Guarantee -->
+<div class="flex items-start gap-2.5 text-caption font-caption text-on-surface-variant pt-1">
+<span class="material-symbols-outlined text-[18px] text-emerald-700 flex-shrink-0">verified_user</span>
+<span><strong class="text-ink">Nimbus Labs</strong> typically reviews submissions and responds within <strong>48 hours</strong>.</span>
+</div>
+</div>
+<!-- Hiring Manager Mini Card -->
+<div class="rounded-2xl bg-base neu-raised-sm p-4 border border-hairline/40 flex items-center gap-3.5">
+<div class="w-12 h-12 rounded-xl bg-base neu-inset-sm p-1 flex-shrink-0">
+<div class="w-full h-full rounded-lg bg-surface-dim flex items-center justify-center font-bold text-ink text-sm">
+              RA
+            </div>
+</div>
+<div class="flex-grow">
+<span class="text-[11px] font-eyebrow uppercase tracking-wider text-on-surface-variant">Hiring Manager</span>
+<div class="font-label text-body-sm font-semibold text-ink">Rohit Agarwal</div>
+<div class="text-caption text-on-surface-variant">VP of Engineering at Nimbus</div>
+</div>
+<button aria-label="Message Hiring Manager" class="w-8 h-8 rounded-full bg-base neu-raised-xs neu-btn-raised flex items-center justify-center text-primary" type="button">
+<span class="material-symbols-outlined text-[16px]">chat</span>
+</button>
+</div>
+</aside>
+</div>
+<!-- ================= BOTTOM SECTIONS ================= -->
+<div class="mt-space-xl flex flex-col gap-space-xl">
+<!-- 1. COMPANY PROFILE CARD (neu-raised-md, radius 20px) -->
+<section class="rounded-[20px] bg-base neu-raised-md p-6 sm:p-8 border border-hairline/40">
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-hairline/60">
+<div class="flex items-center gap-4">
+<div class="w-16 h-16 rounded-2xl bg-base neu-inset-md flex items-center justify-center p-3 flex-shrink-0">
+<div class="w-full h-full rounded-xl bg-gradient-to-tr from-cyan-600 via-primary to-primary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-white text-[28px]">cloud</span>
+</div>
+</div>
+<div>
+<div class="flex items-center gap-2">
+<h3 class="font-headline-3 text-headline-4 text-ink font-bold">Nimbus Labs</h3>
+<span class="text-xs px-2 py-0.5 rounded-full bg-base neu-inset-sm font-medium text-on-surface-variant">Fintech &amp; Mobility</span>
+</div>
+<p class="font-body-sm text-caption text-on-surface-variant mt-1">Building modern merchant checkout and logistics engines for high-density retail.</p>
+</div>
+</div>
+<a class="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-base neu-raised-xs neu-btn-raised text-primary font-button-sm text-button-sm font-semibold self-start md:self-auto transition-transform" href="#">
+            View company profile
+            <span class="material-symbols-outlined text-[16px] ml-1">open_in_new</span>
+</a>
+</div>
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+<div class="p-4 rounded-xl bg-base neu-inset-sm">
+<span class="text-[11px] font-eyebrow uppercase text-on-surface-variant block">Founded</span>
+<span class="font-mono text-base font-bold text-ink">2021</span>
+</div>
+<div class="p-4 rounded-xl bg-base neu-inset-sm">
+<span class="text-[11px] font-eyebrow uppercase text-on-surface-variant block">Headquarters</span>
+<span class="font-body-md font-bold text-ink">Bengaluru, KA</span>
+</div>
+<div class="p-4 rounded-xl bg-base neu-inset-sm">
+<span class="text-[11px] font-eyebrow uppercase text-on-surface-variant block">Team Size</span>
+<span class="font-mono text-base font-bold text-ink">120+ members</span>
+</div>
+<div class="p-4 rounded-xl bg-base neu-inset-sm">
+<span class="text-[11px] font-eyebrow uppercase text-on-surface-variant block">Funding Stage</span>
+<span class="font-label text-base font-bold text-emerald-800">Series B ($18M)</span>
+</div>
+</div>
+</section>
+<!-- 2. SIMILAR JOBS ROW (3 raised cards) -->
+<section>
+<div class="flex items-center justify-between mb-6">
+<div>
+<span class="text-[12px] font-eyebrow uppercase text-primary font-bold tracking-wider">Recommendations</span>
+<h2 class="font-headline-3 text-headline-4 text-ink font-bold">Similar Opportunities</h2>
+</div>
+<a class="font-label text-body-sm text-primary font-semibold hover:underline flex items-center gap-1" href="#">
+            Explore all engineering jobs
+            <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Card 1: Zerodha -->
+<article class="rounded-2xl bg-base neu-raised-sm hover:neu-raised-md p-6 border border-hairline/40 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-base neu-inset-sm flex items-center justify-center p-2">
+<div class="w-full h-full rounded-lg bg-blue-600 flex items-center justify-center text-white font-black text-sm">
+                    Z
+                  </div>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-base neu-raised-xs">
+<span class="font-mono text-xs font-bold text-primary-strong">91%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Match</span>
+</div>
+</div>
+<h3 class="font-headline-4 text-lg font-bold text-ink hover:text-primary transition-colors cursor-pointer">
+                Lead Mobile Architect
+              </h3>
+<div class="font-label text-body-sm font-medium text-on-surface-variant mt-1">Zerodha</div>
+<div class="mt-4 font-mono text-sm font-bold text-ink">
+                ₹35,00,000 – ₹45,00,000 <span class="text-caption font-normal text-on-surface-variant">LPA</span>
+</div>
+</div>
+<div class="pt-5 mt-5 border-t border-hairline/60 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded bg-base neu-inset-sm font-label text-caption text-ink">Bengaluru · Remote friendly</span>
+<button aria-label="Bookmark Lead Mobile Architect" class="w-8 h-8 rounded-full bg-base neu-raised-xs flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+</button>
+</div>
+</article>
+<!-- Card 2: Swiggy -->
+<article class="rounded-2xl bg-base neu-raised-sm hover:neu-raised-md p-6 border border-hairline/40 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-base neu-inset-sm flex items-center justify-center p-2">
+<div class="w-full h-full rounded-lg bg-orange-500 flex items-center justify-center text-white font-black text-sm">
+                    S
+                  </div>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-base neu-raised-xs">
+<span class="font-mono text-xs font-bold text-primary-strong">85%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Match</span>
+</div>
+</div>
+<h3 class="font-headline-4 text-lg font-bold text-ink hover:text-primary transition-colors cursor-pointer">
+                Senior Flutter Engineer
+              </h3>
+<div class="font-label text-body-sm font-medium text-on-surface-variant mt-1">Swiggy</div>
+<div class="mt-4 font-mono text-sm font-bold text-ink">
+                ₹28,00,000 – ₹36,00,000 <span class="text-caption font-normal text-on-surface-variant">LPA</span>
+</div>
+</div>
+<div class="pt-5 mt-5 border-t border-hairline/60 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded bg-base neu-inset-sm font-label text-caption text-ink">Bengaluru · In-office</span>
+<button aria-label="Bookmark Senior Flutter Engineer" class="w-8 h-8 rounded-full bg-base neu-raised-xs flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+</button>
+</div>
+</article>
+<!-- Card 3: CRED -->
+<article class="rounded-2xl bg-base neu-raised-sm hover:neu-raised-md p-6 border border-hairline/40 transition-all flex flex-col justify-between">
+<div>
+<div class="flex items-start justify-between gap-3 mb-4">
+<div class="w-12 h-12 rounded-xl bg-base neu-inset-sm flex items-center justify-center p-2">
+<div class="w-full h-full rounded-lg bg-black flex items-center justify-center text-white font-black text-sm">
+                    C
+                  </div>
+</div>
+<div class="flex items-center gap-1 px-2.5 py-1 rounded-full bg-base neu-raised-xs">
+<span class="font-mono text-xs font-bold text-primary-strong">82%</span>
+<span class="text-[10px] text-on-surface-variant uppercase font-bold">Match</span>
+</div>
+</div>
+<h3 class="font-headline-4 text-lg font-bold text-ink hover:text-primary transition-colors cursor-pointer">
+                Staff Android &amp; Flutter Developer
+              </h3>
+<div class="font-label text-body-sm font-medium text-on-surface-variant mt-1">CRED</div>
+<div class="mt-4 font-mono text-sm font-bold text-ink">
+                ₹30,00,000 – ₹42,00,000 <span class="text-caption font-normal text-on-surface-variant">LPA</span>
+</div>
+</div>
+<div class="pt-5 mt-5 border-t border-hairline/60 flex items-center justify-between">
+<span class="px-2.5 py-1 rounded bg-base neu-inset-sm font-label text-caption text-ink">Bengaluru · Hybrid</span>
+<button aria-label="Bookmark Staff Android &amp; Flutter Developer" class="w-8 h-8 rounded-full bg-base neu-raised-xs flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">bookmark_border</span>
+</button>
+</div>
+</article>
+</div>
+</section>
+</div>
+</main>
+<!-- FOOTER (Shared Component: Footer) -->
+<footer class="mt-space-section bg-surface-container border-t border-hairline">
+<div class="w-full px-space-lg py-space-xl mx-auto flex flex-col md:flex-row items-center justify-between gap-space-md max-w-7xl">
+<!-- Brand & Copyright -->
+<div class="flex flex-col sm:flex-row items-center gap-3 text-center sm:text-left">
+<span class="font-headline-4 text-headline-4 text-ink font-bold">LuzHire</span>
+<span class="hidden sm:inline text-outline">•</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+          © 2025 LuzHire Inc. All rights reserved. Accessible neumorphic career pathways.
+        </p>
+</div>
+<!-- Footer Navigation Links -->
+<nav class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-caption text-caption">
+<a class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" href="#">Security</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" href="#">Accessibility Statement</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" href="#">Contact Support</a>
+</nav>
+</div>
+</footer>
+</body></html>

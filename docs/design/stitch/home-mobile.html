@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire - Tech Careers in India</title>
+<!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Configuration verbatim as specified -->
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-container-high": "#fae4d9",
+            "dark-shade": "#0E0F11",
+            "surface": "#fff8f5",
+            "on-secondary-fixed": "#301400",
+            "hairline": "#DAD6CE",
+            "disabled": "#9A9EA6",
+            "primary-strong": "#9A3F0A",
+            "tertiary-fixed": "#c5e7ff",
+            "dark-ink": "#F2F2EF",
+            "background": "#fff8f5",
+            "dark-hairline": "#2B2E34",
+            "surface-container-highest": "#f4ded3",
+            "on-error": "#ffffff",
+            "on-surface": "#241913",
+            "dark-outline": "#6E737B",
+            "shade": "#CBC5BA",
+            "on-secondary": "#ffffff",
+            "on-primary": "#14110F",
+            "dark-ink-muted": "#C9CCD1",
+            "surface-tint": "#9a4600",
+            "base": "#EEECE7",
+            "outline-variant": "#dfc0b1",
+            "on-primary-container": "#602a00",
+            "on-background": "#241913",
+            "surface-dim": "#ecd6cb",
+            "on-tertiary-fixed": "#001e2d",
+            "surface-container": "#ffeadf",
+            "primary-container": "#fe8022",
+            "outline": "#85817A",
+            "highlight": "#FFFFFF",
+            "ink-muted": "#3D4148",
+            "secondary-fixed-dim": "#ffb785",
+            "on-tertiary-container": "#003e57",
+            "on-secondary-fixed-variant": "#713700",
+            "dark-highlight": "#2A2D33",
+            "dark-muted": "#9EA2AA",
+            "secondary": "#954a00",
+            "primary-fixed": "#ffdbc9",
+            "on-primary-fixed": "#321200",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "inverse-surface": "#3b2e26",
+            "inverse-on-surface": "#ffede5",
+            "dark-base-tint": "#2A1F17",
+            "surface-container-lowest": "#ffffff",
+            "error-container": "#ffdad6",
+            "error": "#ba1a1a",
+            "primary": "#9a4600",
+            "on-tertiary": "#ffffff",
+            "surface-variant": "#f4ded3",
+            "surface-bright": "#fff8f5",
+            "secondary-container": "#fc984b",
+            "on-surface-variant": "#574236",
+            "tertiary-container": "#00afed",
+            "dark-disabled": "#63676E",
+            "dark-sunken": "#16171A",
+            "primary-fixed-dim": "#ffb68c",
+            "dark-base": "#1D1F23",
+            "tertiary": "#00658b",
+            "on-secondary-container": "#6c3400",
+            "ink": "#14110F",
+            "secondary-fixed": "#ffdcc6",
+            "on-error-container": "#93000a",
+            "sunken": "#E4E1DA",
+            "surface-container-low": "#fff1ea",
+            "base-tint": "#F7E6D8",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "on-primary-fixed-variant": "#753400",
+            "muted": "#5A5F66",
+            "inverse-primary": "#ffb68c",
+            "primary-pressed": "#E86D12"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xs": "8px",
+            "space-xl": "32px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-section": "96px",
+            "gutter": "16px",
+            "space-xxl": "48px",
+            "margin": "24px",
+            "space-xxs": "4px",
+            "space-sm": "12px"
+          },
+          "fontFamily": {
+            "caption": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "ws-section": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "mono": ["JetBrains Mono"],
+            "button": ["Inter"],
+            "label": ["Inter"],
+            "ws-title": ["Inter"],
+            "button-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "eyebrow": ["Inter"],
+            "headline-3": ["Plus Jakarta Sans"],
+            "headline-1": ["Plus Jakarta Sans"],
+            "headline-2": ["Plus Jakarta Sans"]
+          },
+          "fontSize": {
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }],
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    /* Neumorphic Custom Utilities compliant with dual-light source */
+    .neu-raised-sm {
+      box-shadow: -2px -2px 5px #FFFFFF, 2px 2px 5px #CBC5BA;
+    }
+    .neu-raised-md {
+      box-shadow: -4px -4px 8px #FFFFFF, 4px 4px 8px #CBC5BA;
+    }
+    .neu-raised-lg {
+      box-shadow: -6px -6px 12px #FFFFFF, 6px 6px 12px #CBC5BA;
+    }
+    .neu-inset-sm {
+      box-shadow: inset 2px 2px 4px #CBC5BA, inset -2px -2px 4px #FFFFFF;
+    }
+    .neu-inset-xs {
+      box-shadow: inset 1px 1px 3px #CBC5BA, inset -1px -1px 3px #FFFFFF;
+    }
+    .neu-orange-glow {
+      box-shadow: 0 4px 14px rgba(254, 128, 34, 0.38), -2px -2px 6px #FFFFFF;
+    }
+    .neu-topbar {
+      box-shadow: 0 2px 6px -1px rgba(203, 197, 186, 0.4), 0 -1px 4px #FFFFFF inset;
+    }
+    .neu-bottombar {
+      box-shadow: 0 -4px 12px rgba(203, 197, 186, 0.45), 0 1px 2px #FFFFFF inset;
+    }
+    /* Hide scrollbar for category pills */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-base text-ink font-body-md antialiased selection:bg-primary-fixed selection:text-ink min-h-screen flex justify-center">
+<!-- Mobile Viewport Container (~390px) -->
+<div class="w-full max-w-md min-h-screen flex flex-col bg-base relative pb-28">
+<!-- 1. COMPACT TOP APP BAR (Shared Component Anchored: TopAppBar) -->
+<header class="sticky top-0 z-40 bg-base neu-topbar px-space-md py-space-sm flex justify-between items-center transition-all">
+<!-- Left: Logo & Wordmark -->
+<div class="flex items-center gap-space-xs cursor-pointer active:scale-95 transition-transform duration-150">
+<!-- Dark Tile Monogram with Orange Dot -->
+<div class="w-8 h-8 rounded-lg bg-[#131314] flex items-center justify-center relative neu-raised-sm">
+<span class="font-display font-extrabold text-white text-base leading-none">L</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container absolute top-1.5 right-1.5 ring-1 ring-[#131314]"></span>
+</div>
+<div class="flex flex-col">
+<span class="font-display text-headline-4 font-bold text-ink tracking-tight leading-none">LuzHire</span>
+<span class="font-caption text-[10px] text-muted tracking-wider uppercase font-semibold">Spotlight Zone</span>
+</div>
+</div>
+<!-- Right: Action Bezels (Notifications & Profile) -->
+<div class="flex items-center gap-space-xs">
+<!-- Notification Bell Well -->
+<button aria-label="Notifications" class="w-9 h-9 rounded-full bg-base neu-raised-sm flex items-center justify-center text-ink-muted hover:text-ink active:scale-90 transition-transform relative">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="w-2 h-2 rounded-full bg-primary-container absolute top-1.5 right-1.5 ring-1 ring-base"></span>
+</button>
+<!-- Candidate Avatar in Neumorphic Bezel -->
+<button aria-label="Candidate Profile" class="w-9 h-9 rounded-full bg-base neu-raised-sm p-0.5 flex items-center justify-center active:scale-90 transition-transform">
+<img class="w-full h-full object-cover rounded-full" data-alt="Close up professional portrait of a confident young South Asian female software engineer smiling warmly, studio lighting with warm neutral porcelain tone background, wearing minimalist dark top with modern aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2GilSiQ8d4ZCjN3qeIVsSA6hRnElP6D6k7eIfRs5PcMj3xGxwR2gjkmSdDcOGSuGsRDrNfR4zBts9xlGee7lLe8mxp3s3GvyLqc0LjgaeyRLmfv1MBpEqPn-D7YmBjTv3dEkc7Vheh4dZXdLzEKEYaA0x36fCytSf5nps54BFheLQxBMUNhTrqcZiAspVaF-CiupHFsl6iC3ufY-KO75907EI3549F2NZQwfxQ-Bf6WMDZPgVDIvbbAwHlL7GJP0kYaDik-pLGK4"/>
+</button>
+</div>
+</header>
+<!-- MAIN SCROLLABLE CONTENT CANVAS -->
+<main class="px-space-md pt-space-md flex flex-col gap-space-lg">
+<!-- 2. HERO & SEARCH PANEL -->
+<section class="flex flex-col gap-space-sm">
+<div class="flex flex-col gap-1">
+<div class="inline-flex items-center gap-1.5 self-start px-2 py-0.5 rounded-full bg-sunken neu-inset-xs border border-hairline">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="font-eyebrow text-[11px] text-primary-strong tracking-wide uppercase">Bengaluru • Pune • NCR</span>
+</div>
+<h1 class="font-headline-3 text-headline-3 font-extrabold text-ink tracking-tight">
+            Find your next breakthrough in Indian tech.
+          </h1>
+<p class="font-body-sm text-body-sm text-muted">
+            Curated roles matching your verified skills &amp; salary expectations.
+          </p>
+</div>
+<!-- Stacked Search Panel (Raised Porcelain Card, r=20px) -->
+<div class="bg-base rounded-[20px] p-4 neu-raised-md border border-white/60 flex flex-col gap-3 mt-1">
+<!-- Role / Title Inset Input -->
+<div class="flex flex-col gap-1">
+<label class="font-label text-caption text-ink font-semibold flex items-center gap-1" for="role-search">
+<span>What role are you targeting?</span>
+</label>
+<div class="flex items-center gap-2 bg-sunken rounded-xl px-3 py-2.5 neu-inset-sm border border-outline/70 focus-within:border-primary-container focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-[18px] text-muted shrink-0" data-icon="search">search</span>
+<input class="w-full bg-transparent border-0 p-0 font-body-sm text-ink placeholder:text-muted focus:ring-0 text-sm" id="role-search" placeholder="Role, skill, or company (e.g. SRE, Go)..." type="text"/>
+</div>
+</div>
+<!-- Location Inset Input -->
+<div class="flex flex-col gap-1">
+<label class="font-label text-caption text-ink font-semibold flex items-center gap-1" for="location-search">
+<span>Preferred Location</span>
+</label>
+<div class="flex items-center gap-2 bg-sunken rounded-xl px-3 py-2.5 neu-inset-sm border border-outline/70 focus-within:border-primary-container focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-[18px] text-muted shrink-0" data-icon="location_on">location_on</span>
+<input class="w-full bg-transparent border-0 p-0 font-body-sm text-ink placeholder:text-muted focus:ring-0 text-sm" id="location-search" placeholder="City (Bengaluru, Hyderabad, Remote)..." type="text"/>
+</div>
+</div>
+<!-- Primary Action Button: Signature Sunrise Orange Pill -->
+<button class="w-full bg-primary-container hover:bg-primary-pressed active:scale-[0.98] transition-all rounded-full py-3.5 px-4 font-button text-button text-on-primary font-bold neu-orange-glow flex items-center justify-center gap-2 mt-1">
+<span class="material-symbols-outlined text-[18px]" data-icon="work">work</span>
+<span>Search 4,200+ Jobs</span>
+</button>
+</div>
+</section>
+<!-- 3. HORIZONTAL SCROLLING CATEGORY CHIPS -->
+<section class="flex flex-col gap-2 -mx-space-md px-space-md">
+<div class="flex items-center justify-between">
+<span class="font-label text-caption font-bold text-ink uppercase tracking-wider">Explore Tracks</span>
+<span class="font-caption text-caption text-primary-strong font-semibold cursor-pointer">Filter</span>
+</div>
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1.5 -mx-space-md px-space-md">
+<!-- Active Chip: Inset Sunken Porcelain with Orange Dot -->
+<button class="shrink-0 bg-sunken text-ink neu-inset-sm border border-outline/80 rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-semibold flex items-center gap-1.5 transition-all">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+<span>All Jobs</span>
+</button>
+<!-- Inactive Chips: Raised Porcelain -->
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            Software Eng
+          </button>
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            Product
+          </button>
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            Data &amp; AI
+          </button>
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            DevOps
+          </button>
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            Fintech
+          </button>
+<button class="shrink-0 bg-base text-muted hover:text-ink neu-raised-sm rounded-full px-3.5 py-1.5 font-button-sm text-button-sm font-medium active:scale-95 transition-all">
+            Remote Only
+          </button>
+</div>
+</section>
+<!-- 4. "NEW JOBS" HIGHLIGHT BANNER -->
+<section class="bg-base-tint rounded-2xl p-3.5 neu-raised-sm border border-white/60 flex items-center justify-between gap-3 relative overflow-hidden">
+<div class="flex items-center gap-3">
+<div class="w-9 h-9 rounded-xl bg-sunken neu-inset-xs border border-outline/40 flex items-center justify-center shrink-0 text-primary-strong">
+<span class="material-symbols-outlined text-[20px]" data-icon="bolt">bolt</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+<h2 class="font-ws-card-title text-ws-card-title font-bold text-ink leading-tight">148 new roles dropped today</h2>
+</div>
+<p class="font-caption text-caption text-ink-muted">Bengaluru, Pune, Hyderabad tech hubs</p>
+</div>
+</div>
+<a class="font-button-sm text-button-sm font-bold text-primary-strong hover:underline shrink-0 flex items-center gap-0.5" href="#fresh-listings">
+<span>View</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="arrow_forward">arrow_forward</span>
+</a>
+</section>
+<!-- 5. VERTICAL FEATURED JOB CARDS (Spotlight Cards, raised-md, r=18px) -->
+<section class="flex flex-col gap-space-md" id="fresh-listings">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-icon="star">star</span>
+<h2 class="font-ws-title text-[18px] font-bold text-ink tracking-tight">Verified Spotlight Roles</h2>
+</div>
+<span class="font-caption text-caption text-muted font-medium">Ranked by Fit</span>
+</div>
+<!-- Card 1: Senior Frontend Engineer @ Swiggy -->
+<article class="bg-base rounded-[18px] p-4 neu-raised-md border border-white/70 flex flex-col gap-3 relative hover:translate-y-[-1px] transition-transform">
+<!-- Top Row: Logo Socket, Company, Role, Bookmark -->
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3">
+<!-- Inset Logo Socket -->
+<div class="w-11 h-11 rounded-xl bg-sunken neu-inset-sm border border-outline/70 flex items-center justify-center shrink-0">
+<span class="font-display font-extrabold text-[#FC8019] text-xl">S</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-caption font-bold text-muted uppercase">Swiggy</span>
+<span class="w-1 h-1 rounded-full bg-shade"></span>
+<span class="font-caption text-caption text-muted">Core Delivery App</span>
+</div>
+<h3 class="font-headline-4 text-[17px] font-bold text-ink leading-snug">Senior Frontend Engineer</h3>
+</div>
+</div>
+<!-- Bookmark Button -->
+<button aria-label="Save Job" class="w-8 h-8 rounded-full bg-base neu-raised-sm flex items-center justify-center text-muted hover:text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+<!-- Middle Row: Salary & Match Dial -->
+<div class="flex items-center justify-between bg-sunken/60 neu-inset-xs rounded-xl p-2.5 border border-hairline/80">
+<div class="flex flex-col">
+<span class="font-caption text-[11px] text-muted uppercase font-medium">Salary Range</span>
+<span class="font-mono text-[15px] font-bold text-ink">₹28 – 35 LPA</span>
+</div>
+<!-- 94% Match Dial Pill -->
+<div class="flex items-center gap-2 bg-base px-2.5 py-1 rounded-lg neu-raised-sm border border-white">
+<div class="relative w-6 h-6 flex items-center justify-center">
+<svg class="w-6 h-6 -rotate-90" viewbox="0 0 36 36">
+<path class="text-hairline stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+<span class="absolute text-[8px] font-mono font-bold text-ink">94</span>
+</div>
+<span class="font-caption text-caption font-bold text-primary-strong">94% Fit</span>
+</div>
+</div>
+<!-- Bottom Row: Meta Chips & Quick Apply -->
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-sunken text-ink text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">React / Next.js</span>
+<span class="bg-sunken text-ink-muted text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Bengaluru • Hybrid</span>
+<span class="text-muted text-[11px] font-caption pl-1">3d ago</span>
+</div>
+<button class="bg-base text-primary-strong hover:bg-sunken neu-raised-sm rounded-lg px-2.5 py-1 font-button-sm text-[12px] font-bold border border-white active:scale-95 transition-all">
+              Details
+            </button>
+</div>
+</article>
+<!-- Card 2: Staff Backend Architect @ PhonePe -->
+<article class="bg-base rounded-[18px] p-4 neu-raised-md border border-white/70 flex flex-col gap-3 relative hover:translate-y-[-1px] transition-transform">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-sunken neu-inset-sm border border-outline/70 flex items-center justify-center shrink-0">
+<span class="font-display font-extrabold text-[#5f259f] text-lg">PP</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-caption font-bold text-muted uppercase">PhonePe</span>
+<span class="w-1 h-1 rounded-full bg-shade"></span>
+<span class="font-caption text-caption text-muted">UPI Core Engine</span>
+</div>
+<h3 class="font-headline-4 text-[17px] font-bold text-ink leading-snug">Staff Backend Architect</h3>
+</div>
+</div>
+<button aria-label="Save Job" class="w-8 h-8 rounded-full bg-base neu-raised-sm flex items-center justify-center text-primary-container active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="bookmark" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</button>
+</div>
+<div class="flex items-center justify-between bg-sunken/60 neu-inset-xs rounded-xl p-2.5 border border-hairline/80">
+<div class="flex flex-col">
+<span class="font-caption text-[11px] text-muted uppercase font-medium">Salary Range</span>
+<span class="font-mono text-[15px] font-bold text-ink">₹45 – 55 LPA</span>
+</div>
+<div class="flex items-center gap-2 bg-base px-2.5 py-1 rounded-lg neu-raised-sm border border-white">
+<div class="relative w-6 h-6 flex items-center justify-center">
+<svg class="w-6 h-6 -rotate-90" viewbox="0 0 36 36">
+<path class="text-hairline stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="89, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+<span class="absolute text-[8px] font-mono font-bold text-ink">89</span>
+</div>
+<span class="font-caption text-caption font-bold text-primary-strong">89% Fit</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-sunken text-ink text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Go / Distributed</span>
+<span class="bg-sunken text-ink-muted text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Bengaluru • Onsite</span>
+<span class="text-muted text-[11px] font-caption pl-1">1d ago</span>
+</div>
+<button class="bg-base text-primary-strong hover:bg-sunken neu-raised-sm rounded-lg px-2.5 py-1 font-button-sm text-[12px] font-bold border border-white active:scale-95 transition-all">
+              Details
+            </button>
+</div>
+</article>
+<!-- Card 3: Lead Product Designer @ Razorpay -->
+<article class="bg-base rounded-[18px] p-4 neu-raised-md border border-white/70 flex flex-col gap-3 relative hover:translate-y-[-1px] transition-transform">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-sunken neu-inset-sm border border-outline/70 flex items-center justify-center shrink-0">
+<span class="font-display font-extrabold text-[#0c2340] text-xl">R</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-caption font-bold text-muted uppercase">Razorpay</span>
+<span class="w-1 h-1 rounded-full bg-shade"></span>
+<span class="font-caption text-caption text-muted">Merchant Experience</span>
+</div>
+<h3 class="font-headline-4 text-[17px] font-bold text-ink leading-snug">Lead Product Designer</h3>
+</div>
+</div>
+<button aria-label="Save Job" class="w-8 h-8 rounded-full bg-base neu-raised-sm flex items-center justify-center text-muted hover:text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+<div class="flex items-center justify-between bg-sunken/60 neu-inset-xs rounded-xl p-2.5 border border-hairline/80">
+<div class="flex flex-col">
+<span class="font-caption text-[11px] text-muted uppercase font-medium">Salary Range</span>
+<span class="font-mono text-[15px] font-bold text-ink">₹24 – 32 LPA</span>
+</div>
+<div class="flex items-center gap-2 bg-base px-2.5 py-1 rounded-lg neu-raised-sm border border-white">
+<div class="relative w-6 h-6 flex items-center justify-center">
+<svg class="w-6 h-6 -rotate-90" viewbox="0 0 36 36">
+<path class="text-hairline stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="91, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+<span class="absolute text-[8px] font-mono font-bold text-ink">91</span>
+</div>
+<span class="font-caption text-caption font-bold text-primary-strong">91% Fit</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-sunken text-ink text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Design Systems</span>
+<span class="bg-sunken text-ink-muted text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Remote / BLR</span>
+<span class="text-muted text-[11px] font-caption pl-1">4h ago</span>
+</div>
+<button class="bg-base text-primary-strong hover:bg-sunken neu-raised-sm rounded-lg px-2.5 py-1 font-button-sm text-[12px] font-bold border border-white active:scale-95 transition-all">
+              Details
+            </button>
+</div>
+</article>
+<!-- Card 4: Machine Learning Platform Engineer @ CRED -->
+<article class="bg-base rounded-[18px] p-4 neu-raised-md border border-white/70 flex flex-col gap-3 relative hover:translate-y-[-1px] transition-transform">
+<div class="flex items-start justify-between gap-2">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-xl bg-sunken neu-inset-sm border border-outline/70 flex items-center justify-center shrink-0">
+<span class="font-display font-black text-ink text-xl tracking-tighter">C</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-caption font-bold text-muted uppercase">CRED</span>
+<span class="w-1 h-1 rounded-full bg-shade"></span>
+<span class="font-caption text-caption text-muted">Risk &amp; Decisioning</span>
+</div>
+<h3 class="font-headline-4 text-[17px] font-bold text-ink leading-snug">ML Platform Engineer</h3>
+</div>
+</div>
+<button aria-label="Save Job" class="w-8 h-8 rounded-full bg-base neu-raised-sm flex items-center justify-center text-muted hover:text-primary active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-[18px]" data-icon="bookmark">bookmark</span>
+</button>
+</div>
+<div class="flex items-center justify-between bg-sunken/60 neu-inset-xs rounded-xl p-2.5 border border-hairline/80">
+<div class="flex flex-col">
+<span class="font-caption text-[11px] text-muted uppercase font-medium">Salary Range</span>
+<span class="font-mono text-[15px] font-bold text-ink">₹38 – 48 LPA</span>
+</div>
+<div class="flex items-center gap-2 bg-base px-2.5 py-1 rounded-lg neu-raised-sm border border-white">
+<div class="relative w-6 h-6 flex items-center justify-center">
+<svg class="w-6 h-6 -rotate-90" viewbox="0 0 36 36">
+<path class="text-hairline stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="86, 100" stroke-linecap="round" stroke-width="3.8"></path>
+</svg>
+<span class="absolute text-[8px] font-mono font-bold text-ink">86</span>
+</div>
+<span class="font-caption text-caption font-bold text-primary-strong">86% Fit</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-1">
+<div class="flex flex-wrap items-center gap-1.5">
+<span class="bg-sunken text-ink text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Python / MLOps</span>
+<span class="bg-sunken text-ink-muted text-[11px] font-caption px-2 py-0.5 rounded-md neu-inset-xs border border-outline/50">Bengaluru • Hybrid</span>
+<span class="text-primary-strong text-[11px] font-caption font-bold pl-1">Just now</span>
+</div>
+<button class="bg-base text-primary-strong hover:bg-sunken neu-raised-sm rounded-lg px-2.5 py-1 font-button-sm text-[12px] font-bold border border-white active:scale-95 transition-all">
+              Details
+            </button>
+</div>
+</article>
+</section>
+<!-- Bottom Spacer for dock clearance -->
+<div class="h-6"></div>
+</main>
+<!-- 6. BOTTOM NAVIGATION BAR (Shared Component Anchored: BottomNavBar) -->
+<!-- Active State Logic: Screen is "Spotlight" mobile home zone -> maps strictly to Spotlight (Active) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 bg-base neu-bottombar">
+<div class="max-w-md mx-auto px-space-md py-space-xs pb-5 flex justify-around items-center">
+<!-- Tab 1: Spotlight (ACTIVE as per JSON label_texts[0] & Prompt home screen intent) -->
+<button class="flex flex-col items-center justify-center bg-primary-container text-on-primary rounded-xl px-3 py-1 font-button-sm text-button-sm shadow-sm active:scale-95 transition-transform duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="explore" style="font-variation-settings: 'FILL' 1;">explore</span>
+<span class="text-[11px] font-bold leading-tight mt-0.5">Spotlight</span>
+</button>
+<!-- Tab 2: Search (Inactive) -->
+<button class="flex flex-col items-center justify-center text-muted px-3 py-1 font-caption text-caption hover:text-ink transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="search">search</span>
+<span class="text-[11px] leading-tight mt-0.5">Search</span>
+</button>
+<!-- Tab 3: Saved (Inactive) -->
+<button class="flex flex-col items-center justify-center text-muted px-3 py-1 font-caption text-caption hover:text-ink transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="bookmark">bookmark</span>
+<span class="text-[11px] leading-tight mt-0.5">Saved</span>
+</button>
+<!-- Tab 4: Profile (Inactive) -->
+<button class="flex flex-col items-center justify-center text-muted px-3 py-1 font-caption text-caption hover:text-ink transition-colors duration-150 active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="text-[11px] leading-tight mt-0.5">Profile</span>
+</button>
+</div>
+</nav>
+</div>
+<!-- Inline Micro-interactions for tactile feel -->
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Toggle bookmarks with subtle tactile feedback
+      const bookmarkButtons = document.querySelectorAll('article button[aria-label="Save Job"]');
+      bookmarkButtons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const icon = btn.querySelector('.material-symbols-outlined');
+          const isFilled = icon.style.fontVariationSettings?.includes("'FILL' 1");
+          if (isFilled) {
+            icon.style.fontVariationSettings = "'FILL' 0";
+            btn.classList.remove('text-primary-container');
+            btn.classList.add('text-muted');
+          } else {
+            icon.style.fontVariationSettings = "'FILL' 1";
+            btn.classList.add('text-primary-container');
+            btn.classList.remove('text-muted');
+          }
+        });
+      });
+    });
+  </script>
+</body></html>

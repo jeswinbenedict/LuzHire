@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire Admin Console - Verification Queue</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-container": "#6c3400",
+            "inverse-surface": "#3b2e26",
+            "secondary-container": "#fc984b",
+            "primary": "#9a4600",
+            "surface-container-high": "#fae4d9",
+            "dark-disabled": "#63676E",
+            "tertiary-fixed": "#c5e7ff",
+            "ink-muted": "#3D4148",
+            "dark-shade": "#0E0F11",
+            "dark-hairline": "#2B2E34",
+            "surface-dim": "#ecd6cb",
+            "surface": "#fff8f5",
+            "on-surface-variant": "#574236",
+            "primary-fixed-dim": "#ffb68c",
+            "on-primary-fixed": "#321200",
+            "on-secondary-fixed": "#301400",
+            "on-tertiary-container": "#003e57",
+            "error-container": "#ffdad6",
+            "tertiary-container": "#00afed",
+            "surface-container": "#ffeadf",
+            "dark-sunken": "#16171A",
+            "dark-ink": "#F2F2EF",
+            "surface-container-lowest": "#ffffff",
+            "secondary-fixed": "#ffdcc6",
+            "error": "#ba1a1a",
+            "on-secondary-fixed-variant": "#713700",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "on-surface": "#241913",
+            "surface-container-low": "#fff1ea",
+            "muted": "#5A5F66",
+            "primary-container": "#fe8022",
+            "on-primary": "#14110F",
+            "dark-highlight": "#2A2D33",
+            "primary-fixed": "#ffdbc9",
+            "on-tertiary-fixed": "#001e2d",
+            "on-error": "#ffffff",
+            "primary-strong": "#9A3F0A",
+            "secondary-fixed-dim": "#ffb785",
+            "ink": "#14110F",
+            "surface-bright": "#fff8f5",
+            "base-tint": "#F7E6D8",
+            "outline": "#85817A",
+            "surface-variant": "#f4ded3",
+            "surface-container-highest": "#f4ded3",
+            "sunken": "#E4E1DA",
+            "disabled": "#9A9EA6",
+            "dark-base": "#1D1F23",
+            "dark-muted": "#9EA2AA",
+            "dark-ink-muted": "#C9CCD1",
+            "on-error-container": "#93000a",
+            "on-primary-fixed-variant": "#753400",
+            "highlight": "#FFFFFF",
+            "on-secondary": "#ffffff",
+            "inverse-primary": "#ffb68c",
+            "hairline": "#DAD6CE",
+            "base": "#EEECE7",
+            "tertiary": "#00658b",
+            "primary-pressed": "#E86D12",
+            "dark-outline": "#6E737B",
+            "outline-variant": "#dfc0b1",
+            "on-primary-container": "#602a00",
+            "shade": "#CBC5BA",
+            "secondary": "#954a00",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "background": "#fff8f5",
+            "surface-tint": "#9a4600",
+            "inverse-on-surface": "#ffede5",
+            "on-tertiary": "#ffffff",
+            "on-background": "#241913",
+            "dark-base-tint": "#2A1F17"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "fontFamily": {
+            "headline-3": ["Plus Jakarta Sans"],
+            "button-sm": ["Inter"],
+            "ws-title": ["Inter"],
+            "body-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "headline-2": ["Plus Jakarta Sans"],
+            "button": ["Inter"],
+            "ws-section": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "label": ["Inter"],
+            "headline-1": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"],
+            "body-lg": ["Inter"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "caption": ["Inter"],
+            "mono": ["JetBrains Mono"],
+            "eyebrow": ["Inter"]
+          },
+          "fontSize": {
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }]
+          },
+          "boxShadow": {
+            "raised-xs": "1px 1px 2px #CBC5BA, -1px -1px 2px #FFFFFF",
+            "raised-sm": "3px 3px 6px #CBC5BA, -3px -3px 6px #FFFFFF",
+            "raised-md": "6px 6px 14px #CBC5BA, -6px -6px 14px #FFFFFF",
+            "inset-sm": "inset 1px 1px 3px #CBC5BA, inset -1px -1px 3px #FFFFFF",
+            "inset-md": "inset 2px 2px 6px #CBC5BA, inset -2px -2px 6px #FFFFFF",
+            "glow-orange": "0 0 12px rgba(254, 128, 34, 0.35)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    body {
+      background-color: #EEECE7;
+      color: #241913;
+    }
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+      font-size: 19px;
+      line-height: 1;
+    }
+    .fill-icon {
+      font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+    }
+    /* Accessible neumorphic custom utilities */
+    .neu-sunken {
+      box-shadow: inset 1.5px 1.5px 3px #CBC5BA, inset -1.5px -1.5px 3px #FFFFFF;
+    }
+    .neu-raised-card {
+      box-shadow: 4px 4px 10px #D8D4CC, -4px -4px 10px #FFFFFF;
+    }
+    .neu-raised-sm {
+      box-shadow: 2px 2px 5px #D8D4CC, -2px -2px 5px #FFFFFF;
+    }
+    .neu-button-active:active {
+      box-shadow: inset 2px 2px 4px #783100, inset -1px -1px 3px rgba(255,255,255,0.2);
+    }
+    /* Hide scrollbars for clean workspace density */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #EEECE7;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #CBC5BA;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body class="bg-base text-on-surface antialiased font-body-sm min-h-screen flex overflow-x-hidden selection:bg-secondary-fixed selection:text-on-secondary-fixed">
+<!-- ========================================================= -->
+<!-- 1. FIXED LEFT SIDEBAR (SideNavBar component execution)    -->
+<!-- ========================================================= -->
+<aside class="fixed top-0 left-0 h-screen w-64 z-30 flex flex-col justify-between bg-surface-container-low border-r border-hairline shadow-raised-xs">
+<!-- Top Brand & Hierarchy -->
+<div class="p-4 flex flex-col gap-5">
+<!-- Header Brand Emblem -->
+<div class="flex items-center gap-3 px-1 py-1">
+<div class="h-9 w-9 rounded-lg bg-[#131314] flex items-center justify-center shadow-raised-sm relative shrink-0">
+<span class="text-white font-headline-4 text-lg font-extrabold tracking-tight">L</span>
+<span class="absolute bottom-1.5 right-1.5 h-1.5 w-1.5 rounded-full bg-primary-container ring-1 ring-[#131314]"></span>
+</div>
+<div class="flex flex-col">
+<span class="text-ws-title font-ws-title font-bold text-on-surface leading-tight tracking-tight">LuzHire</span>
+<span class="text-caption font-caption text-on-surface-variant font-medium">Admin Console</span>
+</div>
+</div>
+<!-- Navigation Tabs Cluster -->
+<nav class="flex flex-col gap-1">
+<!-- Tab: Overview -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">dashboard</span>
+<span class="text-label font-label">Overview</span>
+</a>
+<!-- Tab: Verification (ACTIVE SEMANTIC TAB) -->
+<a class="flex items-center justify-between px-3 py-2 rounded-lg bg-base-tint text-primary-strong font-semibold border border-outline-variant shadow-raised-xs active:scale-[0.99] relative" href="#">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary-strong fill-icon">verified</span>
+<span class="text-label font-label">Verification</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="h-1.5 w-1.5 rounded-full bg-primary-container animate-pulse"></span>
+<span class="px-1.5 py-0.5 rounded text-[11px] font-mono font-semibold bg-primary-strong text-white leading-none">14</span>
+</div>
+<!-- Left orange accent indicator -->
+<div class="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r bg-primary-container"></div>
+</a>
+<!-- Tab: Job Moderation -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">shield</span>
+<span class="text-label font-label">Job Moderation</span>
+</a>
+<!-- Tab: Reports -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">analytics</span>
+<span class="text-label font-label">Reports</span>
+</a>
+<!-- Tab: Users -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">group</span>
+<span class="text-label font-label">Users</span>
+</a>
+<!-- Tab: Announcements -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">campaign</span>
+<span class="text-label font-label">Announcements</span>
+</a>
+<!-- Tab: Audit Log -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150 active:scale-[0.99]" href="#">
+<span class="material-symbols-outlined text-ink-muted">history</span>
+<span class="text-label font-label">Audit Log</span>
+</a>
+</nav>
+</div>
+<!-- Sidebar Footer Cluster -->
+<div class="p-4 flex flex-col gap-3 border-t border-hairline/60">
+<div class="flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-ink-muted">settings</span>
+<span class="text-label font-label">Settings</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant font-normal hover:bg-surface-container hover:text-on-surface transition-colors duration-150" href="#">
+<span class="material-symbols-outlined text-ink-muted">help</span>
+<span class="text-label font-label">Support</span>
+</a>
+</div>
+<!-- Admin Profile Box -->
+<div class="mt-1 pt-3 border-t border-hairline/70 flex items-center justify-between px-1">
+<div class="flex items-center gap-2.5">
+<div class="relative">
+<img class="w-8 h-8 rounded-full object-cover ring-1 ring-hairline shadow-raised-xs" data-alt="Close up photographic corporate portrait of Vikram Malhotra, an Indian male lead compliance administrator wearing crisp charcoal tech executive attire against a warm neutral studio background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC4NH5o5_YEy5tXFpybFykdIG2rwPZtPPKdY2utf8Fe_SkoVXjuAs_WSchR43IZ5A94rjCBC6E9acnGmIRH9yCIA0W7eV8eodsfY_xphmPpQbkCYXJfhI3kJRgiy_No8cEg9XcPL2VY9ND9WlhMyw_3R2Z6MXakpIAeg6OEwqETvkY9l3RqJgcOpZGOa2iJK-OElKxV_Itse0efMDgRtoye7QL5CGxeFYVk0KVwNgdG8cVN-9T8wyCrXtPjUwkccs6nZknhK48HdAw"/>
+<span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-600 ring-1 ring-surface-container-low"></span>
+</div>
+<div class="flex flex-col">
+<span class="text-label font-label font-semibold text-on-surface leading-none text-xs">Vikram Malhotra</span>
+<span class="text-caption font-caption text-ink-muted text-[11px] leading-tight">Lead Compliance</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-ink-muted text-sm cursor-pointer hover:text-on-surface">more_vert</span>
+</div>
+</div>
+</aside>
+<!-- ========================================================= -->
+<!-- 2. MAIN APPLICATION WORKSPACE CANVAS                      -->
+<!-- ========================================================= -->
+<div class="flex-1 ml-64 flex flex-col min-w-0 min-h-screen pb-12">
+<!-- TopNavBar component docked top full-width -->
+<header class="h-14 w-full bg-surface-container-lowest border-b border-hairline shadow-raised-xs px-6 flex justify-between items-center sticky top-0 z-20">
+<!-- Left: Breadcrumb & Search Bar -->
+<div class="flex items-center gap-5 flex-1 max-w-xl">
+<div class="flex items-center gap-2 text-caption font-caption font-medium shrink-0">
+<span class="text-ink-muted">Workspace</span>
+<span class="material-symbols-outlined text-[14px] text-shade">chevron_right</span>
+<span class="text-primary-strong font-semibold">Verification Queue</span>
+</div>
+<!-- Quick Command Well (Ctrl+K) -->
+<div class="relative w-full max-w-xs">
+<div class="neu-sunken bg-sunken/40 border border-hairline rounded-lg flex items-center px-2.5 py-1.5 gap-2 transition-all focus-within:border-outline focus-within:bg-white">
+<span class="material-symbols-outlined text-ink-muted text-[17px]">search</span>
+<input class="bg-transparent border-none p-0 text-caption font-caption text-on-surface placeholder:text-muted focus:ring-0 w-full outline-none" placeholder="Search CIN, GSTIN, Company..." type="text"/>
+<span class="text-[10px] font-mono text-muted bg-base px-1.5 py-0.5 rounded border border-hairline shrink-0">⌘K</span>
+</div>
+</div>
+</div>
+<!-- Right: Action Bar / State Switchers -->
+<div class="flex items-center gap-3">
+<!-- 30s Auto Refresh Pill -->
+<div class="neu-raised-sm bg-base px-2.5 py-1 rounded-full border border-hairline/80 flex items-center gap-2 text-caption font-caption text-ink-muted">
+<span class="material-symbols-outlined text-[14px] text-primary-container animate-spin" style="animation-duration: 9s;">sync</span>
+<span class="text-[11px] font-mono font-medium">Auto: <strong class="text-on-surface">24s</strong></span>
+</div>
+<!-- Preset Switcher -->
+<div class="neu-sunken bg-sunken/50 border border-hairline rounded-lg p-0.5 flex items-center text-caption font-caption font-medium">
+<button class="px-2.5 py-0.5 rounded text-xs bg-white text-primary-strong shadow-raised-xs font-semibold">Live Queue</button>
+<button class="px-2.5 py-0.5 rounded text-xs text-muted hover:text-on-surface transition-colors">Archived</button>
+</div>
+<!-- Notifications Action -->
+<button class="neu-raised-sm p-1.5 rounded-lg border border-hairline bg-base hover:bg-surface-container active:neu-sunken text-on-surface-variant relative">
+<span class="material-symbols-outlined text-[18px]">notifications</span>
+<span class="absolute top-1 right-1 h-2 w-2 rounded-full bg-primary-container ring-1 ring-white"></span>
+</button>
+<div class="h-4 w-px bg-hairline"></div>
+<!-- Trailing Production Tag -->
+<div class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200 text-caption font-caption font-semibold">
+<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+<span>Production</span>
+</div>
+</div>
+</header>
+<!-- Main Content Container: Grid Layout with Right Inspector -->
+<main class="p-6 flex-1 flex flex-col gap-6">
+<!-- ========================================================= -->
+<!-- 3. TOP PLATFORM METRICS TILES (4 Neumorphic Stat Cards)    -->
+<!-- ========================================================= -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+<!-- Stat Tile 1: Pending Verification -->
+<div class="neu-raised-card bg-surface-container-lowest p-4 rounded-xl border border-hairline flex flex-col justify-between relative overflow-hidden">
+<div class="flex items-start justify-between">
+<span class="text-caption font-caption text-ink-muted uppercase tracking-wider text-[11px] font-semibold">Pending Verification</span>
+<div class="p-1.5 rounded-lg bg-base-tint border border-outline-variant/60 text-primary-strong">
+<span class="material-symbols-outlined text-[18px]">pending_actions</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<span class="text-headline-3 font-headline-3 text-on-surface tracking-tight">14</span>
+<span class="text-caption font-caption text-amber-700 bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded font-medium">+3 in last 1hr</span>
+</div>
+<div class="w-full bg-sunken h-1 rounded-full mt-3 overflow-hidden">
+<div class="bg-primary-container h-full w-[65%] rounded-full"></div>
+</div>
+</div>
+<!-- Stat Tile 2: Avg. Turnaround -->
+<div class="neu-raised-card bg-surface-container-lowest p-4 rounded-xl border border-hairline flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-caption font-caption text-ink-muted uppercase tracking-wider text-[11px] font-semibold">Avg. Turnaround</span>
+<div class="p-1.5 rounded-lg bg-base border border-hairline text-ink-muted">
+<span class="material-symbols-outlined text-[18px]">timer</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<div class="flex items-baseline gap-1">
+<span class="text-headline-3 font-headline-3 text-on-surface tracking-tight">4.2</span>
+<span class="text-caption font-caption text-muted font-medium">hrs</span>
+</div>
+<span class="text-caption font-caption text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-medium">↓ 18% vs avg</span>
+</div>
+<div class="w-full bg-sunken h-1 rounded-full mt-3 overflow-hidden">
+<div class="bg-emerald-600 h-full w-[82%] rounded-full"></div>
+</div>
+</div>
+<!-- Stat Tile 3: Approved This Month -->
+<div class="neu-raised-card bg-surface-container-lowest p-4 rounded-xl border border-hairline flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-caption font-caption text-ink-muted uppercase tracking-wider text-[11px] font-semibold">Approved This Month</span>
+<div class="p-1.5 rounded-lg bg-base border border-hairline text-ink-muted">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<span class="text-headline-3 font-headline-3 text-on-surface tracking-tight">142</span>
+<span class="text-caption font-caption text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded font-medium">96.8% rate</span>
+</div>
+<div class="w-full bg-sunken h-1 rounded-full mt-3 overflow-hidden">
+<div class="bg-tertiary h-full w-[94%] rounded-full"></div>
+</div>
+</div>
+<!-- Stat Tile 4: High Risk Flagged -->
+<div class="neu-raised-card bg-surface-container-lowest p-4 rounded-xl border border-hairline flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<span class="text-caption font-caption text-ink-muted uppercase tracking-wider text-[11px] font-semibold">High Risk Flagged</span>
+<div class="p-1.5 rounded-lg bg-error-container/60 border border-error/20 text-error">
+<span class="material-symbols-outlined text-[18px]">warning</span>
+</div>
+</div>
+<div class="mt-3 flex items-baseline justify-between">
+<span class="text-headline-3 font-headline-3 text-error tracking-tight">3</span>
+<span class="text-caption font-caption text-error bg-error-container/40 border border-error/30 px-1.5 py-0.5 rounded font-medium">Action Required</span>
+</div>
+<div class="w-full bg-sunken h-1 rounded-full mt-3 overflow-hidden">
+<div class="bg-error h-full w-[25%] rounded-full"></div>
+</div>
+</div>
+</div>
+<!-- ========================================================= -->
+<!-- 4 & 5. WORKSPACE SPLIT: TABLE & INSPECTION DRAWER        -->
+<!-- ========================================================= -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-6 items-start">
+<!-- ========================================================= -->
+<!-- 4. CENTER DATA TABLE PANEL (8 of 12 columns on large)     -->
+<!-- ========================================================= -->
+<section class="xl:col-span-7 bg-surface-container-lowest rounded-xl border border-hairline neu-raised-card flex flex-col overflow-hidden">
+<!-- Panel Header & Filter Controls -->
+<div class="p-4 border-b border-hairline bg-surface-container-low/40 flex flex-col gap-3">
+<div class="flex flex-wrap items-center justify-between gap-3">
+<div>
+<h2 class="text-ws-section font-ws-section text-on-surface">Verification Review Stream</h2>
+<p class="text-caption font-caption text-muted">Showing 5 Indian technology corporate dossiers requiring active sign-off</p>
+</div>
+<!-- Filter Search Input -->
+<div class="relative w-64">
+<div class="neu-sunken bg-white border border-hairline rounded-lg flex items-center px-2.5 py-1 gap-2">
+<span class="material-symbols-outlined text-ink-muted text-[16px]">filter_list</span>
+<input class="bg-transparent border-none p-0 text-caption font-caption text-on-surface placeholder:text-muted focus:ring-0 w-full outline-none" placeholder="Filter submissions..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Filter Status Pills & Bulk Action Bar -->
+<div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+<!-- Filter Pills -->
+<div class="flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-md text-caption font-caption font-semibold bg-on-surface text-white shadow-raised-xs">All (14)</button>
+<button class="px-2.5 py-1 rounded-md text-caption font-caption font-medium bg-base hover:bg-surface-container text-ink-muted border border-hairline transition-colors">High Risk (3)</button>
+<button class="px-2.5 py-1 rounded-md text-caption font-caption font-medium bg-base hover:bg-surface-container text-ink-muted border border-hairline transition-colors">Domain Mismatch (2)</button>
+<button class="px-2.5 py-1 rounded-md text-caption font-caption font-medium bg-base hover:bg-surface-container text-ink-muted border border-hairline transition-colors">Fast-track (4)</button>
+</div>
+<!-- Bulk Action Bar -->
+<div class="flex items-center gap-2 bg-base px-2 py-1 rounded-lg border border-hairline neu-sunken">
+<span class="text-caption font-caption text-primary-strong font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">check_box</span>
+                  1 selected
+                </span>
+<span class="h-3 w-px bg-hairline"></span>
+<button class="text-button-sm font-button-sm text-ink-muted hover:text-on-surface px-1.5 py-0.5 rounded transition-colors">Request Info</button>
+<button class="text-button-sm font-button-sm text-primary-strong hover:text-primary-pressed px-1.5 py-0.5 rounded transition-colors font-semibold">Bulk Approve</button>
+</div>
+</div>
+</div>
+<!-- Table Wrapper -->
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="bg-base/70 border-b border-hairline text-caption font-caption text-ink-muted font-semibold tracking-wider uppercase text-[11px]">
+<th class="py-2.5 px-4 w-10">
+<input checked="" class="rounded border-outline text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</th>
+<th class="py-2.5 px-3">Company Details</th>
+<th class="py-2.5 px-3">Location / Hub</th>
+<th class="py-2.5 px-3">Risk Assessment</th>
+<th class="py-2.5 px-3">Docs</th>
+<th class="py-2.5 px-4 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-hairline">
+<!-- ROW 1: NxtWave Mobility (SELECTED ACTIVE ITEM) -->
+<tr class="bg-base-tint/50 border-l-4 border-l-primary-container hover:bg-base-tint/70 transition-colors cursor-pointer">
+<td class="py-3 px-4">
+<input checked="" class="rounded border-outline-variant text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-lg bg-white border border-outline-variant flex items-center justify-center font-bold text-primary-strong shadow-raised-xs">
+                        NM
+                      </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-label font-label font-bold text-on-surface">NxtWave Mobility</span>
+<span class="material-symbols-outlined text-[15px] text-tertiary">domain</span>
+</div>
+<span class="text-caption font-caption text-muted font-mono text-[11px]">CIN: U72900KA2021PTC145612</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="text-body-sm font-body-sm text-on-surface">Bengaluru, KA</span>
+<span class="block text-caption font-caption text-muted">Indiranagar HQ</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-caption font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
+                      Low Risk
+                    </span>
+</td>
+<td class="py-3 px-3">
+<span class="text-caption font-caption font-mono text-ink-muted bg-white px-1.5 py-0.5 rounded border border-hairline">3/3 Valid</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="p-1 rounded hover:bg-white text-primary-strong transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- ROW 2: Kaveri FinTech -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-hairline text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-lg bg-sunken/60 border border-hairline flex items-center justify-center font-bold text-on-surface-variant">
+                        KF
+                      </div>
+<div class="flex flex-col">
+<span class="text-label font-label font-semibold text-on-surface">Kaveri FinTech</span>
+<span class="text-caption font-caption text-muted font-mono text-[11px]">CIN: U65999TG2019PTC098231</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="text-body-sm font-body-sm text-on-surface">Hyderabad, TS</span>
+<span class="block text-caption font-caption text-muted">HITEC City</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-caption font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+<span class="h-1.5 w-1.5 rounded-full bg-amber-600"></span>
+                      Medium Risk
+                    </span>
+</td>
+<td class="py-3 px-3">
+<span class="text-caption font-caption font-mono text-ink-muted bg-base px-1.5 py-0.5 rounded border border-hairline">2/3 Pending</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="p-1 rounded hover:bg-white text-ink-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- ROW 3: Zestlogix Cloud -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer bg-error-container/10">
+<td class="py-3 px-4">
+<input class="rounded border-hairline text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-lg bg-error-container/40 border border-error/30 flex items-center justify-center font-bold text-error">
+                        ZC
+                      </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-label font-label font-semibold text-on-surface">Zestlogix Cloud</span>
+<span class="material-symbols-outlined text-[15px] text-error">error</span>
+</div>
+<span class="text-caption font-caption text-muted font-mono text-[11px]">CIN: U74999PN2022PTC183420</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="text-body-sm font-body-sm text-on-surface">Pune, MH</span>
+<span class="block text-caption font-caption text-muted">Kalyani Nagar</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-caption font-semibold bg-error-container text-on-error-container border border-error/20">
+<span class="h-1.5 w-1.5 rounded-full bg-error"></span>
+                      High Risk
+                    </span>
+</td>
+<td class="py-3 px-3">
+<span class="text-caption font-caption font-mono text-error font-semibold bg-error-container/30 px-1.5 py-0.5 rounded border border-error/20">Domain Mismatch</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="p-1 rounded hover:bg-white text-ink-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- ROW 4: Coromandel HealthTech -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-hairline text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-lg bg-sunken/60 border border-hairline flex items-center justify-center font-bold text-on-surface-variant">
+                        CH
+                      </div>
+<div class="flex flex-col">
+<span class="text-label font-label font-semibold text-on-surface">Coromandel HealthTech</span>
+<span class="text-caption font-caption text-muted font-mono text-[11px]">CIN: U85110TN2020PTC120491</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="text-body-sm font-body-sm text-on-surface">Chennai, TN</span>
+<span class="block text-caption font-caption text-muted">OMR Tech Park</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-caption font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200">
+<span class="h-1.5 w-1.5 rounded-full bg-emerald-600"></span>
+                      Low Risk
+                    </span>
+</td>
+<td class="py-3 px-3">
+<span class="text-caption font-caption font-mono text-ink-muted bg-base px-1.5 py-0.5 rounded border border-hairline">3/3 Valid</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="p-1 rounded hover:bg-white text-ink-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</td>
+</tr>
+<!-- ROW 5: Deccan Robotics -->
+<tr class="hover:bg-surface-container-low transition-colors cursor-pointer">
+<td class="py-3 px-4">
+<input class="rounded border-hairline text-primary-strong focus:ring-0 neu-sunken h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-3">
+<div class="h-8 w-8 rounded-lg bg-tertiary-fixed/40 border border-tertiary/20 flex items-center justify-center font-bold text-tertiary">
+                        DR
+                      </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<span class="text-label font-label font-semibold text-on-surface">Deccan Robotics</span>
+<span class="material-symbols-outlined text-[15px] text-primary-container">bolt</span>
+</div>
+<span class="text-caption font-caption text-muted font-mono text-[11px]">CIN: U29309KA2023PTC178902</span>
+</div>
+</div>
+</td>
+<td class="py-3 px-3">
+<span class="text-body-sm font-body-sm text-on-surface">Bengaluru, KA</span>
+<span class="block text-caption font-caption text-muted">Whitefield SEZ</span>
+</td>
+<td class="py-3 px-3">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-caption font-caption font-semibold bg-orange-50 text-primary-strong border border-primary-fixed">
+<span class="material-symbols-outlined text-[13px] text-primary-container">rocket_launch</span>
+                      Fast-Track
+                    </span>
+</td>
+<td class="py-3 px-3">
+<span class="text-caption font-caption font-mono text-ink-muted bg-base px-1.5 py-0.5 rounded border border-hairline">Series A Backed</span>
+</td>
+<td class="py-3 px-4 text-right">
+<button class="p-1 rounded hover:bg-white text-ink-muted hover:text-on-surface transition-colors">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Table Footer Pagination bar -->
+<div class="p-3 border-t border-hairline bg-surface-container-low/30 flex items-center justify-between text-caption font-caption text-ink-muted">
+<span>Showing <strong class="text-on-surface">1 - 5</strong> of 14 submissions</span>
+<div class="flex items-center gap-1">
+<button class="p-1 rounded border border-hairline bg-base hover:bg-white disabled:opacity-40" disabled="">
+<span class="material-symbols-outlined text-[16px]">chevron_left</span>
+</button>
+<button class="px-2.5 py-0.5 rounded border border-primary-strong bg-primary-strong text-white font-semibold">1</button>
+<button class="px-2.5 py-0.5 rounded border border-hairline bg-base hover:bg-white">2</button>
+<button class="px-2.5 py-0.5 rounded border border-hairline bg-base hover:bg-white">3</button>
+<button class="p-1 rounded border border-hairline bg-base hover:bg-white">
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+<!-- ========================================================= -->
+<!-- 5. RIGHT INSPECTION INSPECTOR DRAWER (NxtWave Mobility)   -->
+<!-- ========================================================= -->
+<aside class="xl:col-span-5 bg-surface-container-lowest rounded-xl border border-hairline neu-raised-card flex flex-col p-5 gap-5">
+<!-- Inspector Header -->
+<div class="flex items-start justify-between border-b border-hairline pb-4">
+<div class="flex items-center gap-3">
+<div class="h-11 w-11 rounded-xl bg-base-tint border border-outline-variant flex items-center justify-center font-bold text-lg text-primary-strong shadow-raised-sm">
+                NM
+              </div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h3 class="text-ws-card-title font-ws-card-title font-bold text-on-surface text-base">NxtWave Mobility Pvt Ltd</h3>
+<span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+</div>
+<span class="text-caption font-caption text-ink-muted font-mono">GSTIN: 29AAGCN2891K1Z5</span>
+</div>
+</div>
+<div class="flex items-center gap-1">
+<button class="p-1.5 rounded-lg border border-hairline bg-base hover:bg-surface-container text-ink-muted" title="Open in new window">
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</button>
+<button class="p-1.5 rounded-lg border border-hairline bg-base hover:bg-surface-container text-ink-muted" title="Close Panel">
+<span class="material-symbols-outlined text-[16px]">close</span>
+</button>
+</div>
+</div>
+<!-- Section 1: MCA ROC Registration Status -->
+<div class="flex flex-col gap-2.5 bg-base/50 p-3.5 rounded-lg border border-hairline neu-sunken">
+<div class="flex items-center justify-between">
+<span class="text-caption font-caption text-ink-muted font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-tertiary">assured_workload</span>
+                MCA ROC Registration
+              </span>
+<span class="text-[11px] font-semibold text-emerald-800 bg-emerald-100/70 border border-emerald-300 px-2 py-0.5 rounded">Active &amp; Compliant</span>
+</div>
+<div class="grid grid-cols-2 gap-2 text-caption font-caption pt-1 text-xs">
+<div>
+<span class="text-muted block">ROC RoC-Bangalore:</span>
+<span class="font-mono font-medium text-on-surface">Registered (2021)</span>
+</div>
+<div>
+<span class="text-muted block">Paid-up Capital:</span>
+<span class="font-mono font-medium text-on-surface">₹ 2,50,00,000</span>
+</div>
+<div>
+<span class="text-muted block">Auth Director 1:</span>
+<span class="font-medium text-on-surface">Rohan Sen (DIN 084219)</span>
+</div>
+<div>
+<span class="text-muted block">Auth Director 2:</span>
+<span class="font-medium text-on-surface">Pooja Nair (DIN 091044)</span>
+</div>
+</div>
+</div>
+<!-- Section 2: GSTIN & Technical Checklist -->
+<div class="flex flex-col gap-2">
+<span class="text-caption font-caption text-ink-muted font-semibold uppercase tracking-wider text-[11px]">Compliance Checklist</span>
+<div class="space-y-1.5">
+<!-- Item 1 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-white border border-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 fill-icon">check_circle</span>
+<span class="text-caption font-caption font-medium text-on-surface">GSTIN Status (Live API)</span>
+</div>
+<span class="text-caption font-caption font-mono text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded text-[11px]">Regular Active</span>
+</div>
+<!-- Item 2 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-white border border-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 fill-icon">check_circle</span>
+<span class="text-caption font-caption font-medium text-on-surface">Domain SPF &amp; DKIM Records</span>
+</div>
+<span class="text-caption font-caption font-mono text-tertiary bg-sky-50 px-1.5 py-0.5 rounded text-[11px]">nxtwavemobility.in</span>
+</div>
+<!-- Item 3 -->
+<div class="flex items-center justify-between p-2 rounded-lg bg-white border border-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-emerald-600 fill-icon">check_circle</span>
+<span class="text-caption font-caption font-medium text-on-surface">Authorized Email Domain Match</span>
+</div>
+<span class="text-caption font-caption font-mono text-muted text-[11px]">rohan@nxtwave...</span>
+</div>
+</div>
+</div>
+<!-- Section 3: Uploaded Incorporation Documents (PDF Preview Chips) -->
+<div class="flex flex-col gap-2">
+<div class="flex items-center justify-between">
+<span class="text-caption font-caption text-ink-muted font-semibold uppercase tracking-wider text-[11px]">Incorporation Files (3)</span>
+<button class="text-[11px] font-button-sm text-primary-strong hover:underline font-semibold">View All</button>
+</div>
+<div class="grid grid-cols-2 gap-2">
+<!-- Chip 1: Certificate of Incorporation -->
+<div class="p-2.5 rounded-lg border border-hairline bg-surface-container-low hover:bg-base-tint transition-all cursor-pointer flex items-center gap-2.5 neu-raised-sm group">
+<div class="p-1.5 rounded bg-error-container/60 text-error shrink-0">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption font-caption font-semibold text-on-surface truncate group-hover:text-primary-strong text-xs">COI_NxtWave.pdf</span>
+<span class="text-[11px] font-mono text-muted">2.4 MB • MCA Seal</span>
+</div>
+</div>
+<!-- Chip 2: GST Registration Certificate -->
+<div class="p-2.5 rounded-lg border border-hairline bg-surface-container-low hover:bg-base-tint transition-all cursor-pointer flex items-center gap-2.5 neu-raised-sm group">
+<div class="p-1.5 rounded bg-error-container/60 text-error shrink-0">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="text-caption font-caption font-semibold text-on-surface truncate group-hover:text-primary-strong text-xs">GST_REG_06.pdf</span>
+<span class="text-[11px] font-mono text-muted">1.1 MB • Validated</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Admin Verification Notes Input -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="text-caption font-caption text-ink-muted font-semibold text-xs">Verification Review Log / Internal Note</label>
+<span class="text-[11px] text-muted font-mono">Auto-logged as Vikram M.</span>
+</div>
+<div class="neu-sunken bg-sunken/40 border border-hairline rounded-lg p-2.5">
+<textarea class="bg-transparent border-none p-0 text-caption font-caption text-on-surface placeholder:text-muted focus:ring-0 w-full outline-none resize-none" placeholder="Add compliance observations (e.g. Verified with Karnataka ROC portal; all authorized signatories verified via Aadhaar OTP)..." rows="2">Verified ROC MCA filing and confirmed active GST filings till Q3 2024. Domain whois matches incorporation address.</textarea>
+</div>
+</div>
+<!-- Section 5: Decision Action Buttons (Exact Brand Tokens) -->
+<div class="pt-2 border-t border-hairline flex flex-col gap-2">
+<!-- Primary Action: Solid #9A3F0A Button -->
+<button class="w-full py-2.5 px-4 rounded-lg bg-primary-strong hover:bg-primary-pressed text-white text-button font-button flex items-center justify-center gap-2 shadow-raised-sm neu-button-active transition-all">
+<span class="material-symbols-outlined text-[19px]">verified</span>
+<span>Approve &amp; Verify Entity</span>
+</button>
+<!-- Secondary Decision Row -->
+<div class="grid grid-cols-2 gap-2">
+<button class="py-2 px-3 rounded-lg border border-hairline bg-base hover:bg-surface-container text-ink-muted text-button-sm font-button-sm flex items-center justify-center gap-1.5 neu-raised-sm active:neu-sunken transition-all">
+<span class="material-symbols-outlined text-[16px]">contact_support</span>
+<span>Request Info</span>
+</button>
+<button class="py-2 px-3 rounded-lg border border-error/40 bg-white hover:bg-error-container/30 text-error text-button-sm font-button-sm flex items-center justify-center gap-1.5 neu-raised-sm active:neu-sunken transition-all">
+<span class="material-symbols-outlined text-[16px]">block</span>
+<span>Reject Dossier</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

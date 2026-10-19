@@ -1,0 +1,90 @@
+{
+  "project": "projects/9802537347684928858",
+  "designSystem": "assets/e7eaf9641ec14d9ca452e9238ded3026",
+  "screens": {
+    "admin-queue-desktop": {
+      "screen": "projects/9802537347684928858/screens/9908b432b55d401db03ea020eb203231",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "2218"
+    },
+    "candidate-dashboard-desktop-dark": {
+      "screen": "projects/9802537347684928858/screens/957869523727453088ee81d3946fcb5e",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "3430"
+    },
+    "candidate-dashboard-desktop": {
+      "screen": "projects/9802537347684928858/screens/28ea2082c5e64e948c2c7b3b095a01ac",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "3426"
+    },
+    "candidate-dashboard-mobile": {
+      "screen": "projects/9802537347684928858/screens/3f525dc90fb240809d6adf05c3fb06bd",
+      "device": "MOBILE",
+      "width": "780",
+      "height": "3186"
+    },
+    "employer-pipeline-desktop-dark": {
+      "screen": "projects/9802537347684928858/screens/38bd5f488c3c46b8b7973f41dab4c895",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "2048"
+    },
+    "employer-pipeline-desktop": {
+      "screen": "projects/9802537347684928858/screens/e2cd9832daa845d281ae54b0c1313e91",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "2048"
+    },
+    "home-desktop-dark": {
+      "screen": "projects/9802537347684928858/screens/7846dab1f68b426b87aea5fbf4efa13a",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "6990"
+    },
+    "home-desktop": {
+      "screen": "projects/9802537347684928858/screens/469be1a466b142228f9a6a51b0466af9",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "6970"
+    },
+    "home-mobile-dark": {
+      "screen": "projects/9802537347684928858/screens/8947c28ed8eb414eb5139389ade459d7",
+      "device": "MOBILE",
+      "width": "780",
+      "height": "3640"
+    },
+    "home-mobile": {
+      "screen": "projects/9802537347684928858/screens/35e2556743ed44fa909e0b2c75cbd005",
+      "device": "MOBILE",
+      "width": "780",
+      "height": "3638"
+    },
+    "job-detail-desktop": {
+      "screen": "projects/9802537347684928858/screens/4ad4a4f7d4af4de2a83a7c625012a065",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "6006"
+    },
+    "job-detail-mobile": {
+      "screen": "projects/9802537347684928858/screens/7eb1220eef6a4ddf829316f0d6d57529",
+      "device": "MOBILE",
+      "width": "780",
+      "height": "4876"
+    },
+    "jobs-search-desktop": {
+      "screen": "projects/9802537347684928858/screens/f5c4b8acbf2f40c3a7462cd7da9e5211",
+      "device": "DESKTOP",
+      "width": "2560",
+      "height": "2478"
+    },
+    "jobs-search-mobile": {
+      "screen": "projects/9802537347684928858/screens/edc0d0a3db8f4333bf37aa62ade847f6",
+      "device": "MOBILE",
+      "width": "780",
+      "height": "2998"
+    }
+  }
+}

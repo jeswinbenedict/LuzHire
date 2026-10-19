@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+
+<html class="h-full" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire - Workspace Hiring Pipeline</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Inter, Plus Jakarta Sans, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "on-secondary-container": "#6c3400",
+            "on-tertiary-fixed": "#001e2d",
+            "inverse-surface": "#3b2e26",
+            "surface-container-lowest": "#ffffff",
+            "on-primary": "#ffffff",
+            "secondary-fixed": "#ffdcc6",
+            "disabled": "#9A9EA6",
+            "on-surface": "#241913",
+            "dark-outline": "#6E737B",
+            "dark-base": "#1D1F23",
+            "on-primary-container": "#602a00",
+            "surface-container": "#ffeadf",
+            "on-tertiary": "#ffffff",
+            "inverse-primary": "#ffb68c",
+            "error": "#ba1a1a",
+            "on-primary-fixed-variant": "#753400",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "on-secondary-fixed-variant": "#713700",
+            "sunken": "#E4E1DA",
+            "on-primary-fixed": "#321200",
+            "tertiary": "#00658b",
+            "surface-tint": "#9a4600",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "primary-pressed": "#E86D12",
+            "dark-ink": "#F2F2EF",
+            "tertiary-fixed": "#c5e7ff",
+            "on-surface-variant": "#574236",
+            "primary-container": "#fe8022",
+            "inverse-on-surface": "#ffede5",
+            "surface-container-highest": "#f4ded3",
+            "secondary": "#954a00",
+            "primary-fixed": "#ffdbc9",
+            "outline": "#85817A",
+            "surface-variant": "#f4ded3",
+            "base": "#EEECE7",
+            "surface-dim": "#ecd6cb",
+            "on-secondary-fixed": "#301400",
+            "muted": "#5A5F66",
+            "outline-variant": "#dfc0b1",
+            "hairline": "#DAD6CE",
+            "dark-hairline": "#2B2E34",
+            "surface-bright": "#fff8f5",
+            "dark-ink-muted": "#C9CCD1",
+            "highlight": "#FFFFFF",
+            "surface-container-high": "#fae4d9",
+            "surface": "#fff8f5",
+            "on-secondary": "#ffffff",
+            "surface-container-low": "#fff1ea",
+            "ink": "#14110F",
+            "dark-shade": "#0E0F11",
+            "on-tertiary-container": "#003e57",
+            "dark-sunken": "#16171A",
+            "dark-muted": "#9EA2AA",
+            "background": "#fff8f5",
+            "dark-highlight": "#2A2D33",
+            "shade": "#CBC5BA",
+            "dark-disabled": "#63676E",
+            "base-tint": "#F7E6D8",
+            "secondary-fixed-dim": "#ffb785",
+            "secondary-container": "#fc984b",
+            "primary-strong": "#9A3F0A",
+            "ink-muted": "#3D4148",
+            "on-error-container": "#93000a",
+            "on-background": "#241913",
+            "primary": "#9a4600",
+            "dark-base-tint": "#2A1F17",
+            "error-container": "#ffdad6",
+            "primary-fixed-dim": "#ffb68c",
+            "on-error": "#ffffff",
+            "tertiary-container": "#00afed"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "margin": "24px",
+            "space-xxl": "48px",
+            "space-sm": "12px",
+            "space-lg": "24px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-xxs": "4px",
+            "space-xs": "8px",
+            "space-xl": "32px",
+            "space-section": "96px"
+          },
+          "fontFamily": {
+            "body-md": ["Inter"],
+            "headline-1": ["Plus Jakarta Sans"],
+            "headline-3": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "eyebrow": ["Inter"],
+            "button-sm": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "caption": ["Inter"],
+            "label": ["Inter"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "body-sm": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "ws-section": ["Inter"],
+            "button": ["Inter"],
+            "ws-title": ["Inter"],
+            "headline-2": ["Plus Jakarta Sans"],
+            "mono": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Neumorphic Dual-Shadow Relief Utilities */
+    .neu-raised-sm {
+      box-shadow: -2px -2px 5px #FFFFFF, 2px 2px 5px #CBC5BA;
+    }
+    .neu-raised-card {
+      box-shadow: -3px -3px 6px #FFFFFF, 3px 3px 6px #CBC5BA;
+    }
+    .neu-raised-panel {
+      box-shadow: -5px -5px 12px #FFFFFF, 5px 5px 12px #CBC5BA;
+    }
+    .neu-inset-sm {
+      box-shadow: inset 1.5px 1.5px 3px #CBC5BA, inset -1.5px -1.5px 3px #FFFFFF;
+    }
+    .neu-inset-well {
+      box-shadow: inset 2px 2px 5px #CBC5BA, inset -2px -2px 5px #FFFFFF;
+    }
+    .neu-pressed {
+      box-shadow: inset 2px 2px 4px #CBC5BA, inset -2px -2px 4px #FFFFFF;
+    }
+    .active-card-glow {
+      box-shadow: 0 0 0 2px #FE8022, -3px -3px 6px #FFFFFF, 3px 3px 6px #CBC5BA;
+    }
+    
+    /* Custom Scrollbar for Kanban Trays */
+    .kanban-scroll::-webkit-scrollbar {
+      height: 8px;
+      width: 6px;
+    }
+    .kanban-scroll::-webkit-scrollbar-track {
+      background: #E4E1DA;
+      border-radius: 4px;
+    }
+    .kanban-scroll::-webkit-scrollbar-thumb {
+      background: #CBC5BA;
+      border-radius: 4px;
+    }
+    .kanban-scroll::-webkit-scrollbar-thumb:hover {
+      background: #85817A;
+    }
+  </style>
+</head>
+<body class="bg-base text-ink font-body-sm text-body-sm antialiased h-full overflow-hidden select-none">
+<!-- Main View Container -->
+<div class="flex h-screen w-screen overflow-hidden bg-base">
+<!-- 1. SideNavBar Component from Shared Components JSON -->
+<aside class="w-60 h-screen fixed left-0 top-0 z-30 flex flex-col justify-between p-space-sm bg-base border-r border-hairline shrink-0 shadow-[2px_0_4px_#CBC5BA]">
+<!-- Top Section: Brand & Nav Links -->
+<div class="flex flex-col gap-space-md">
+<!-- Brand Header -->
+<div class="flex items-center gap-space-xs px-1 py-1">
+<div class="w-8 h-8 rounded-lg bg-[#131314] flex items-center justify-center relative shadow-sm shrink-0">
+<span class="text-white font-headline-4 text-headline-4 font-bold text-base leading-none">L</span>
+<span class="w-2 h-2 rounded-full bg-primary-container absolute top-1.5 right-1.5"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-4 text-headline-4 font-bold text-on-surface tracking-tight text-base leading-tight">LuzHire</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 rounded bg-sunken text-ink-muted border border-hairline font-medium leading-none">PRO</span>
+</div>
+<span class="font-body-sm text-body-sm text-muted text-[11px] truncate">Acme Engineering</span>
+</div>
+</div>
+<!-- Section: WORKSPACE TABS (Mapped to Shared Component JSON tabs) -->
+<div class="flex flex-col gap-1">
+<div class="px-2 py-1 font-label text-label text-[11px] font-semibold text-muted uppercase tracking-wider">Workspace</div>
+<!-- Tab 1: Jobs & Pipelines (Semantic Match for Pipeline / Jobs Pipeline - ACTIVE) -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 bg-sunken text-on-surface font-semibold rounded-lg border-l-[3px] border-primary-container shadow-inner" href="#">
+<span class="material-symbols-outlined text-primary-strong text-lg">work</span>
+<span class="truncate flex-1 font-label text-label text-sm">Jobs &amp; Pipelines</span>
+<span class="font-mono text-mono text-xs px-1.5 py-0.2 rounded-full bg-base border border-hairline text-ink-muted font-medium">8</span>
+</a>
+<!-- Tab 2: Candidates -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-muted text-lg">group</span>
+<span class="truncate flex-1 font-label text-label text-sm">Candidates</span>
+<span class="font-mono text-mono text-xs px-1.5 py-0.2 rounded-full bg-sunken text-ink-muted font-medium">142</span>
+</a>
+<!-- Tab 3: Talent Pool -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-muted text-lg">database</span>
+<span class="truncate flex-1 font-label text-label text-sm">Talent Pool</span>
+</a>
+<!-- Tab 4: Analytics -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-muted text-lg">bar_chart</span>
+<span class="truncate flex-1 font-label text-label text-sm">Analytics</span>
+</a>
+<!-- Tab 5: Company Settings -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-muted text-lg">settings</span>
+<span class="truncate flex-1 font-label text-label text-sm">Company Settings</span>
+</a>
+<!-- Tab 6: Team Members -->
+<a class="flex items-center gap-space-xs px-space-sm py-2 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-muted text-lg">badge</span>
+<span class="truncate flex-1 font-label text-label text-sm">Team Members</span>
+</a>
+</div>
+<!-- Section: RECRUITING SUB-OPS -->
+<div class="flex flex-col gap-1">
+<div class="px-2 py-1 font-label text-label text-[11px] font-semibold text-muted uppercase tracking-wider">Schedules</div>
+<a class="flex items-center gap-space-xs px-space-sm py-1.5 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors text-xs" href="#">
+<span class="material-symbols-outlined text-muted text-base">calendar_today</span>
+<span class="truncate flex-1 font-body-sm text-body-sm text-xs">Interviews</span>
+<span class="font-mono text-mono text-[11px] text-primary-strong font-medium">3 today</span>
+</a>
+<a class="flex items-center gap-space-xs px-space-sm py-1.5 text-muted font-medium rounded-lg hover:bg-surface-container-low hover:text-on-surface transition-colors text-xs" href="#">
+<span class="material-symbols-outlined text-muted text-base">mail</span>
+<span class="truncate flex-1 font-body-sm text-body-sm text-xs">Offers</span>
+<span class="font-mono text-mono text-[11px] text-muted">2 pending</span>
+</a>
+</div>
+</div>
+<!-- Footer Section: CTA, Docs & Profile -->
+<div class="flex flex-col gap-2 pt-2 border-t border-hairline">
+<!-- JSON CTA: Invite Teammate -->
+<button class="w-full neu-raised-sm bg-base hover:bg-surface-container-low active:neu-pressed text-ink font-button-sm text-button-sm py-2 px-3 rounded-lg border border-hairline flex items-center justify-center gap-1.5 transition-all text-xs">
+<span class="material-symbols-outlined text-sm text-primary-strong">person_add</span>
+<span>Invite Teammate</span>
+</button>
+<!-- JSON Footer Tabs: Docs & Shortcuts, Support -->
+<div class="grid grid-cols-2 gap-1 py-1">
+<a class="flex items-center gap-1 px-2 py-1 text-muted hover:text-ink text-xs font-body-sm text-body-sm rounded" href="#">
+<span class="material-symbols-outlined text-sm">keyboard</span>
+<span class="truncate">Docs &amp; ⌘K</span>
+</a>
+<a class="flex items-center gap-1 px-2 py-1 text-muted hover:text-ink text-xs font-body-sm text-body-sm rounded" href="#">
+<span class="material-symbols-outlined text-sm">help</span>
+<span class="truncate">Support</span>
+</a>
+</div>
+<!-- Recruiter Profile Badge -->
+<div class="neu-inset-sm bg-sunken p-2 rounded-lg border border-hairline flex items-center justify-between">
+<div class="flex items-center gap-2 min-w-0">
+<div class="relative w-7 h-7 rounded-full bg-primary-fixed flex items-center justify-center text-primary-strong font-semibold text-xs border border-white shrink-0">
+              PS
+              <span class="absolute bottom-0 right-0 w-2 h-2 rounded-full bg-emerald-600 border border-white"></span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-body-sm text-body-sm text-xs font-semibold text-ink truncate leading-tight">Priya Sharma</span>
+<span class="font-caption text-caption text-[10px] text-muted truncate">Lead Recruiter</span>
+</div>
+</div>
+<kbd class="font-mono text-mono text-[10px] px-1 py-0.5 rounded bg-base text-ink-muted border border-hairline shadow-xs">⌘K</kbd>
+</div>
+</div>
+</aside>
+<!-- 2. TopNavBar Component from Shared Components JSON & Kanban Canvas -->
+<div class="flex-1 flex flex-col pl-60 h-screen overflow-hidden">
+<!-- Top Header (Docked full-width top-0 h-14, #EEECE7 background) -->
+<header class="h-14 pl-6 pr-space-lg flex items-center justify-between w-full bg-base border-b border-hairline shadow-[0_2px_4px_#CBC5BA] z-20 shrink-0">
+<!-- Left Cluster: Job Context Selector Pill & Filters -->
+<div class="flex items-center gap-space-sm">
+<!-- Job Title Dropdown Pill -->
+<div class="neu-raised-sm bg-base border border-hairline rounded-lg px-3 py-1.5 flex items-center gap-2.5 cursor-pointer hover:bg-surface-container-low transition-all">
+<div class="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="font-ws-title text-ws-title text-sm font-bold text-ink tracking-tight">Backend Engineer (Go)</span>
+<span class="material-symbols-outlined text-sm text-muted">expand_more</span>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-sunken text-ink-muted border border-hairline font-medium ml-1">42 Candidates</span>
+</div>
+<!-- Metadata Tags -->
+<div class="hidden lg:flex items-center gap-2 text-xs text-muted">
+<span class="neu-inset-sm bg-sunken px-2 py-1 rounded text-ink-muted border border-hairline flex items-center gap-1 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[13px]">domain</span> Platform Eng
+            </span>
+<span class="neu-inset-sm bg-sunken px-2 py-1 rounded text-ink-muted border border-hairline flex items-center gap-1 font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[13px]">location_on</span> Bengaluru / Hybrid
+            </span>
+</div>
+<!-- Navigation Sub-Links (Shared Component TopNavBar) -->
+<div class="hidden xl:flex items-center gap-4 ml-3 border-l border-hairline pl-4 text-xs font-label text-label">
+<a class="text-primary-strong font-semibold border-b-2 border-primary-container pb-1" href="#">Pipeline</a>
+<a class="text-muted hover:text-on-surface transition-colors pb-1" href="#">Candidates List</a>
+<a class="text-muted hover:text-on-surface transition-colors pb-1" href="#">Job Details</a>
+<a class="text-muted hover:text-on-surface transition-colors pb-1" href="#">Analytics</a>
+</div>
+</div>
+<!-- Center: Search Input Inset Well -->
+<div class="w-72 lg:w-80 relative mx-2">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-muted text-base">search</span>
+<input class="w-full bg-sunken neu-inset-well border border-outline rounded-lg pl-8 pr-10 py-1.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm text-body-sm" placeholder="Filter candidates or press ⌘K..." type="text"/>
+<kbd class="font-mono text-mono absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] bg-base px-1.5 py-0.5 rounded border border-hairline text-ink-muted">⌘K</kbd>
+</div>
+<!-- Right: Actions, Metric Badges & Primary CTA -->
+<div class="flex items-center gap-2.5 shrink-0">
+<!-- Quick Stats Pill -->
+<div class="hidden 2xl:flex items-center gap-3 px-2.5 py-1 rounded-lg neu-inset-sm bg-sunken border border-hairline text-xs font-mono text-mono">
+<div>Avg: <span class="text-ink font-semibold">18d</span></div>
+<div class="w-1 h-3 border-r border-hairline"></div>
+<div>Match: <span class="text-primary-strong font-semibold">84%</span></div>
+</div>
+<!-- Trailing Icon Action: Notifications -->
+<button class="neu-raised-sm bg-base border border-hairline p-1.5 rounded-lg text-ink-muted hover:text-ink relative transition-all" title="Notifications">
+<span class="material-symbols-outlined text-lg leading-none">notifications</span>
+<span class="w-2 h-2 rounded-full bg-primary-container absolute top-1 right-1"></span>
+</button>
+<!-- Trailing Icon Action: Tune -->
+<button class="neu-raised-sm bg-base border border-hairline p-1.5 rounded-lg text-ink-muted hover:text-ink transition-all" title="Filter Settings">
+<span class="material-symbols-outlined text-lg leading-none">tune</span>
+</button>
+<!-- Trailing Secondary Action: Share Pipeline -->
+<button class="neu-raised-sm bg-base hover:bg-surface-container-low active:neu-pressed border border-hairline text-ink font-button-sm text-button-sm px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-xs transition-all">
+<span class="material-symbols-outlined text-sm">ios_share</span>
+<span class="hidden sm:inline">Share pipeline</span>
+</button>
+<!-- Trailing Primary Action: Post a Job -->
+<button class="bg-primary-strong hover:bg-primary-pressed active:scale-95 text-on-primary font-button-sm text-button-sm px-3.5 py-1.5 rounded-lg shadow-sm flex items-center gap-1 text-xs font-semibold transition-all">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>Post a job</span>
+</button>
+</div>
+</header>
+<!-- 3. Pipeline Kanban Canvas + Candidate Inspector Drawer -->
+<div class="flex-1 flex overflow-hidden relative">
+<!-- Horizontally Scrollable Kanban Board Workspace -->
+<main class="flex-1 overflow-x-auto overflow-y-hidden p-space-md kanban-scroll bg-base">
+<div class="inline-flex gap-4 h-full items-start pr-space-lg">
+<!-- COLUMN 1: APPLIED (24) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0">
+<!-- Column Header -->
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Applied</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-base border border-hairline text-ink-muted font-medium">24</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<!-- Cards List -->
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<!-- Candidate: Meera Sundaram -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        MS
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Meera Sundaram</h4>
+<p class="font-caption text-caption text-[11px] text-muted">SDE 2 @ Zeta</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-fixed text-primary-strong font-bold border border-primary-container/30">89%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">payments</span> ₹24 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 4y exp</span>
+<span>Pune</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Golang</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">AWS</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Microservices</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> 1d ago</span>
+<span class="material-symbols-outlined text-xs text-muted hover:text-primary-strong">bookmark</span>
+</div>
+</div>
+<!-- Candidate: Vikram Nair -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        VN
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Vikram Nair</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Software Engineer @ CRED</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-fixed text-primary-strong font-bold border border-primary-container/30">88%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">payments</span> ₹22 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 3y exp</span>
+<span>Bengaluru</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Go</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">PostgreSQL</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Kafka</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> 2d ago</span>
+<span class="material-symbols-outlined text-xs text-muted hover:text-primary-strong">bookmark</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN 2: SCREENING (9) - INCLUDES SELECTED CANDIDATE (Rohan Deshmukh) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0">
+<!-- Column Header -->
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Screening</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-[#E6EBF7] text-[#1D4ED8] border border-blue-200 font-semibold">9</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<!-- Cards List -->
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<!-- Selected Candidate: Rohan Deshmukh (ACTIVE CARD GLOW) -->
+<div class="bg-base p-3 rounded-lg border border-primary-container active-card-glow cursor-pointer relative transition-all">
+<!-- Active Indicator Pip -->
+<div class="absolute -left-1 top-4 w-2 h-4 rounded-r bg-primary-container"></div>
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-secondary-fixed text-primary-strong border border-primary-container flex items-center justify-center font-mono text-mono text-xs font-bold shrink-0">
+                        RD
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Rohan Deshmukh</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Sr. Go Developer @ Swiggy</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-container text-white font-bold shadow-xs">96%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5 text-ink font-medium"><span class="material-symbols-outlined text-xs text-primary-strong">payments</span> ₹26 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 5y exp</span>
+<span>BLR</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink font-medium">Go</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink font-medium">gRPC</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink font-medium">Dist. Systems</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1 font-semibold text-primary-strong"><span class="material-symbols-outlined text-[12px]">check_circle</span> Screened by Priya</span>
+<span class="material-symbols-outlined text-xs text-primary-container" style="font-variation-settings: 'FILL' 1;">bookmark</span>
+</div>
+</div>
+<!-- Candidate: Ananya Krishnan -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        AK
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Ananya Krishnan</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Backend Eng @ Razorpay</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-fixed text-primary-strong font-bold border border-primary-container/30">91%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">payments</span> ₹21 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 3.5y exp</span>
+<span>Chennai</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Go</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">PostgreSQL</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Redis</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">schedule</span> 3d ago</span>
+<span class="material-symbols-outlined text-xs text-muted hover:text-primary-strong">bookmark</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN 3: INTERVIEW (5) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0">
+<!-- Column Header -->
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Interview</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-[#ECE5F7] text-[#6D28D9] border border-purple-200 font-semibold">5</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<!-- Cards List -->
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<!-- Candidate: Karthik Rao -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        KR
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Karthik Rao</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Cloud Systems @ PhonePe</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-fixed text-primary-strong font-bold border border-primary-container/30">94%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">payments</span> ₹28 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 6y exp</span>
+<span>Hyderabad</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Go</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Kubernetes</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Kafka</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-[#6D28D9] font-medium"><span class="material-symbols-outlined text-[12px]">event</span> Round 2 Tomorrow</span>
+<span class="material-symbols-outlined text-xs text-muted">bookmark</span>
+</div>
+</div>
+<!-- Candidate: Aditya Verma -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        AV
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Aditya Verma</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Backend Lead @ Freshworks</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-container text-white font-bold shadow-xs">97%</span>
+</div>
+<div class="flex items-center justify-between text-[11px] text-muted my-2 font-mono text-mono">
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">payments</span> ₹32 LPA</span>
+<span class="flex items-center gap-0.5"><span class="material-symbols-outlined text-xs">schedule</span> 7y exp</span>
+<span>Remote</span>
+</div>
+<div class="flex flex-wrap gap-1 mb-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Go</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">Rust</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">High Throughput</span>
+</div>
+<div class="flex items-center justify-between pt-1.5 border-t border-hairline text-[10px] font-body-sm text-body-sm">
+<span class="flex items-center gap-1 text-[#6D28D9] font-medium"><span class="material-symbols-outlined text-[12px]">videocam</span> Architect Interview</span>
+<span class="material-symbols-outlined text-xs text-muted">bookmark</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN 4: OFFER (2) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0">
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Offer</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-[#FBE4D3] text-[#9A3412] border border-orange-200 font-semibold">2</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<!-- Offer Card -->
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer hover:-translate-y-0.5 transition-all">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-sunken border border-outline flex items-center justify-center font-mono text-mono text-xs font-semibold text-ink shrink-0">
+                        TP
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Tanmay Patel</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Staff Go Dev @ InMobi</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-primary-fixed text-primary-strong font-bold border border-primary-container/30">95%</span>
+</div>
+<div class="p-2 my-2 rounded bg-sunken border border-hairline neu-inset-sm flex flex-col gap-1">
+<div class="flex justify-between items-center text-xs">
+<span class="font-mono text-mono text-[11px] text-muted">Offer CTC:</span>
+<span class="font-mono text-mono font-bold text-ink text-xs">₹34.5 LPA</span>
+</div>
+<div class="flex justify-between items-center text-[10px] text-muted font-body-sm text-body-sm">
+<span>Expires in 3 days</span>
+<span class="text-primary-strong font-semibold">Pending Signature</span>
+</div>
+</div>
+<div class="flex items-center justify-between text-[10px] text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[12px]">send</span> Sent Oct 15</span>
+<span class="material-symbols-outlined text-xs text-muted">bookmark</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN 5: HIRED (1) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0">
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Hired</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-[#E3F1E6] text-[#166534] border border-green-200 font-semibold">1</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<div class="neu-raised-card bg-base p-3 rounded-lg border border-hairline cursor-pointer opacity-95">
+<div class="flex items-start justify-between gap-1 mb-1.5">
+<div class="flex items-center gap-2">
+<div class="w-7 h-7 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 flex items-center justify-center font-mono text-mono text-xs font-bold shrink-0">
+                        SB
+                      </div>
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink leading-tight">Siddharth Basu</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Joined Platform Core</p>
+</div>
+</div>
+<span class="font-mono text-mono text-[11px] px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">Offer Accepted</span>
+</div>
+<div class="text-[11px] text-muted font-mono text-mono my-1.5">
+                    Joining Date: <span class="text-ink font-medium">Nov 1, 2024</span>
+</div>
+</div>
+</div>
+</div>
+<!-- COLUMN 6: REJECTED (12) -->
+<div class="w-[272px] h-full flex flex-col rounded-xl bg-sunken neu-inset-sm border border-outline/50 p-2.5 shrink-0 opacity-80 hover:opacity-100 transition-opacity">
+<div class="flex items-center justify-between mb-2.5 px-1">
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title text-xs font-semibold text-ink">Rejected</span>
+<span class="font-mono text-mono text-[11px] px-2 py-0.5 rounded-full bg-[#F6E3E1] text-[#B91C1C] border border-red-200 font-semibold">12</span>
+</div>
+<button class="text-muted hover:text-ink"><span class="material-symbols-outlined text-sm">more_horiz</span></button>
+</div>
+<div class="flex-1 overflow-y-auto space-y-2.5 pr-1 kanban-scroll">
+<div class="bg-base/70 p-3 rounded-lg border border-hairline">
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-semibold text-muted">Gaurav Sethi</h4>
+<p class="font-caption text-caption text-[11px] text-muted">Comp expectation mismatch (&gt;₹45 LPA)</p>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- 4. Open Right-Side Candidate Drawer (380px width, raised-md panel inspecting 'Rohan Deshmukh') -->
+<aside class="w-[390px] h-full bg-base border-l border-hairline neu-raised-panel flex flex-col shrink-0 z-10 overflow-y-auto kanban-scroll">
+<!-- Drawer Header -->
+<div class="p-space-md border-b border-hairline bg-base sticky top-0 z-10 shadow-xs">
+<div class="flex items-start justify-between gap-3 mb-2">
+<div class="flex items-center gap-3">
+<div class="w-11 h-11 rounded-full bg-secondary-fixed text-primary-strong border border-primary-container flex items-center justify-center font-mono text-mono text-base font-bold shrink-0 neu-raised-sm">
+                  RD
+                </div>
+<div>
+<div class="flex items-center gap-1.5">
+<h3 class="font-ws-title text-ws-title text-base font-bold text-ink">Rohan Deshmukh</h3>
+<span class="material-symbols-outlined text-sm text-primary-strong" title="Verified Candidate">verified</span>
+</div>
+<p class="font-body-sm text-body-sm text-xs text-muted">Sr. Backend Engineer at Swiggy</p>
+</div>
+</div>
+<button class="w-7 h-7 rounded-full neu-raised-sm bg-base border border-hairline flex items-center justify-center text-muted hover:text-ink active:neu-pressed transition-all">
+<span class="material-symbols-outlined text-sm">close</span>
+</button>
+</div>
+<div class="flex items-center gap-3 text-xs text-ink-muted font-body-sm text-body-sm mt-1">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-xs">location_on</span> Bengaluru, KA (Hybrid)</span>
+<span>•</span>
+<span class="font-mono text-mono text-primary-strong font-medium">30d Notice</span>
+</div>
+<!-- Quick Action Bar -->
+<div class="grid grid-cols-3 gap-2 mt-4">
+<button class="bg-primary-strong hover:bg-primary-pressed active:scale-95 text-on-primary font-button-sm text-button-sm py-2 px-2 rounded-lg text-xs font-semibold shadow flex items-center justify-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm">trending_flat</span>
+<span>To Interview</span>
+</button>
+<button class="neu-raised-sm bg-base hover:bg-surface-container-low active:neu-pressed border border-hairline text-ink font-button-sm text-button-sm py-2 px-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm text-muted">calendar_add_on</span>
+<span>Call</span>
+</button>
+<button class="neu-raised-sm bg-base hover:bg-red-50 active:neu-pressed border border-hairline text-error font-button-sm text-button-sm py-2 px-2 rounded-lg text-xs font-medium flex items-center justify-center gap-1 transition-all">
+<span class="material-symbols-outlined text-sm">block</span>
+<span>Reject</span>
+</button>
+</div>
+</div>
+<!-- Drawer Body Content -->
+<div class="p-space-md space-y-5">
+<!-- Match Score Neumorphic Meter -->
+<div class="neu-inset-sm bg-sunken p-3.5 rounded-xl border border-outline/60">
+<div class="flex items-center justify-between mb-3">
+<span class="font-label text-label text-xs font-semibold text-ink flex items-center gap-1.5">
+<span class="material-symbols-outlined text-primary-container text-sm" style="font-variation-settings: 'FILL' 1;">stars</span>
+                  LuzScore AI Matching
+                </span>
+<span class="font-mono text-mono text-base font-bold text-primary-strong bg-base px-2 py-0.5 rounded border border-hairline">96%</span>
+</div>
+<!-- Breakdown Progress Bars -->
+<div class="space-y-2 text-xs font-body-sm text-body-sm">
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-muted">Core Skills (Go, gRPC, Concurrency)</span>
+<span class="font-mono text-mono font-semibold text-ink">100%</span>
+</div>
+<div class="h-1.5 w-full bg-base rounded-full overflow-hidden border border-hairline">
+<div class="h-full bg-primary-container rounded-full" style="width: 100%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-muted">Experience &amp; Scale (5y, Microservices)</span>
+<span class="font-mono text-mono font-semibold text-ink">95%</span>
+</div>
+<div class="h-1.5 w-full bg-base rounded-full overflow-hidden border border-hairline">
+<div class="h-full bg-primary-container rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between text-[11px] mb-1">
+<span class="text-muted">Compensation Range Match</span>
+<span class="font-mono text-mono font-semibold text-ink">92%</span>
+</div>
+<div class="h-1.5 w-full bg-base rounded-full overflow-hidden border border-hairline">
+<div class="h-full bg-primary-container rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Compensation Details Tile -->
+<div class="neu-raised-card bg-base p-3.5 rounded-xl border border-hairline">
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink mb-2.5 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-primary-strong">currency_rupee</span>
+                Compensation Benchmark
+              </h4>
+<div class="grid grid-cols-2 gap-3 text-xs">
+<div class="neu-inset-sm bg-sunken p-2.5 rounded-lg border border-hairline">
+<span class="text-[11px] text-muted block mb-0.5">Current CTC</span>
+<span class="font-mono text-mono text-sm font-bold text-ink">₹22.0 LPA</span>
+<span class="text-[10px] text-muted block mt-0.5 font-body-sm text-body-sm">Swiggy Base + Ret.</span>
+</div>
+<div class="neu-inset-sm bg-sunken p-2.5 rounded-lg border border-hairline">
+<span class="text-[11px] text-muted block mb-0.5">Expected CTC</span>
+<span class="font-mono text-mono text-sm font-bold text-primary-strong">₹26–28 LPA</span>
+<span class="text-[10px] text-emerald-700 block mt-0.5 font-medium font-body-sm text-body-sm">Within Band (Max 30)</span>
+</div>
+</div>
+</div>
+<!-- Resume Preview Inset Tile -->
+<div class="neu-inset-well bg-sunken p-3 rounded-xl border border-outline flex items-center justify-between">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-10 bg-base rounded border border-hairline neu-raised-sm flex items-center justify-center text-primary-strong shrink-0">
+<span class="material-symbols-outlined text-lg">description</span>
+</div>
+<div class="min-w-0">
+<span class="font-body-sm text-body-sm text-xs font-semibold text-ink block truncate">Rohan_Deshmukh_Golang_Resume.pdf</span>
+<span class="font-mono text-mono text-[10px] text-muted">1.2 MB • Updated 12 Oct</span>
+</div>
+</div>
+<button class="neu-raised-sm bg-base px-2.5 py-1 rounded text-xs font-semibold text-primary-strong hover:bg-surface-container-low border border-hairline flex items-center gap-1 shrink-0">
+<span class="material-symbols-outlined text-xs">visibility</span>
+                View
+              </button>
+</div>
+<!-- Stage History & Activity Timeline -->
+<div>
+<h4 class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink mb-3 flex items-center gap-1.5">
+<span class="material-symbols-outlined text-sm text-muted">history</span>
+                Pipeline Activity
+              </h4>
+<div class="space-y-3 pl-2 border-l-2 border-hairline ml-2 text-xs font-body-sm text-body-sm">
+<div class="relative pl-3">
+<div class="w-2.5 h-2.5 rounded-full bg-primary-container absolute -left-[18px] top-1 border-2 border-base"></div>
+<div class="flex justify-between items-baseline">
+<span class="font-semibold text-ink">Screened by Priya Sharma</span>
+<span class="font-mono text-mono text-[10px] text-muted">Oct 16, 11:30 AM</span>
+</div>
+<p class="text-[11px] text-muted mt-0.5">Recommended moving directly to Round 2 Architecture interview due to strong system design portfolio.</p>
+</div>
+<div class="relative pl-3">
+<div class="w-2.5 h-2.5 rounded-full bg-muted absolute -left-[18px] top-1 border-2 border-base"></div>
+<div class="flex justify-between items-baseline">
+<span class="font-semibold text-ink">Applied via Careers Page</span>
+<span class="font-mono text-mono text-[10px] text-muted">Oct 14, 04:12 PM</span>
+</div>
+<p class="text-[11px] text-muted mt-0.5">Matched 96% criteria for Go + Distributed Cache requirement.</p>
+</div>
+</div>
+</div>
+<!-- Notes & Evaluation Well -->
+<div class="neu-raised-card bg-base p-3.5 rounded-xl border border-hairline">
+<div class="flex items-center justify-between mb-2">
+<label class="font-ws-card-title text-ws-card-title text-xs font-bold text-ink" for="recruiter-notes">Recruiter Notes</label>
+<span class="font-mono text-mono text-[10px] text-muted">Saved 10m ago</span>
+</div>
+<textarea class="w-full bg-sunken neu-inset-well border border-outline rounded-lg p-2.5 text-xs text-ink placeholder:text-muted focus:outline-none focus:ring-1 focus:ring-primary-container font-body-sm text-body-sm resize-none" id="recruiter-notes" placeholder="Add private evaluation notes..." rows="3">Strong concurrency experience with gRPC &amp; Raft consensus at scale. Prepared to join within 30 days if Bengaluru hybrid model permits 2 days WFH.</textarea>
+<div class="flex flex-wrap gap-1 mt-2">
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">#StrongConcurrency</span>
+<span class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-sunken rounded border border-hairline text-ink-muted">#DistributedCache</span>
+<button class="font-mono text-mono text-[10px] px-1.5 py-0.5 bg-base rounded border border-hairline text-primary-strong font-medium">+ Tag</button>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</div>
+</div>
+</body></html>

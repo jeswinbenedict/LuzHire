@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire — Candidate Dashboard</title>
+<!-- Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "on-primary": "#14110F",
+            "dark-base": "#1D1F23",
+            "dark-sunken": "#16171A",
+            "dark-highlight": "#2A2D33",
+            "dark-shade": "#0E0F11",
+            "dark-ink": "#F2F2EF",
+            "dark-ink-muted": "#C9CCD1",
+            "dark-muted": "#9EA2AA",
+            "dark-outline": "#6E737B",
+            "dark-hairline": "#2B2E34",
+            "primary-container": "#FE8022",
+            "primary-strong": "#FE8022",
+            "primary": "#FE8022",
+            "ink": "#F2F2EF",
+            "ink-muted": "#C9CCD1",
+            "muted": "#9EA2AA",
+            "outline": "#6E737B",
+            "hairline": "#2B2E34",
+            "base": "#1D1F23",
+            "sunken": "#16171A"
+          },
+          borderRadius: {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          spacing: {
+            "space-section": "96px",
+            "gutter": "16px",
+            "space-md": "16px",
+            "space-xl": "32px",
+            "margin": "24px",
+            "space-xxs": "4px",
+            "space-lg": "24px",
+            "space-xxl": "48px",
+            "space-xs": "8px",
+            "space-sm": "12px"
+          },
+          fontFamily: {
+            "headline-2": ["Plus Jakarta Sans"],
+            "display": ["Plus Jakarta Sans"],
+            "button": ["Inter"],
+            "ws-section": ["Inter"],
+            "ws-title": ["Inter"],
+            "mono": ["JetBrains Mono"],
+            "body-lg": ["Inter"],
+            "eyebrow": ["Inter"],
+            "label": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "caption": ["Inter"],
+            "button-sm": ["Inter"],
+            "body-sm": ["Inter"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "headline-3": ["Plus Jakarta Sans"],
+            "headline-1": ["Plus Jakarta Sans"],
+            "body-md": ["Inter"]
+          },
+          fontSize: {
+            "headline-2": ["36px", { lineHeight: "1.15", letterSpacing: "-0.5px", fontWeight: "700" }],
+            "display": ["64px", { lineHeight: "1.05", letterSpacing: "-1.5px", fontWeight: "800" }],
+            "button": ["15px", { lineHeight: "1", letterSpacing: "0", fontWeight: "600" }],
+            "ws-section": ["18px", { lineHeight: "1.3", letterSpacing: "-0.2px", fontWeight: "600" }],
+            "ws-title": ["24px", { lineHeight: "1.25", letterSpacing: "-0.4px", fontWeight: "600" }],
+            "mono": ["13px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }],
+            "body-lg": ["18px", { lineHeight: "1.6", letterSpacing: "0", fontWeight: "400" }],
+            "eyebrow": ["12px", { lineHeight: "1.3", letterSpacing: "0.6px", fontWeight: "600" }],
+            "label": ["14px", { lineHeight: "1.3", letterSpacing: "0", fontWeight: "500" }],
+            "ws-card-title": ["15px", { lineHeight: "1.35", letterSpacing: "-0.1px", fontWeight: "600" }],
+            "caption": ["12px", { lineHeight: "1.4", letterSpacing: "0", fontWeight: "500" }],
+            "button-sm": ["13px", { lineHeight: "1", letterSpacing: "0", fontWeight: "600" }],
+            "body-sm": ["14px", { lineHeight: "1.5", letterSpacing: "0", fontWeight: "400" }],
+            "headline-4": ["22px", { lineHeight: "1.25", letterSpacing: "-0.2px", fontWeight: "700" }],
+            "headline-3": ["28px", { lineHeight: "1.2", letterSpacing: "-0.3px", fontWeight: "700" }],
+            "headline-1": ["48px", { lineHeight: "1.1", letterSpacing: "-1px", fontWeight: "800" }],
+            "body-md": ["16px", { lineHeight: "1.55", letterSpacing: "0", fontWeight: "400" }]
+          },
+          boxShadow: {
+            "raised-sm": "-3px -3px 7px #2A2D33, 3px 3px 7px #0E0F11",
+            "raised-md": "-6px -6px 14px #2A2D33, 6px 6px 14px #0E0F11",
+            "inset-sm": "inset 2px 2px 4px #0E0F11, inset -2px -2px 4px #2A2D33",
+            "inset-md": "inset 3px 3px 6px #0E0F11, inset -3px -3px 6px #2A2D33",
+            "glow-orange": "0 0 14px rgba(254, 128, 34, 0.55)"
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      display: inline-block;
+      vertical-align: middle;
+      line-height: 1;
+    }
+    .material-symbols-outlined[data-weight="fill"] {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+  </style>
+</head>
+<body class="bg-dark-base text-dark-ink min-h-screen antialiased selection:bg-primary-container selection:text-on-primary">
+<!-- TOP APP BAR -->
+<header class="docked full-width top-0 z-50 bg-dark-base border-b border-dark-hairline shadow-[0_4px_12px_rgba(14,15,17,0.6)] sticky">
+<div class="flex justify-between items-center w-full px-space-lg py-space-sm max-w-7xl mx-auto">
+<!-- Brand & Search Left Cluster -->
+<div class="flex items-center gap-space-lg">
+<a class="flex items-center gap-space-xs group" href="#">
+<div class="w-9 h-9 rounded-lg bg-dark-sunken border border-dark-outline/30 relative flex items-center justify-center shadow-raised-sm group-hover:scale-105 transition-transform">
+<span class="font-headline-3 text-headline-3 text-dark-ink font-bold tracking-tight">L</span>
+<span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary-container shadow-glow-orange"></span>
+</div>
+<span class="font-headline-3 text-headline-3 text-dark-ink font-bold tracking-tight">LuzHire</span>
+</a>
+<!-- Search Bar: Inset Well with 1px border outline -->
+<div class="relative hidden lg:block w-72">
+<div class="flex items-center bg-dark-sunken rounded-full border border-dark-outline shadow-inset-sm px-space-sm py-1.5 text-dark-ink-muted focus-within:border-primary-container focus-within:ring-1 focus-within:ring-primary-container transition-all">
+<span class="material-symbols-outlined text-dark-muted mr-space-xs text-[18px]">search</span>
+<input class="bg-transparent border-none p-0 text-label font-label text-dark-ink placeholder:text-dark-muted focus:ring-0 w-full outline-none" placeholder="Search jobs, skills, companies..." type="text"/>
+</div>
+</div>
+</div>
+<!-- Navigation Links (Applications is Active) -->
+<nav class="hidden md:flex items-center gap-space-lg">
+<a class="font-label text-label text-dark-ink-muted hover:text-dark-ink transition-colors pb-1" href="#">Jobs</a>
+<a class="font-label text-label border-b-2 border-primary-container text-primary-container font-semibold pb-1" href="#">Applications</a>
+<a class="font-label text-label text-dark-ink-muted hover:text-dark-ink transition-colors pb-1" href="#">Interviews</a>
+<a class="font-label text-label text-dark-ink-muted hover:text-dark-ink transition-colors pb-1" href="#">Saved</a>
+</nav>
+<!-- Trailing Controls & User Profile -->
+<div class="flex items-center gap-space-md">
+<!-- Post Profile CTA -->
+<button class="hidden xl:inline-flex items-center gap-1.5 bg-primary-container hover:bg-[#E86D12] active:scale-95 text-[#14110F] font-button-sm text-button-sm font-semibold px-space-md py-2 rounded-full shadow-raised-sm transition-all duration-150">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+          Post Profile
+        </button>
+<!-- Tactile Light / Dark Switch (Dark Mode Active) -->
+<div class="w-12 h-6 bg-dark-sunken rounded-full border border-dark-outline shadow-inset-sm p-0.5 flex items-center justify-end cursor-pointer transition-colors" title="Toggle Theme">
+<div class="w-5 h-5 bg-dark-base rounded-full shadow-raised-sm flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[13px]">dark_mode</span>
+</div>
+</div>
+<!-- Chat Bubble Button -->
+<button class="relative w-9 h-9 rounded-full bg-dark-base border border-dark-outline/40 shadow-raised-sm flex items-center justify-center hover:bg-dark-highlight text-dark-ink transition-all active:scale-95" title="Messages">
+<span class="material-symbols-outlined text-[20px]">chat_bubble</span>
+</button>
+<!-- Notifications with Sunrise Orange Dot -->
+<button class="relative w-9 h-9 rounded-full bg-dark-base border border-dark-outline/40 shadow-raised-sm flex items-center justify-center hover:bg-dark-highlight text-dark-ink transition-all active:scale-95" title="Notifications">
+<span class="material-symbols-outlined text-[20px]">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary-container rounded-full ring-2 ring-dark-base shadow-glow-orange"></span>
+</button>
+<!-- User Profile Avatar Pill -->
+<div class="flex items-center gap-space-xs pl-space-xs border-l border-dark-hairline">
+<div class="w-10 h-10 rounded-full bg-dark-sunken p-0.5 border border-dark-outline shadow-raised-sm overflow-hidden flex-shrink-0">
+<img alt="Priya Sharma avatar" class="w-full h-full object-cover rounded-full" data-alt="Editorial close-up portrait of Priya Sharma, a confident Indian woman and Senior Frontend Architect in her early thirties, smiling gently in a bright modern tech workspace with warm natural light, soft bokeh, wearing smart-casual minimalist beige linen attire, embodying a clean porcelain light-mode aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAm1p3DWIfSRHDjcqacAhPJzZuRCwH7GYaVkrEa0hGCcC1oDWq3bk3RdZ3y6hTCbtwIyUXph_JehF367r3fsqCWnGD1ZiJqvXulJw8I0uZLiQqHRstTqMkK87q5NkSAACx_pOkyOUGmtfTgvQlWsRD5ATn0ugwEvWDFmnPmPRYYleiInlsV96iI9MKXkym6fi1cQRKKEFdIMFEOu_Gf_SicnUO3ztJP9SHzF51nnajeowAUce6Akd-WOsakMXbZRAmNRtj5xM88tpo"/>
+</div>
+<div class="hidden sm:flex flex-col text-left">
+<span class="font-label text-label text-dark-ink font-semibold leading-tight">Priya S.</span>
+<span class="font-caption text-caption text-dark-muted">Sr. Frontend Architect</span>
+</div>
+</div>
+</div>
+</div>
+</header>
+<!-- MAIN CANVAS CONTAINER -->
+<main class="max-w-7xl mx-auto px-space-lg py-space-xl space-y-space-xl">
+<!-- 1. GREETING & PROFILE COMPLETENESS HERO (raised-md) -->
+<section class="bg-dark-base rounded-xl p-space-lg sm:p-space-xl shadow-raised-md border border-dark-hairline relative overflow-hidden">
+<!-- Top Row: Welcome Headline & Status Indicator -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md mb-space-lg">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-eyebrow text-eyebrow text-[#FFB088] tracking-wide uppercase bg-[#3A2215] px-2.5 py-0.5 rounded-full border border-primary-container/40">Candidate Spotlight</span>
+<span class="flex items-center gap-1 font-mono text-mono text-dark-muted text-xs">
+<span class="w-2 h-2 rounded-full bg-[#7EE2A8] animate-pulse"></span> Open to Offers
+            </span>
+</div>
+<h1 class="font-headline-2 text-headline-2 text-dark-ink">Good evening, Priya 👋</h1>
+<p class="font-body-md text-body-md text-dark-ink-muted mt-1">Here is what’s happening with your job applications today across Bengaluru &amp; remote hubs.</p>
+</div>
+<!-- Quick CTA inside Hero -->
+<div class="flex items-center gap-space-xs">
+<button class="bg-dark-base border border-dark-outline/40 hover:bg-dark-highlight text-dark-ink font-button-sm text-button-sm px-space-md py-2.5 rounded-lg shadow-raised-sm active:scale-95 transition-all flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[18px]">share</span>
+            Share Profile
+          </button>
+<button class="bg-primary-container hover:bg-[#E86D12] text-[#14110F] font-button-sm text-button-sm font-semibold px-space-md py-2.5 rounded-lg shadow-raised-sm active:scale-95 transition-all flex items-center gap-1.5 shadow-glow-orange">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+            Recruiter View
+          </button>
+</div>
+</div>
+<!-- Completeness Inset Groove Container -->
+<div class="bg-dark-sunken rounded-xl p-space-md border border-dark-outline shadow-inset-sm mb-space-lg">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container text-[20px]" data-weight="fill">verified</span>
+<span class="font-label text-label text-dark-ink font-semibold">Profile Strength &amp; Discoverability</span>
+</div>
+<span class="font-mono text-mono font-semibold text-primary-container">72% Complete</span>
+</div>
+<!-- Inset Progress Groove -->
+<div class="w-full h-3 bg-dark-sunken rounded-full border border-dark-outline shadow-inset-sm overflow-hidden p-0.5 mb-space-md">
+<div class="h-full rounded-full bg-gradient-to-r from-primary-strong via-primary-container to-[#fc984b] shadow-sm transition-all duration-700" style="width: 72%;"></div>
+</div>
+<!-- Next Actionable Steps Pill Cards -->
+<div class="flex flex-wrap items-center gap-space-xs pt-1">
+<span class="font-caption text-caption text-dark-muted mr-1 font-medium">Quick Boosts:</span>
+<button class="group inline-flex items-center gap-1.5 bg-dark-base hover:bg-dark-highlight border border-dark-outline/40 px-3 py-1.5 rounded-full shadow-raised-sm active:scale-95 transition-all text-xs font-label text-dark-ink">
+<span class="text-primary-container font-bold">+</span>
+<span>Add AWS / Cloud certification</span>
+<span class="font-mono text-[11px] text-primary-container font-semibold bg-[#3A2215] px-1.5 py-0.5 rounded-full border border-primary-container/30">(+12%)</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-dark-base hover:bg-dark-highlight border border-dark-outline/40 px-3 py-1.5 rounded-full shadow-raised-sm active:scale-95 transition-all text-xs font-label text-dark-ink">
+<span class="text-primary-container font-bold">+</span>
+<span>Upload updated portfolio link</span>
+<span class="font-mono text-[11px] text-primary-container font-semibold bg-[#3A2215] px-1.5 py-0.5 rounded-full border border-primary-container/30">(+8%)</span>
+</button>
+<button class="group inline-flex items-center gap-1.5 bg-dark-base hover:bg-dark-highlight border border-dark-outline/40 px-3 py-1.5 rounded-full shadow-raised-sm active:scale-95 transition-all text-xs font-label text-dark-ink">
+<span class="text-primary-container font-bold">+</span>
+<span>Verify phone number</span>
+<span class="font-mono text-[11px] text-primary-container font-semibold bg-[#3A2215] px-1.5 py-0.5 rounded-full border border-primary-container/30">(+8%)</span>
+</button>
+</div>
+</div>
+<!-- Quick Stats Row (Bento Micro Cards) -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-space-md">
+<div class="bg-dark-base rounded-lg p-space-md border border-dark-hairline shadow-raised-sm flex items-center justify-between">
+<div>
+<p class="font-caption text-caption text-dark-muted">Active Applications</p>
+<p class="font-mono text-headline-4 text-dark-ink font-bold mt-1">08</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-dark-sunken border border-dark-outline shadow-inset-sm flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">send</span>
+</div>
+</div>
+<div class="bg-dark-base rounded-lg p-space-md border border-dark-hairline shadow-raised-sm flex items-center justify-between">
+<div>
+<p class="font-caption text-caption text-dark-muted">Upcoming Interviews</p>
+<p class="font-mono text-headline-4 text-primary-container font-bold mt-1">03</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-dark-sunken border border-dark-outline shadow-inset-sm flex items-center justify-center text-primary-container">
+<span class="material-symbols-outlined text-[20px]">event_available</span>
+</div>
+</div>
+<div class="bg-dark-base rounded-lg p-space-md border border-dark-hairline shadow-raised-sm flex items-center justify-between">
+<div>
+<p class="font-caption text-caption text-dark-muted">Saved Roles</p>
+<p class="font-mono text-headline-4 text-dark-ink font-bold mt-1">18</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-dark-sunken border border-dark-outline shadow-inset-sm flex items-center justify-center text-dark-ink-muted">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</div>
+</div>
+<div class="bg-dark-base rounded-lg p-space-md border border-dark-hairline shadow-raised-sm flex items-center justify-between">
+<div>
+<p class="font-caption text-caption text-dark-muted">Search Visibility</p>
+<p class="font-mono text-headline-4 text-[#7EE2A8] font-bold mt-1">94%</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-dark-sunken border border-dark-outline shadow-inset-sm flex items-center justify-center text-[#7EE2A8]">
+<span class="material-symbols-outlined text-[20px]">trending_up</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. MAIN WORKSPACE: 2/3 COLUMN APPLICATIONS & 1/3 COLUMN SCHEDULE/RECOMMENDATIONS -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-xl">
+<!-- LEFT 8-COLUMN TRACKER -->
+<section class="lg:col-span-8 space-y-space-lg">
+<div class="bg-dark-base rounded-xl p-space-lg sm:p-space-xl shadow-raised-md border border-dark-hairline">
+<!-- Tracker Header & Inset Filter Pills -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-md pb-space-lg border-b border-dark-hairline">
+<div>
+<h2 class="font-ws-title text-ws-title text-dark-ink font-bold">Application Pipeline</h2>
+<p class="font-body-sm text-body-sm text-dark-muted">Monitor milestones, scheduled stages, and pending recruiter actions.</p>
+</div>
+<!-- Filter Wells -->
+<div class="flex items-center gap-1.5 p-1 bg-dark-sunken rounded-lg border border-dark-outline shadow-inset-sm overflow-x-auto">
+<!-- Selected Filter: Sunken with orange dot -->
+<button class="inline-flex items-center gap-1.5 px-3 py-1 bg-dark-base text-dark-ink font-label text-label font-semibold rounded-md shadow-raised-sm border border-dark-outline/30">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container shadow-glow-orange"></span>
+<span>All (8)</span>
+</button>
+<button class="px-2.5 py-1 text-dark-muted hover:text-dark-ink font-label text-label transition-colors">In Review</button>
+<button class="px-2.5 py-1 text-dark-muted hover:text-dark-ink font-label text-label transition-colors">Interviewing</button>
+<button class="px-2.5 py-1 text-dark-muted hover:text-dark-ink font-label text-label transition-colors">Offers (1)</button>
+<button class="px-2.5 py-1 text-dark-muted hover:text-dark-ink font-label text-label transition-colors">Archived</button>
+</div>
+</div>
+<!-- Application Item Cards List -->
+<div class="divide-y divide-dark-hairline space-y-space-md pt-space-md">
+<!-- APP 1: Swiggy -->
+<article class="pt-space-md first:pt-0 group">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-sm mb-space-sm">
+<div class="flex items-start gap-space-md">
+<!-- Company Monogram Socket -->
+<div class="w-12 h-12 rounded-xl bg-[#3A2215] border border-primary-container/40 shadow-raised-sm flex items-center justify-center font-bold text-[#FFB088] font-headline-4">
+                    S
+                  </div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold group-hover:text-primary-container transition-colors">
+                        Senior Staff Frontend Engineer
+                      </h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#1A2236] text-[#93B4FF] border border-[#2B3A5A]">
+<span class="material-symbols-outlined text-[13px]">calendar_today</span>
+                        Technical Interview
+                      </span>
+</div>
+<div class="flex items-center gap-3 text-dark-ink-muted font-body-sm text-body-sm mt-0.5 flex-wrap">
+<span class="font-semibold text-dark-ink">Swiggy</span>
+<span>•</span>
+<span>Bengaluru (Hybrid)</span>
+<span>•</span>
+<span class="font-mono text-dark-ink font-medium">₹38–48 LPA</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-mono text-xs text-dark-muted">Updated 2h ago</span>
+</div>
+</div>
+<!-- Mini Stage Timeline -->
+<div class="bg-dark-sunken rounded-lg p-space-sm border border-dark-outline shadow-inset-sm mt-space-sm">
+<div class="grid grid-cols-5 gap-1 items-center text-center font-caption text-caption">
+<!-- Applied Completed -->
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-[#15291E] border border-[#7EE2A8]/50 text-[#7EE2A8] flex items-center justify-center text-xs mb-1 font-bold">✓</div>
+<span class="text-dark-ink font-medium text-[11px]">Applied</span>
+</div>
+<!-- Under Review Completed -->
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-[#15291E] border border-[#7EE2A8]/50 text-[#7EE2A8] flex items-center justify-center text-xs mb-1 font-bold">✓</div>
+<span class="text-dark-ink font-medium text-[11px]">Under Review</span>
+</div>
+<!-- Technical Round ACTIVE -->
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-primary-container text-[#14110F] flex items-center justify-center text-xs mb-1 shadow-glow-orange ring-2 ring-primary-container/40 font-bold">3</div>
+<span class="text-primary-container font-bold text-[11px]">Tech Round</span>
+</div>
+<!-- Culture Fit Pending -->
+<div class="flex flex-col items-center opacity-60">
+<div class="w-6 h-6 rounded-full bg-dark-base border border-dark-outline flex items-center justify-center text-xs mb-1 text-dark-muted">4</div>
+<span class="text-dark-muted text-[11px]">Culture Fit</span>
+</div>
+<!-- Offer Pending -->
+<div class="flex flex-col items-center opacity-60">
+<div class="w-6 h-6 rounded-full bg-dark-base border border-dark-outline flex items-center justify-center text-xs mb-1 text-dark-muted">5</div>
+<span class="text-dark-muted text-[11px]">Offer</span>
+</div>
+</div>
+</div>
+</article>
+<!-- APP 2: CRED (With Offer Issued Action) -->
+<article class="pt-space-lg group">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-sm mb-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-dark-sunken text-dark-ink border border-dark-outline shadow-raised-sm flex items-center justify-center font-bold font-headline-4">
+                    C
+                  </div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold group-hover:text-primary-container transition-colors">
+                        Lead UI/UX Engineer
+                      </h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#3A2215] text-[#FFB088] border border-primary-container/40">
+<span class="material-symbols-outlined text-[14px] text-primary-container" data-weight="fill">mark_email_read</span>
+                        Offer Issued
+                      </span>
+</div>
+<div class="flex items-center gap-3 text-dark-ink-muted font-body-sm text-body-sm mt-0.5 flex-wrap">
+<span class="font-semibold text-dark-ink">CRED</span>
+<span>•</span>
+<span>Bengaluru</span>
+<span>•</span>
+<span class="font-mono text-dark-ink font-medium">₹42–52 LPA</span>
+</div>
+</div>
+</div>
+<button class="self-start sm:self-auto bg-primary-container hover:bg-[#E86D12] active:scale-95 text-[#14110F] font-button-sm text-button-sm font-semibold px-4 py-2 rounded-lg shadow-raised-sm transition-all duration-150 flex items-center gap-1.5 shadow-glow-orange">
+<span class="material-symbols-outlined text-[16px]">description</span>
+                  Review Offer Letter
+                </button>
+</div>
+<!-- Mini Timeline -->
+<div class="bg-dark-sunken rounded-lg p-space-sm border border-dark-outline shadow-inset-sm mt-space-sm">
+<div class="grid grid-cols-4 gap-1 items-center text-center font-caption text-caption">
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-[#15291E] border border-[#7EE2A8]/50 text-[#7EE2A8] flex items-center justify-center text-xs mb-1 font-bold">✓</div>
+<span class="text-dark-ink font-medium text-[11px]">Applied</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-[#15291E] border border-[#7EE2A8]/50 text-[#7EE2A8] flex items-center justify-center text-xs mb-1 font-bold">✓</div>
+<span class="text-dark-ink font-medium text-[11px]">Review</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-[#15291E] border border-[#7EE2A8]/50 text-[#7EE2A8] flex items-center justify-center text-xs mb-1 font-bold">✓</div>
+<span class="text-dark-ink font-medium text-[11px]">Interviews</span>
+</div>
+<div class="flex flex-col items-center">
+<div class="w-6 h-6 rounded-full bg-primary-container text-[#14110F] flex items-center justify-center text-xs mb-1 shadow-glow-orange font-bold">★</div>
+<span class="text-primary-container font-bold text-[11px]">Offer Extended</span>
+</div>
+</div>
+</div>
+</article>
+<!-- APP 3: Razorpay -->
+<article class="pt-space-lg group">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-sm mb-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-[#1A2236] text-[#93B4FF] border border-[#2B3A5A] shadow-raised-sm flex items-center justify-center font-bold font-headline-4">
+                    R
+                  </div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold group-hover:text-primary-container transition-colors">
+                        Principal Design Technologist
+                      </h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-dark-sunken text-dark-ink-muted border border-dark-outline">
+<span class="material-symbols-outlined text-[13px]">search</span>
+                        Under Review
+                      </span>
+</div>
+<div class="flex items-center gap-3 text-dark-ink-muted font-body-sm text-body-sm mt-0.5 flex-wrap">
+<span class="font-semibold text-dark-ink">Razorpay</span>
+<span>•</span>
+<span>Bengaluru / Remote</span>
+<span>•</span>
+<span class="font-mono text-dark-ink font-medium">₹45–55 LPA</span>
+</div>
+</div>
+</div>
+<span class="font-mono text-xs text-dark-muted self-start sm:self-auto">Applied 3 days ago</span>
+</div>
+</article>
+<!-- APP 4: Zepto -->
+<article class="pt-space-lg group">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-sm mb-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-[#241C38] text-[#C4B0FF] border border-[#403063] shadow-raised-sm flex items-center justify-center font-bold font-headline-4">
+                    Z
+                  </div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold group-hover:text-primary-container transition-colors">
+                        Engineering Manager (Web)
+                      </h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#241C38] text-[#C4B0FF] border border-[#403063]">
+<span class="material-symbols-outlined text-[13px]">assignment_turned_in</span>
+                        Assessment Completed
+                      </span>
+</div>
+<div class="flex items-center gap-3 text-dark-ink-muted font-body-sm text-body-sm mt-0.5 flex-wrap">
+<span class="font-semibold text-dark-ink">Zepto</span>
+<span>•</span>
+<span>Mumbai / Bengaluru</span>
+<span>•</span>
+<span class="font-mono text-dark-ink font-medium">₹40–50 LPA</span>
+</div>
+</div>
+</div>
+<span class="font-mono text-xs text-dark-muted self-start sm:self-auto">Score: 98/100</span>
+</div>
+</article>
+<!-- APP 5: PhonePe -->
+<article class="pt-space-lg group">
+<div class="flex flex-col sm:flex-row sm:items-start justify-between gap-space-sm mb-space-sm">
+<div class="flex items-start gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-[#2D1B4E] text-[#D8B4FE] border border-[#4E2F80] shadow-raised-sm flex items-center justify-center font-bold font-headline-4">
+                    P
+                  </div>
+<div>
+<div class="flex items-center gap-2 flex-wrap">
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold group-hover:text-primary-container transition-colors">
+                        Senior Frontend Architect
+                      </h3>
+<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-mono font-medium bg-[#241C38] text-[#C4B0FF] border border-[#403063]">
+<span class="material-symbols-outlined text-[13px]">grade</span>
+                        Shortlisted
+                      </span>
+</div>
+<div class="flex items-center gap-3 text-dark-ink-muted font-body-sm text-body-sm mt-0.5 flex-wrap">
+<span class="font-semibold text-dark-ink">PhonePe</span>
+<span>•</span>
+<span>Pune / Bengaluru</span>
+<span>•</span>
+<span class="font-mono text-dark-ink font-medium">₹36–45 LPA</span>
+</div>
+</div>
+</div>
+<span class="font-mono text-xs text-dark-muted self-start sm:self-auto">Screening Call Pending</span>
+</div>
+</article>
+</div>
+</div>
+</section>
+<!-- RIGHT 4-COLUMN CARDS -->
+<aside class="lg:col-span-4 space-y-space-lg">
+<!-- CARD 1: Upcoming Interviews with Skeuomorphic Tear-off Calendar Tiles -->
+<div class="bg-dark-base rounded-xl p-space-md sm:p-space-lg shadow-raised-md border border-dark-hairline">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b border-dark-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">event</span>
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold">Upcoming Interviews</h3>
+</div>
+<span class="font-mono text-xs font-semibold bg-[#3A2215] text-[#FFB088] px-2 py-0.5 rounded-full border border-primary-container/30">3 Scheduled</span>
+</div>
+<div class="space-y-space-md">
+<!-- Interview 1: CRED System Design -->
+<div class="bg-dark-sunken rounded-xl p-space-sm border border-dark-outline shadow-inset-sm flex gap-space-sm items-start">
+<!-- Calendar Date Block -->
+<div class="w-12 rounded-lg overflow-hidden bg-dark-base border border-dark-outline shadow-raised-sm flex-shrink-0 text-center">
+<div class="bg-[#0E0F11] text-dark-muted text-[10px] font-mono uppercase tracking-wider py-0.5 border-b border-dark-outline/30">TOM</div>
+<div class="font-mono text-headline-4 text-dark-ink font-bold leading-tight py-1">24</div>
+</div>
+<!-- Details & Meet CTA -->
+<div class="flex-1 min-w-0">
+<div class="flex items-center justify-between">
+<span class="font-mono text-xs text-primary-container font-semibold">2:30 PM IST</span>
+<span class="w-2 h-2 rounded-full bg-[#7EE2A8] shadow-[0_0_8px_#7EE2A8]" title="Confirmed"></span>
+</div>
+<p class="font-label text-label font-bold text-dark-ink truncate mt-0.5">System Design Round</p>
+<p class="font-caption text-caption text-dark-muted">CRED • Girish Nair (VP Eng)</p>
+<a class="mt-2 inline-flex items-center gap-1.5 bg-dark-base border border-dark-outline/40 hover:bg-dark-highlight text-[#93B4FF] font-button-sm text-[12px] px-2.5 py-1 rounded-md shadow-raised-sm active:scale-95 transition-all" href="#">
+<span class="material-symbols-outlined text-[14px]">video_camera_front</span>
+                  Join Google Meet
+                </a>
+</div>
+</div>
+<!-- Interview 2: Swiggy Tech Deep-dive -->
+<div class="bg-dark-sunken rounded-xl p-space-sm border border-dark-outline shadow-inset-sm flex gap-space-sm items-start">
+<!-- Calendar Date Block -->
+<div class="w-12 rounded-lg overflow-hidden bg-dark-base border border-dark-outline shadow-raised-sm flex-shrink-0 text-center">
+<div class="bg-[#0E0F11] text-dark-muted text-[10px] font-mono uppercase tracking-wider py-0.5 border-b border-dark-outline/30">OCT</div>
+<div class="font-mono text-headline-4 text-dark-ink font-bold leading-tight py-1">28</div>
+</div>
+<!-- Details -->
+<div class="flex-1 min-w-0">
+<span class="font-mono text-xs text-dark-muted font-semibold">4:00 PM IST</span>
+<p class="font-label text-label font-bold text-dark-ink truncate mt-0.5">Technical Deep-Dive</p>
+<p class="font-caption text-caption text-dark-muted">Swiggy • Senior Panel Round</p>
+<span class="mt-1.5 inline-block text-[11px] font-mono text-dark-muted bg-dark-base px-2 py-0.5 rounded border border-dark-outline/40">
+                  Prep Notes Attached
+                </span>
+</div>
+</div>
+</div>
+</div>
+<!-- CARD 2: Recommended For You with Match Dial & Inset Bookmark Ribbon -->
+<div class="bg-dark-base rounded-xl p-space-md sm:p-space-lg shadow-raised-md border border-dark-hairline">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b border-dark-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-container">auto_awesome</span>
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold">Recommended For You</h3>
+</div>
+<a class="font-caption text-caption text-primary-container font-semibold hover:underline" href="#">View All</a>
+</div>
+<div class="space-y-space-md">
+<!-- Role 1: PhonePe -->
+<div class="bg-dark-sunken rounded-xl p-space-sm border border-dark-outline shadow-inset-sm relative group hover:border-primary-container/60 transition-all">
+<!-- Inset Bookmark Ribbon Button -->
+<button class="absolute top-3 right-3 text-dark-muted hover:text-primary-container transition-colors p-1" title="Save role">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+<div class="flex items-start gap-space-sm pr-6">
+<!-- Match Dial SVG (96%) -->
+<div class="relative w-11 h-11 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="14" stroke="#2B2E34" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="none" r="14" stroke="#FE8022" stroke-dasharray="88 100" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold text-dark-ink">96%</span>
+</div>
+<div>
+<h4 class="font-label text-label font-bold text-dark-ink group-hover:text-primary-container leading-snug">
+                    Staff Software Engineer (Design Systems)
+                  </h4>
+<p class="font-caption text-caption text-dark-muted">PhonePe • Bengaluru</p>
+<p class="font-mono text-xs text-primary-container font-semibold mt-1">₹40–50 LPA</p>
+</div>
+</div>
+</div>
+<!-- Role 2: BrowserStack -->
+<div class="bg-dark-sunken rounded-xl p-space-sm border border-dark-outline shadow-inset-sm relative group hover:border-primary-container/60 transition-all">
+<button class="absolute top-3 right-3 text-dark-muted hover:text-primary-container transition-colors p-1" title="Save role">
+<span class="material-symbols-outlined text-[18px]">bookmark_border</span>
+</button>
+<div class="flex items-start gap-space-sm pr-6">
+<!-- Match Dial SVG (91%) -->
+<div class="relative w-11 h-11 flex-shrink-0">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<circle cx="18" cy="18" fill="none" r="14" stroke="#2B2E34" stroke-width="3"></circle>
+<circle cx="18" cy="18" fill="none" r="14" stroke="#FE8022" stroke-dasharray="82 100" stroke-linecap="round" stroke-width="3"></circle>
+</svg>
+<span class="absolute inset-0 flex items-center justify-center font-mono text-[10px] font-bold text-dark-ink">91%</span>
+</div>
+<div>
+<h4 class="font-label text-label font-bold text-dark-ink group-hover:text-primary-container leading-snug">
+                    Lead Frontend Engineer
+                  </h4>
+<p class="font-caption text-caption text-dark-muted">BrowserStack • Remote / Mumbai</p>
+<p class="font-mono text-xs text-primary-container font-semibold mt-1">₹34–42 LPA</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- CARD 3: Recent Activity & Notifications Preview -->
+<div class="bg-dark-base rounded-xl p-space-md sm:p-space-lg shadow-raised-md border border-dark-hairline">
+<div class="flex items-center justify-between pb-space-sm mb-space-sm border-b border-dark-hairline">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-dark-muted">history</span>
+<h3 class="font-ws-card-title text-ws-card-title text-dark-ink font-bold">Activity Feed</h3>
+</div>
+<span class="w-2 h-2 rounded-full bg-primary-container shadow-glow-orange"></span>
+</div>
+<ul class="space-y-space-sm text-body-sm font-body-sm">
+<li class="flex items-start gap-space-xs text-dark-ink">
+<span class="material-symbols-outlined text-primary-container text-[16px] mt-0.5">verified</span>
+<div>
+<p class="font-medium text-xs leading-relaxed"><strong class="font-bold text-dark-ink">CRED</strong> updated your status to <span class="text-primary-container font-semibold">Offer Stage</span></p>
+<span class="font-mono text-[11px] text-dark-muted">1 hour ago</span>
+</div>
+</li>
+<li class="flex items-start gap-space-xs text-dark-ink">
+<span class="material-symbols-outlined text-[#93B4FF] text-[16px] mt-0.5">speaker_notes</span>
+<div>
+<p class="font-medium text-xs leading-relaxed"><strong class="font-bold text-dark-ink">Swiggy</strong> interviewer added prep notes for System Design</p>
+<span class="font-mono text-[11px] text-dark-muted">3 hours ago</span>
+</div>
+</li>
+<li class="flex items-start gap-space-xs text-dark-ink">
+<span class="material-symbols-outlined text-dark-muted text-[16px] mt-0.5">visibility</span>
+<div>
+<p class="font-medium text-xs leading-relaxed">Recruiter from <strong class="font-bold text-dark-ink">Flipkart</strong> viewed your profile</p>
+<span class="font-mono text-[11px] text-dark-muted">Yesterday</span>
+</div>
+</li>
+</ul>
+</div>
+</aside>
+</div>
+</main>
+<!-- FOOTER TONAL RESTRAINT -->
+<footer class="mt-space-section border-t border-dark-hairline bg-dark-base py-space-lg">
+<div class="max-w-7xl mx-auto px-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-sm text-dark-muted font-caption text-caption">
+<div class="flex items-center gap-space-xs">
+<span class="font-headline-4 text-sm font-bold text-dark-ink">LuzHire</span>
+<span>•</span>
+<span>Accessible Neumorphic Candidate Portal</span>
+</div>
+<p class="font-mono text-xs">Bangalore • Pune • Mumbai • Hyderabad • Remote</p>
+</div>
+</footer>
+</body></html>

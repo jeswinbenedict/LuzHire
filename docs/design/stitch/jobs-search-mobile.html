@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire - Job Search Results</title>
+<!-- Material Symbols Outlined -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Google Fonts: Plus Jakarta Sans, Inter, JetBrains Mono -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "surface-tint": "#9a4600",
+            "dark-shade": "#0E0F11",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "disabled": "#9A9EA6",
+            "ink": "#14110F",
+            "dark-sunken": "#16171A",
+            "primary-container": "#fe8022",
+            "tertiary-container": "#00afed",
+            "secondary": "#954a00",
+            "inverse-surface": "#3b2e26",
+            "on-primary": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-container-low": "#fff1ea",
+            "outline": "#85817A",
+            "surface-variant": "#f4ded3",
+            "sunken": "#E4E1DA",
+            "secondary-fixed-dim": "#ffb785",
+            "base-tint": "#F7E6D8",
+            "dark-ink-muted": "#C9CCD1",
+            "dark-base": "#1D1F23",
+            "error-container": "#ffdad6",
+            "dark-ink": "#F2F2EF",
+            "outline-variant": "#dfc0b1",
+            "surface-container-highest": "#f4ded3",
+            "primary": "#9a4600",
+            "dark-highlight": "#2A2D33",
+            "base": "#EEECE7",
+            "on-tertiary-container": "#003e57",
+            "tertiary-fixed": "#c5e7ff",
+            "secondary-container": "#fc984b",
+            "primary-strong": "#9A3F0A",
+            "on-primary-fixed-variant": "#753400",
+            "on-primary-fixed": "#321200",
+            "on-surface": "#241913",
+            "dark-hairline": "#2B2E34",
+            "surface-container-high": "#fae4d9",
+            "on-secondary-container": "#6c3400",
+            "surface-dim": "#ecd6cb",
+            "dark-outline": "#6E737B",
+            "dark-muted": "#9EA2AA",
+            "on-secondary": "#ffffff",
+            "surface-bright": "#fff8f5",
+            "on-secondary-fixed-variant": "#713700",
+            "highlight": "#FFFFFF",
+            "muted": "#5A5F66",
+            "inverse-on-surface": "#ffede5",
+            "on-surface-variant": "#574236",
+            "ink-muted": "#3D4148",
+            "shade": "#CBC5BA",
+            "on-primary-container": "#602a00",
+            "on-tertiary": "#ffffff",
+            "on-error-container": "#93000a",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "secondary-fixed": "#ffdcc6",
+            "hairline": "#DAD6CE",
+            "primary-fixed-dim": "#ffb68c",
+            "surface": "#fff8f5",
+            "on-tertiary-fixed": "#001e2d",
+            "on-secondary-fixed": "#301400",
+            "dark-disabled": "#63676E",
+            "inverse-primary": "#ffb68c",
+            "on-background": "#241913",
+            "background": "#fff8f5",
+            "tertiary": "#00658b",
+            "on-error": "#ffffff",
+            "primary-pressed": "#E86D12",
+            "surface-container-lowest": "#ffffff",
+            "primary-fixed": "#ffdbc9",
+            "surface-container": "#ffeadf",
+            "dark-base-tint": "#2A1F17"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "2xl": "1rem",
+            "3xl": "1.25rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xxs": "4px",
+            "space-xs": "8px",
+            "space-sm": "12px",
+            "space-md": "16px",
+            "space-lg": "24px",
+            "space-xl": "32px",
+            "space-xxl": "48px",
+            "gutter": "16px",
+            "margin": "24px",
+            "space-section": "96px"
+          },
+          "fontFamily": {
+            "headline-1": ["Plus Jakarta Sans"],
+            "headline-2": ["Plus Jakarta Sans"],
+            "headline-3": ["Plus Jakarta Sans"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "display": ["Plus Jakarta Sans"],
+            "ws-title": ["Inter"],
+            "ws-section": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "button": ["Inter"],
+            "button-sm": ["Inter"],
+            "body-lg": ["Inter"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "label": ["Inter"],
+            "caption": ["Inter"],
+            "eyebrow": ["Inter"],
+            "mono": ["JetBrains Mono"]
+          },
+          "fontSize": {
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }]
+          }
+        }
+      }
+    };
+  </script>
+<style>
+    .material-symbols-outlined {
+      font-variation-settings: 'FILL' 0, 'wght' 450, 'GRAD' 0, 'opsz' 24;
+      line-height: 1;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    .material-symbols-outlined.fill {
+      font-variation-settings: 'FILL' 1, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+    }
+    
+    /* Accessible Tactile Neumorphic Utilities */
+    .neu-raised-sm {
+      box-shadow: -3px -3px 8px #FFFFFF, 3px 3px 8px #CBC5BA;
+    }
+    .neu-raised-md {
+      box-shadow: -5px -5px 12px #FFFFFF, 5px 5px 12px #CBC5BA;
+    }
+    .neu-raised-btn {
+      box-shadow: -3px -3px 7px #FFFFFF, 3px 3px 7px #CBC5BA;
+    }
+    .neu-raised-btn:active {
+      box-shadow: inset 2px 2px 5px #CBC5BA, inset -2px -2px 5px #FFFFFF;
+      transform: translateY(1px);
+    }
+    .neu-inset-sm {
+      box-shadow: inset 2px 2px 5px #CBC5BA, inset -2px -2px 5px #FFFFFF;
+      background-color: #E4E1DA;
+    }
+    .neu-inset-md {
+      box-shadow: inset 3px 3px 7px #CBC5BA, inset -3px -3px 7px #FFFFFF;
+      background-color: #E4E1DA;
+    }
+    .neu-inset-socket {
+      box-shadow: inset 2px 2px 4px #CBC5BA, inset -2px -2px 4px #FFFFFF;
+    }
+    .neu-raised-pill {
+      box-shadow: -2px -2px 6px #FFFFFF, 2px 2px 6px #CBC5BA;
+    }
+
+    /* Ribbon Flag shape */
+    .ribbon-flag {
+      clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 82%, 0 100%);
+    }
+
+    /* Custom scrollbar suppression for smooth horizontal pill scroller */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-base text-ink antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-ink">
+<!-- Mobile Screen Container (390px locked canvas) -->
+<div class="w-full max-w-[390px] min-h-screen bg-base relative flex flex-col pb-28">
+<!-- TOP STICKY HEADER -->
+<header class="sticky top-0 z-40 bg-base/95 backdrop-blur-md px-space-md pt-3 pb-2 shadow-sm">
+<!-- Brand & Profile Row -->
+<div class="flex justify-between items-center w-full mb-3">
+<!-- Brand Logo as defined in Shared Components JSON: LuzHire -->
+<div class="flex items-center gap-2">
+<!-- Tactile Dark Icon Tile -->
+<div class="w-8 h-8 rounded-xl bg-ink flex items-center justify-center neu-raised-sm relative border border-hairline/60">
+<span class="font-headline-4 text-headline-4 text-white font-extrabold leading-none tracking-tight">L</span>
+<span class="absolute bottom-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+<span class="font-headline-4 text-headline-4 font-bold text-ink tracking-tight flex items-center gap-1.5">
+            LuzHire
+          </span>
+</div>
+<!-- Right utility cluster -->
+<div class="flex items-center gap-2.5">
+<!-- Notification Bell in tactile raised circle -->
+<button aria-label="Notifications" class="w-9 h-9 rounded-full bg-base flex items-center justify-center neu-raised-btn text-ink border border-white/60 relative focus:outline-none focus:ring-2 focus:ring-primary-strong transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary-container ring-1 ring-base"></span>
+</button>
+<!-- Filter Tune Icon from Shared Components TopAppBar trailing_icon -->
+<button aria-label="Filters" class="w-9 h-9 rounded-full bg-base flex items-center justify-center neu-raised-btn text-ink border border-white/60 focus:outline-none focus:ring-2 focus:ring-primary-strong transition-all duration-150">
+<span class="material-symbols-outlined text-[20px]" data-icon="tune">tune</span>
+</button>
+<!-- User Avatar in tactile recessed ring -->
+<div class="w-9 h-9 rounded-full p-0.5 neu-raised-sm bg-base cursor-pointer">
+<div class="w-full h-full rounded-full bg-sunken flex items-center justify-center overflow-hidden border border-outline/30">
+<span class="material-symbols-outlined text-[22px] text-ink-muted" data-icon="account_circle">account_circle</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Sunken Inset Search Well (WCAG AA Compliant Outline #85817A) -->
+<div class="relative w-full mb-2.5">
+<div class="neu-inset-md rounded-xl h-11 px-3 flex items-center border border-outline transition-all duration-150 focus-within:border-primary-strong focus-within:ring-1 focus-within:ring-primary-strong">
+<span class="material-symbols-outlined text-muted text-[20px] mr-2" data-icon="search">search</span>
+<input class="bg-transparent border-0 p-0 text-ink font-body-sm text-body-sm w-full focus:ring-0 placeholder:text-muted focus:outline-none font-medium" placeholder="Search role, skill, or company..." type="text" value="Product Designer"/>
+<button aria-label="Clear" class="w-6 h-6 rounded-full flex items-center justify-center text-muted hover:text-ink focus:outline-none mr-1">
+<span class="material-symbols-outlined text-[16px]" data-icon="cancel">cancel</span>
+</button>
+<div class="h-4 w-px bg-outline/40 mx-1"></div>
+<button aria-label="Voice Search" class="w-7 h-7 rounded-lg flex items-center justify-center text-primary-strong neu-raised-sm bg-base border border-white active:scale-95 transition-transform ml-1">
+<span class="material-symbols-outlined text-[17px]" data-icon="mic">mic</span>
+</button>
+</div>
+</div>
+<!-- Horizontal Scrollable Quick Filter Pills -->
+<div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1 -mx-space-md px-space-md">
+<!-- Master Filter Button with Count Badge -->
+<button class="flex items-center gap-1.5 h-8 px-2.5 rounded-full bg-base neu-raised-btn border border-white text-ink text-button-sm font-button-sm shrink-0 active:scale-95 transition-all">
+<span class="material-symbols-outlined text-[16px] text-primary-strong" data-icon="tune">tune</span>
+<span class="font-semibold">Filters</span>
+<span class="w-4 h-4 rounded-full bg-primary-container text-ink font-mono text-[10px] font-bold flex items-center justify-center">3</span>
+</button>
+<!-- Active Filter: Bengaluru (Selected Inset Well) -->
+<button class="flex items-center gap-1.5 h-8 px-3 rounded-full neu-inset-sm border border-outline text-primary-strong text-button-sm font-button-sm shrink-0 font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+<span>Bengaluru</span>
+<span class="material-symbols-outlined text-[15px] text-ink-muted" data-icon="close">close</span>
+</button>
+<!-- Salary Quick Filter -->
+<button class="flex items-center gap-1 h-8 px-3 rounded-full bg-base neu-raised-btn border border-white text-ink-muted text-button-sm font-button-sm shrink-0 active:scale-95">
+<span class="font-mono text-ink font-medium">₹15L+</span>
+<span class="material-symbols-outlined text-[16px]" data-icon="expand_more">expand_more</span>
+</button>
+<!-- Work Mode: Hybrid -->
+<button class="flex items-center gap-1 h-8 px-3 rounded-full bg-base neu-raised-btn border border-white text-ink-muted text-button-sm font-button-sm shrink-0 active:scale-95">
+<span class="font-medium text-ink">Hybrid</span>
+</button>
+<!-- Job Type: Full-time -->
+<button class="flex items-center gap-1 h-8 px-3 rounded-full bg-base neu-raised-btn border border-white text-ink-muted text-button-sm font-button-sm shrink-0 active:scale-95">
+<span class="font-medium text-ink">Full-time</span>
+</button>
+</div>
+</header>
+<!-- MAIN FEED -->
+<main class="px-space-md pt-2 flex-1 space-y-4">
+<!-- Spotlight Results Summary & Physical Match Toggle -->
+<section class="flex items-center justify-between pt-1">
+<div>
+<div class="flex items-center gap-1.5">
+<h1 class="font-headline-4 text-headline-4 text-ink font-bold tracking-tight">Jobs in India</h1>
+<span class="neu-inset-sm px-2 py-0.5 rounded-md border border-hairline text-ink font-mono text-caption font-bold">142</span>
+</div>
+<p class="font-caption text-caption text-ink-muted flex items-center gap-1 mt-0.5">
+<span>Sorted by</span>
+<span class="font-semibold text-primary-strong flex items-center">
+              Best Match
+              <span class="material-symbols-outlined text-[14px]" data-icon="arrow_drop_down">arrow_drop_down</span>
+</span>
+</p>
+</div>
+<!-- Physical Skeuomorphic Auto-Match Switch -->
+<div class="flex flex-col items-end">
+<label class="flex items-center gap-2 cursor-pointer" for="autoMatchToggle">
+<span class="font-caption text-caption text-ink font-medium">Auto-Alert</span>
+<div class="relative w-11 h-6 neu-inset-md rounded-full border border-outline/70 p-0.5 flex items-center">
+<input checked="" class="sr-only peer" id="autoMatchToggle" type="checkbox"/>
+<!-- Sunken track active color -->
+<div class="w-full h-full rounded-full transition-colors peer-checked:bg-primary-container/20"></div>
+<!-- Raised sliding tactile knob -->
+<div class="absolute left-0.5 peer-checked:left-5 w-5 h-5 rounded-full bg-base neu-raised-btn border border-white flex items-center justify-center transition-all duration-200">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container"></span>
+</div>
+</div>
+</label>
+</div>
+</section>
+<!-- JOB CARDS STACK -->
+<!-- CARD 1: Swiggy - Senior Product Designer (High Priority Spotlight Card) -->
+<article class="relative bg-base neu-raised-md rounded-2xl p-4 border border-white/80 transition-transform active:scale-[0.99] overflow-hidden">
+<!-- Physical Bookmark Ribbon (Interactive Flag Metaphor: Filled Orange) -->
+<button aria-label="Saved Job" class="absolute top-0 right-5 w-7 h-9 bg-primary-container ribbon-flag neu-raised-sm flex items-start justify-center pt-1.5 shadow-sm active:translate-y-0.5 transition-transform">
+<span class="material-symbols-outlined fill text-ink text-[16px]" data-icon="bookmark">bookmark</span>
+</button>
+<!-- Company & Meta Header -->
+<div class="flex items-start gap-3 pr-8">
+<!-- Inset Socket for Company Logo -->
+<div class="w-12 h-12 rounded-xl neu-inset-socket bg-sunken border border-hairline p-1 flex items-center justify-center shrink-0">
+<!-- Representational Swiggy Monogram -->
+<div class="w-full h-full rounded-lg bg-[#FC8019] flex items-center justify-center shadow-inner">
+<span class="font-headline-4 text-headline-4 text-white font-black leading-none tracking-tighter">S</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-label font-bold text-ink truncate">Swiggy</span>
+<!-- Verified Wax Seal Badge Metaphor -->
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-base-tint border border-primary/30 text-primary-strong text-[11px] font-semibold" title="Verified Employer">
+<span class="material-symbols-outlined text-[13px] fill" data-icon="verified">verified</span>
+<span>Verified</span>
+</span>
+</div>
+<h2 class="font-ws-section text-ws-section text-ink font-bold leading-tight mt-0.5 line-clamp-1">
+              Senior Product Designer
+            </h2>
+<p class="font-body-sm text-body-sm text-ink-muted flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-muted" data-icon="location_on">location_on</span>
+<span>Bengaluru · Hybrid</span>
+</p>
+</div>
+</div>
+<!-- Metrics Row: Salary Pill + Match Arc Dial -->
+<div class="mt-3.5 pt-3 border-t border-hairline/80 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<!-- JetBrains Mono Salary Tag in Recessed Pill -->
+<div class="neu-inset-sm px-2.5 py-1 rounded-lg border border-hairline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary-strong" data-icon="payments">payments</span>
+<span class="font-mono text-sm text-ink font-bold tracking-tight">₹24–32 LPA</span>
+</div>
+<span class="font-caption text-caption text-muted">Full-time</span>
+</div>
+<!-- Tactile Match Dial Metaphor (94%) -->
+<div class="flex items-center gap-2 bg-base neu-raised-sm px-2 py-1 rounded-xl border border-white">
+<!-- Mini Circular Dial -->
+<div class="relative w-7 h-7 flex items-center justify-center">
+<svg class="w-7 h-7 -rotate-90" viewbox="0 0 36 36">
+<!-- Track -->
+<path class="text-sunken stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<!-- Value 94% -->
+<path class="text-primary-container stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="94, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-mono text-[9px] font-bold text-ink">94</span>
+</div>
+<div class="text-left">
+<p class="font-caption text-[10px] text-ink-muted leading-none">Match</p>
+<p class="font-label text-caption font-bold text-primary-strong leading-tight">Exceptional</p>
+</div>
+</div>
+</div>
+<!-- Skill Tags & Time -->
+<div class="mt-3 flex items-center justify-between flex-wrap gap-1.5">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Figma</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Design Systems</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Mobile UX</span>
+</div>
+<span class="font-mono text-caption text-muted flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+            5d ago
+          </span>
+</div>
+<!-- Action Row -->
+<div class="mt-3.5 pt-2.5 flex items-center gap-2">
+<button class="flex-1 h-9 rounded-xl bg-primary-strong text-white font-button text-button flex items-center justify-center gap-1.5 neu-raised-btn active:scale-95 transition-transform border border-primary">
+<span>Quick Apply</span>
+<span class="material-symbols-outlined text-[17px]" data-icon="bolt">bolt</span>
+</button>
+<button aria-label="Job Details" class="w-9 h-9 rounded-xl bg-base neu-raised-btn flex items-center justify-center text-ink-muted border border-white active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</article>
+<!-- CARD 2: Razorpay - Staff Frontend Engineer -->
+<article class="relative bg-base neu-raised-md rounded-2xl p-4 border border-white/80 transition-transform active:scale-[0.99] overflow-hidden">
+<!-- Physical Bookmark Ribbon (Outline state) -->
+<button aria-label="Save Job" class="absolute top-0 right-5 w-7 h-9 bg-sunken ribbon-flag neu-raised-sm flex items-start justify-center pt-1.5 border-t border-hairline active:translate-y-0.5 transition-transform">
+<span class="material-symbols-outlined text-ink-muted text-[16px]" data-icon="bookmark">bookmark</span>
+</button>
+<!-- Company & Title -->
+<div class="flex items-start gap-3 pr-8">
+<div class="w-12 h-12 rounded-xl neu-inset-socket bg-sunken border border-hairline p-1 flex items-center justify-center shrink-0">
+<div class="w-full h-full rounded-lg bg-[#0C2340] flex items-center justify-center shadow-inner">
+<span class="font-headline-4 text-headline-4 text-[#00BAF2] font-black leading-none">R</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-label font-bold text-ink truncate">Razorpay</span>
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-base-tint border border-primary/30 text-primary-strong text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] fill" data-icon="verified">verified</span>
+<span>Verified</span>
+</span>
+</div>
+<h2 class="font-ws-section text-ws-section text-ink font-bold leading-tight mt-0.5 line-clamp-1">
+              Staff Frontend Engineer
+            </h2>
+<p class="font-body-sm text-body-sm text-ink-muted flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-muted" data-icon="location_on">location_on</span>
+<span>Bengaluru · On-site</span>
+</p>
+</div>
+</div>
+<!-- Metrics Row -->
+<div class="mt-3.5 pt-3 border-t border-hairline/80 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="neu-inset-sm px-2.5 py-1 rounded-lg border border-hairline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary-strong" data-icon="payments">payments</span>
+<span class="font-mono text-sm text-ink font-bold tracking-tight">₹38–50 LPA</span>
+</div>
+</div>
+<!-- Dial 88% -->
+<div class="flex items-center gap-2 bg-base neu-raised-sm px-2 py-1 rounded-xl border border-white">
+<div class="relative w-7 h-7 flex items-center justify-center">
+<svg class="w-7 h-7 -rotate-90" viewbox="0 0 36 36">
+<path class="text-sunken stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="88, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-mono text-[9px] font-bold text-ink">88</span>
+</div>
+<div class="text-left">
+<p class="font-caption text-[10px] text-ink-muted leading-none">Match</p>
+<p class="font-label text-caption font-bold text-ink leading-tight">High Fit</p>
+</div>
+</div>
+</div>
+<!-- Skill Tags -->
+<div class="mt-3 flex items-center justify-between flex-wrap gap-1.5">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">React</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">TypeScript</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Architecture</span>
+</div>
+<span class="font-mono text-caption text-muted flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+            2d ago
+          </span>
+</div>
+<!-- Quick Apply Action Button -->
+<div class="mt-3.5 pt-2.5 flex items-center gap-2">
+<button class="flex-1 h-9 rounded-xl bg-primary-strong text-white font-button text-button flex items-center justify-center gap-1.5 neu-raised-btn active:scale-95 transition-transform border border-primary">
+<span>Quick Apply</span>
+<span class="material-symbols-outlined text-[17px]" data-icon="bolt">bolt</span>
+</button>
+<button aria-label="Job Details" class="w-9 h-9 rounded-xl bg-base neu-raised-btn flex items-center justify-center text-ink-muted border border-white active:scale-95">
+<span class="material-symbols-outlined text-[20px]" data-icon="open_in_new">open_in_new</span>
+</button>
+</div>
+</article>
+<!-- CARD 3: CRED - Lead UX Researcher -->
+<article class="relative bg-base neu-raised-md rounded-2xl p-4 border border-white/80 transition-transform active:scale-[0.99] overflow-hidden">
+<button aria-label="Save Job" class="absolute top-0 right-5 w-7 h-9 bg-sunken ribbon-flag neu-raised-sm flex items-start justify-center pt-1.5 border-t border-hairline active:translate-y-0.5 transition-transform">
+<span class="material-symbols-outlined text-ink-muted text-[16px]" data-icon="bookmark">bookmark</span>
+</button>
+<div class="flex items-start gap-3 pr-8">
+<div class="w-12 h-12 rounded-xl neu-inset-socket bg-sunken border border-hairline p-1 flex items-center justify-center shrink-0">
+<div class="w-full h-full rounded-lg bg-ink flex items-center justify-center shadow-inner">
+<span class="font-headline-4 text-headline-4 text-white font-serif font-black leading-none">C</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-label font-bold text-ink truncate">CRED</span>
+<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-base-tint border border-primary/30 text-primary-strong text-[11px] font-semibold">
+<span class="material-symbols-outlined text-[13px] fill" data-icon="verified">verified</span>
+<span>Verified</span>
+</span>
+</div>
+<h2 class="font-ws-section text-ws-section text-ink font-bold leading-tight mt-0.5 line-clamp-1">
+              Lead UX Researcher
+            </h2>
+<p class="font-body-sm text-body-sm text-ink-muted flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-muted" data-icon="location_on">location_on</span>
+<span>Bengaluru · In-office</span>
+</p>
+</div>
+</div>
+<div class="mt-3.5 pt-3 border-t border-hairline/80 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="neu-inset-sm px-2.5 py-1 rounded-lg border border-hairline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary-strong" data-icon="payments">payments</span>
+<span class="font-mono text-sm text-ink font-bold tracking-tight">₹28–36 LPA</span>
+</div>
+</div>
+<!-- Dial 82% -->
+<div class="flex items-center gap-2 bg-base neu-raised-sm px-2 py-1 rounded-xl border border-white">
+<div class="relative w-7 h-7 flex items-center justify-center">
+<svg class="w-7 h-7 -rotate-90" viewbox="0 0 36 36">
+<path class="text-sunken stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-secondary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="82, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-mono text-[9px] font-bold text-ink">82</span>
+</div>
+<div class="text-left">
+<p class="font-caption text-[10px] text-ink-muted leading-none">Match</p>
+<p class="font-label text-caption font-bold text-ink leading-tight">Good Fit</p>
+</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between flex-wrap gap-1.5">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">User Interviews</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Fintech</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Card Sorting</span>
+</div>
+<span class="font-mono text-caption text-muted flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+            1d ago
+          </span>
+</div>
+<div class="mt-3.5 pt-2.5 flex items-center gap-2">
+<button class="flex-1 h-9 rounded-xl bg-base neu-raised-btn text-ink font-button text-button flex items-center justify-center gap-1.5 border border-white active:scale-95 transition-transform">
+<span>View Role</span>
+<span class="material-symbols-outlined text-[17px] text-ink-muted" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</article>
+<!-- CARD 4: Zepto - Backend Architect -->
+<article class="relative bg-base neu-raised-md rounded-2xl p-4 border border-white/80 transition-transform active:scale-[0.99] overflow-hidden">
+<button aria-label="Save Job" class="absolute top-0 right-5 w-7 h-9 bg-sunken ribbon-flag neu-raised-sm flex items-start justify-center pt-1.5 border-t border-hairline active:translate-y-0.5 transition-transform">
+<span class="material-symbols-outlined text-ink-muted text-[16px]" data-icon="bookmark">bookmark</span>
+</button>
+<div class="flex items-start gap-3 pr-8">
+<div class="w-12 h-12 rounded-xl neu-inset-socket bg-sunken border border-hairline p-1 flex items-center justify-center shrink-0">
+<div class="w-full h-full rounded-lg bg-[#5300E8] flex items-center justify-center shadow-inner">
+<span class="font-headline-4 text-headline-4 text-[#FF3269] font-black leading-none">Z</span>
+</div>
+</div>
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-label font-bold text-ink truncate">Zepto</span>
+<span class="px-1.5 py-0.5 rounded bg-sunken text-ink-muted font-mono text-[10px] font-medium border border-hairline">via LinkedIn</span>
+</div>
+<h2 class="font-ws-section text-ws-section text-ink font-bold leading-tight mt-0.5 line-clamp-1">
+              Backend Architect
+            </h2>
+<p class="font-body-sm text-body-sm text-ink-muted flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[15px] text-muted" data-icon="location_on">location_on</span>
+<span>Mumbai · Remote friendly</span>
+</p>
+</div>
+</div>
+<div class="mt-3.5 pt-3 border-t border-hairline/80 flex items-center justify-between">
+<div class="flex items-center gap-2">
+<div class="neu-inset-sm px-2.5 py-1 rounded-lg border border-hairline flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary-strong" data-icon="payments">payments</span>
+<span class="font-mono text-sm text-ink font-bold tracking-tight">₹42–55 LPA</span>
+</div>
+</div>
+<!-- Dial 79% -->
+<div class="flex items-center gap-2 bg-base neu-raised-sm px-2 py-1 rounded-xl border border-white">
+<div class="relative w-7 h-7 flex items-center justify-center">
+<svg class="w-7 h-7 -rotate-90" viewbox="0 0 36 36">
+<path class="text-sunken stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-muted stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="79, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-mono text-[9px] font-bold text-ink">79</span>
+</div>
+<div class="text-left">
+<p class="font-caption text-[10px] text-ink-muted leading-none">Match</p>
+<p class="font-label text-caption font-bold text-ink-muted leading-tight">Fair</p>
+</div>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between flex-wrap gap-1.5">
+<div class="flex items-center gap-1.5 flex-wrap">
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Go</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Distributed Systems</span>
+<span class="px-2 py-0.5 rounded-md bg-sunken text-ink text-caption font-label border border-outline/30">Kafka</span>
+</div>
+<span class="font-mono text-caption text-muted flex items-center gap-0.5">
+<span class="material-symbols-outlined text-[13px]" data-icon="schedule">schedule</span>
+            3d ago
+          </span>
+</div>
+</article>
+<!-- TACTILE BOTTOM SHEET PREVIEW HOOK (Salary & Filter Peek) -->
+<div class="mt-2 p-3.5 rounded-2xl bg-base neu-raised-sm border border-white/70">
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary-strong text-[18px]" data-icon="tune">tune</span>
+<span class="font-ws-card-title text-ws-card-title text-ink font-semibold">Active Filter Range</span>
+</div>
+<span class="font-mono text-caption text-primary-strong font-bold">₹15L – ₹50L LPA</span>
+</div>
+<!-- Physical Slotted Slider Track -->
+<div class="relative w-full h-3 neu-inset-sm rounded-full border border-hairline flex items-center px-1">
+<div class="h-1.5 bg-primary-container rounded-full" style="width: 70%; margin-left: 15%;"></div>
+<div class="absolute left-[15%] w-4 h-4 rounded-full bg-base neu-raised-btn border border-white -translate-x-1/2"></div>
+<div class="absolute left-[85%] w-4 h-4 rounded-full bg-base neu-raised-btn border border-white -translate-x-1/2"></div>
+</div>
+</div>
+</main>
+<!-- DOCKED PORCELAIN BOTTOM NAVIGATION BAR (Shared Components JSON Compliant) -->
+<!-- 
+      - Destination Count: 4
+      - Labels: ["Jobs", "Applied", "Messages", "Profile"]
+      - Icons: ["work", "assignment_turned_in", "chat_bubble", "person"]
+      - Current Screen Context: Job search results -> "Jobs" active tab
+      - Active Style: flex flex-col items-center justify-center bg-sunken text-primary rounded-xl px-space-md py-space-xxs font-label text-label border border-primary/20
+      - Inactive Style: flex flex-col items-center justify-center text-ink-muted px-space-md py-space-xxs font-label text-label
+    -->
+<nav aria-label="Bottom Navigation" class="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[390px] z-50 bg-base border-t border-hairline shadow-md px-space-sm py-space-xs flex justify-around items-center">
+<!-- Tab 1: Jobs (ACTIVE) -->
+<a class="flex flex-col items-center justify-center bg-sunken text-primary rounded-xl px-space-md py-space-xxs font-label text-label border border-primary/20 relative active:scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined text-[20px] fill" data-icon="work" style="font-variation-settings: 'FILL' 1;">work</span>
+<span class="text-[11px] font-semibold mt-0.5">Jobs</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container absolute -bottom-1"></span>
+</a>
+<!-- Tab 2: Applied -->
+<a class="flex flex-col items-center justify-center text-ink-muted px-space-md py-space-xxs font-label text-label hover:text-primary transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="assignment_turned_in">assignment_turned_in</span>
+<span class="text-[11px] font-medium mt-0.5">Applied</span>
+</a>
+<!-- Tab 3: Messages -->
+<a class="flex flex-col items-center justify-center text-ink-muted px-space-md py-space-xxs font-label text-label hover:text-primary transition-colors duration-150 active:scale-95 relative" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="chat_bubble">chat_bubble</span>
+<span class="text-[11px] font-medium mt-0.5">Messages</span>
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container absolute top-1 right-3"></span>
+</a>
+<!-- Tab 4: Profile -->
+<a class="flex flex-col items-center justify-center text-ink-muted px-space-md py-space-xxs font-label text-label hover:text-primary transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="person">person</span>
+<span class="text-[11px] font-medium mt-0.5">Profile</span>
+</a>
+</nav>
+</div>
+</body></html>

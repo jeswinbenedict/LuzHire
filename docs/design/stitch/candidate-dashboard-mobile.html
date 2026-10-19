@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>LuzHire - Candidate Spotlight Dashboard</title>
+<!-- Google Fonts & Material Symbols -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS with Forms & Container Queries -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          "colors": {
+            "dark-sunken": "#16171A",
+            "on-primary-fixed-variant": "#753400",
+            "tertiary-container": "#00afed",
+            "dark-base": "#1D1F23",
+            "hairline": "#DAD6CE",
+            "on-error": "#ffffff",
+            "error": "#ba1a1a",
+            "surface-container-high": "#fae4d9",
+            "secondary-fixed-dim": "#ffb785",
+            "surface-variant": "#f4ded3",
+            "surface-container-highest": "#f4ded3",
+            "on-background": "#241913",
+            "dark-shade": "#0E0F11",
+            "on-surface-variant": "#574236",
+            "secondary": "#954a00",
+            "ink-muted": "#3D4148",
+            "on-tertiary": "#ffffff",
+            "on-secondary-container": "#6c3400",
+            "inverse-surface": "#3b2e26",
+            "primary-fixed-dim": "#ffb68c",
+            "primary-fixed": "#ffdbc9",
+            "outline": "#85817A",
+            "ink": "#14110F",
+            "surface-bright": "#fff8f5",
+            "outline-variant": "#dfc0b1",
+            "tertiary-fixed-dim": "#7ed0ff",
+            "dark-highlight": "#2A2D33",
+            "primary-container": "#fe8022",
+            "on-surface": "#241913",
+            "dark-outline": "#6E737B",
+            "on-tertiary-fixed": "#001e2d",
+            "error-container": "#ffdad6",
+            "on-error-container": "#93000a",
+            "base": "#EEECE7",
+            "on-primary": "#ffffff",
+            "secondary-container": "#fc984b",
+            "tertiary-fixed": "#c5e7ff",
+            "inverse-primary": "#ffb68c",
+            "disabled": "#9A9EA6",
+            "dark-ink-muted": "#C9CCD1",
+            "surface-container-low": "#fff1ea",
+            "dark-base-tint": "#2A1F17",
+            "on-primary-fixed": "#321200",
+            "muted": "#5A5F66",
+            "dark-muted": "#9EA2AA",
+            "highlight": "#FFFFFF",
+            "background": "#fff8f5",
+            "secondary-fixed": "#ffdcc6",
+            "sunken": "#E4E1DA",
+            "inverse-on-surface": "#ffede5",
+            "dark-ink": "#F2F2EF",
+            "primary": "#9a4600",
+            "on-primary-container": "#602a00",
+            "primary-strong": "#9A3F0A",
+            "primary-pressed": "#E86D12",
+            "on-tertiary-container": "#003e57",
+            "base-tint": "#F7E6D8",
+            "on-tertiary-fixed-variant": "#004c6a",
+            "on-secondary-fixed": "#301400",
+            "dark-hairline": "#2B2E34",
+            "surface-tint": "#9a4600",
+            "surface-container": "#ffeadf",
+            "on-secondary": "#ffffff",
+            "dark-disabled": "#63676E",
+            "surface-dim": "#ecd6cb",
+            "on-secondary-fixed-variant": "#713700",
+            "surface": "#fff8f5",
+            "tertiary": "#00658b",
+            "surface-container-lowest": "#ffffff",
+            "shade": "#CBC5BA"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.25rem",
+            "lg": "0.5rem",
+            "xl": "0.75rem",
+            "full": "9999px"
+          },
+          "spacing": {
+            "space-xxs": "4px",
+            "space-section": "96px",
+            "space-sm": "12px",
+            "space-xl": "32px",
+            "space-xxl": "48px",
+            "space-md": "16px",
+            "margin": "24px",
+            "gutter": "16px",
+            "space-lg": "24px",
+            "space-xs": "8px"
+          },
+          "fontFamily": {
+            "eyebrow": ["Inter"],
+            "ws-title": ["Inter"],
+            "display": ["Plus Jakarta Sans"],
+            "headline-1": ["Plus Jakarta Sans"],
+            "body-lg": ["Inter"],
+            "button-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "body-sm": ["Inter"],
+            "ws-card-title": ["Inter"],
+            "mono": ["JetBrains Mono"],
+            "headline-4": ["Plus Jakarta Sans"],
+            "headline-3": ["Plus Jakarta Sans"],
+            "label": ["Inter"],
+            "headline-2": ["Plus Jakarta Sans"],
+            "ws-section": ["Inter"],
+            "caption": ["Inter"],
+            "button": ["Inter"]
+          },
+          "fontSize": {
+            "eyebrow": ["12px", { "lineHeight": "1.3", "letterSpacing": "0.6px", "fontWeight": "600" }],
+            "ws-title": ["24px", { "lineHeight": "1.25", "letterSpacing": "-0.4px", "fontWeight": "600" }],
+            "display": ["64px", { "lineHeight": "1.05", "letterSpacing": "-1.5px", "fontWeight": "800" }],
+            "headline-1": ["48px", { "lineHeight": "1.1", "letterSpacing": "-1px", "fontWeight": "800" }],
+            "body-lg": ["18px", { "lineHeight": "1.6", "letterSpacing": "0", "fontWeight": "400" }],
+            "button-sm": ["13px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }],
+            "body-md": ["16px", { "lineHeight": "1.55", "letterSpacing": "0", "fontWeight": "400" }],
+            "body-sm": ["14px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "ws-card-title": ["15px", { "lineHeight": "1.35", "letterSpacing": "-0.1px", "fontWeight": "600" }],
+            "mono": ["13px", { "lineHeight": "1.5", "letterSpacing": "0", "fontWeight": "400" }],
+            "headline-4": ["22px", { "lineHeight": "1.25", "letterSpacing": "-0.2px", "fontWeight": "700" }],
+            "headline-3": ["28px", { "lineHeight": "1.2", "letterSpacing": "-0.3px", "fontWeight": "700" }],
+            "label": ["14px", { "lineHeight": "1.3", "letterSpacing": "0", "fontWeight": "500" }],
+            "headline-2": ["36px", { "lineHeight": "1.15", "letterSpacing": "-0.5px", "fontWeight": "700" }],
+            "ws-section": ["18px", { "lineHeight": "1.3", "letterSpacing": "-0.2px", "fontWeight": "600" }],
+            "caption": ["12px", { "lineHeight": "1.4", "letterSpacing": "0", "fontWeight": "500" }],
+            "button": ["15px", { "lineHeight": "1", "letterSpacing": "0", "fontWeight": "600" }]
+          }
+        }
+      }
+    }
+  </script>
+<style>
+    /* Neumorphic Tactical Tokens */
+    .neu-raised-xs {
+      box-shadow: -2px -2px 4px #FFFFFF, 2px 2px 4px #CBC5BA;
+    }
+    .neu-raised-sm {
+      box-shadow: -3px -3px 6px #FFFFFF, 3px 3px 6px #CBC5BA;
+    }
+    .neu-raised-md {
+      box-shadow: -6px -6px 12px #FFFFFF, 6px 6px 12px #CBC5BA;
+    }
+    .neu-raised-pill {
+      box-shadow: -2px -2px 4px #FFFFFF, 2px 2px 5px #CBC5BA;
+    }
+    .neu-inset-sm {
+      box-shadow: inset 2px 2px 4px #CBC5BA, inset -2px -2px 4px #FFFFFF;
+    }
+    .neu-inset-md {
+      box-shadow: inset 3px 3px 6px #CBC5BA, inset -3px -3px 6px #FFFFFF;
+    }
+    .neu-btn-primary {
+      box-shadow: -3px -3px 6px #FFFFFF, 3px 3px 8px rgba(154, 63, 10, 0.4), inset 1px 1px 1px rgba(255, 255, 255, 0.35);
+    }
+    .neu-btn-primary:active {
+      box-shadow: inset 2px 2px 4px rgba(0, 0, 0, 0.35), inset -1px -1px 2px rgba(255, 255, 255, 0.2);
+    }
+    /* Calendar punch holes pattern */
+    .calendar-punch-holes {
+      background-image: radial-gradient(#CBC5BA 2.5px, transparent 3px);
+      background-size: 16px 16px;
+      background-position: 8px center;
+      background-repeat: repeat-x;
+    }
+    /* Hide scrollbar for carousel */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-base text-ink antialiased min-h-screen flex justify-center selection:bg-primary-container selection:text-ink">
+<!-- Mobile Screen Shell Container (Standard 390px mobile viewport) -->
+<main class="w-full max-w-[390px] min-h-screen bg-base relative flex flex-col pb-28">
+<!-- 1. TOP APP BAR (Shared Component: TopAppBar) -->
+<!-- JSON Blueprint Implementation: Docked full-width, shadow separation, exact labels -->
+<header class="flex justify-between items-center w-full px-space-md py-space-xs sticky top-0 z-50 bg-base shadow-[0_2px_4px_rgba(203,197,186,0.6)] dark:shadow-[0_2px_4px_rgba(14,15,17,0.8)]">
+<!-- Leading Brand Mark & Wordmark -->
+<div class="flex items-center gap-space-xs">
+<!-- Logo Tile: Dark #131314 with White "L" and Sunrise Orange Dot -->
+<div class="w-9 h-9 rounded-xl bg-[#131314] flex items-center justify-center relative neu-raised-xs border border-[#2B2E34]/40 shrink-0">
+<span class="text-white font-headline-4 text-headline-4 font-extrabold leading-none tracking-tight">L</span>
+<span class="absolute bottom-2 right-2 w-1.5 h-1.5 rounded-full bg-primary-container ring-1 ring-[#131314]"></span>
+</div>
+<span class="font-headline-4 text-headline-4 font-bold text-ink tracking-tight">LuzHire</span>
+</div>
+<!-- Trailing Action Sockets: Inset sockets with accessible borders -->
+<div class="flex items-center gap-space-xs">
+<!-- Notification Socket with active orange indicator -->
+<button aria-label="Notifications (3 unread)" class="w-9 h-9 rounded-xl bg-sunken neu-inset-sm border border-outline flex items-center justify-center relative active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-ink" data-icon="notifications" style="font-size: 20px;">notifications</span>
+<span class="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-primary-container rounded-full border-2 border-base"></span>
+</button>
+<!-- Candidate Avatar Socket -->
+<div class="w-9 h-9 rounded-xl bg-sunken neu-inset-sm border border-outline p-0.5 overflow-hidden flex items-center justify-center">
+<img alt="Aarav's profile avatar" class="w-full h-full object-cover rounded-[10px]" data-alt="Close up professional studio portrait of Aarav, a charismatic 29-year-old Indian male Senior Product Designer with warm skin tones, stylish modern haircut, wearing a crisp collar shirt against an architectural studio backdrop. Bright natural morning sunlight provides soft highlights, evoking a polished, modern creative tech vibe consistent with clean porcelain aesthetics." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB8IKvw17q41JwLkw_-TA4ORPf8ttLbGpC_JEwYcq6b0WQocc46caLKrek1Ued8Fynhkae7UKADlK_L3Z8lNJeDKQ_OfzXbE-cVx_PPJ1ZGLpbxRs6EmlLxWC1rU_3V_rbkxHCQTgD65uP9ZMXSiCBpGAArs6ZQpHBt-hONyrnBwxw6kEVFXFSvBMtMEmN6xNIdFBtNbYLPpnZNm17LUq8sKRBLW_qBaMFfx4zpyGvmNEbIpszouzLrp96K11pXGhaY6yydFcDqoVk"/>
+</div>
+</div>
+</header>
+<!-- CONTENT CANVAS -->
+<div class="flex-1 flex flex-col px-space-md pt-space-md space-y-space-md">
+<!-- 2. CANDIDATE GREETING -->
+<section aria-label="Candidate Overview" class="space-y-space-xxs">
+<h1 class="font-headline-3 text-headline-3 font-bold text-ink tracking-tight flex items-center gap-1.5">
+          Good morning, Aarav <span aria-label="waving hand" class="text-2xl" role="img">👋</span>
+</h1>
+<p class="font-body-sm text-body-sm text-muted font-medium flex items-center gap-2">
+<span>Senior Product Designer</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="text-primary-strong font-semibold font-mono text-xs">3 updates today</span>
+</p>
+</section>
+<!-- 3. PROFILE COMPLETENESS GROOVE (72%) -->
+<section class="p-space-md rounded-2xl bg-base neu-raised-sm border border-hairline/60">
+<div class="flex justify-between items-center mb-space-xs">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary-container inline-block shadow-[0_0_6px_#FE8022]"></span>
+<span class="font-headline-4 text-headline-4 text-sm font-bold text-ink">Profile Strength: <span class="font-mono text-primary-strong">72%</span></span>
+</div>
+<!-- Micro-action pill button -->
+<button class="neu-raised-pill px-space-xs py-1 rounded-full bg-base border border-hairline flex items-center gap-1 active:scale-95 transition-all text-ink hover:text-primary-strong" type="button">
+<span class="material-symbols-outlined text-primary-strong" data-icon="add_link" style="font-size: 15px;">add_link</span>
+<span class="font-caption text-caption font-semibold">+8% Add portfolio link</span>
+</button>
+</div>
+<!-- Skeuomorphic Recessed Groove Track -->
+<div class="w-full h-3.5 bg-sunken neu-inset-sm rounded-full border border-outline relative p-0.5 overflow-hidden">
+<!-- Tactile Gradient Progress Bar with Sunrise Glow -->
+<div class="h-full rounded-full bg-gradient-to-r from-secondary-container via-primary-container to-primary-pressed shadow-[0_1px_3px_rgba(154,63,10,0.4)] transition-all duration-700 ease-out" style="width: 72%;"></div>
+</div>
+<p class="mt-space-xs font-caption text-caption text-ink-muted">
+          Complete remaining verifications to unlock top-tier Spotlight job matches.
+        </p>
+</section>
+<!-- 4. NEXT INTERVIEW CARD (Skeuomorphic Tear-off Calendar Metaphor) -->
+<section class="rounded-2xl bg-base neu-raised-md border border-hairline/80 overflow-hidden flex flex-col">
+<!-- Calendar Binding Header Strip -->
+<div class="w-full bg-base-tint border-b border-outline-variant px-space-md py-2 flex items-center justify-between relative">
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary-strong"></span>
+<span class="w-2 h-2 rounded-full bg-secondary-container"></span>
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="ml-2 font-eyebrow text-eyebrow tracking-wider uppercase text-primary-strong font-bold">Confirmed Interview</span>
+</div>
+<span class="font-mono text-xs font-semibold text-ink-muted bg-base px-2 py-0.5 rounded-md neu-inset-sm border border-outline/50">IST (UTC+5:30)</span>
+</div>
+<!-- Card Body -->
+<div class="p-space-md space-y-space-sm">
+<!-- Calendar Date and Time Row -->
+<div class="flex items-start gap-space-sm">
+<!-- Skeuomorphic Tear-Off Date Block -->
+<div class="w-16 h-18 rounded-xl bg-base neu-raised-xs border border-outline flex flex-col items-center overflow-hidden shrink-0">
+<div class="w-full bg-primary-strong py-0.5 text-center">
+<span class="font-mono font-bold text-[10px] uppercase text-white tracking-wider">THU</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-1">
+<span class="font-headline-3 text-headline-3 font-extrabold text-ink leading-tight font-mono">27</span>
+<span class="font-mono text-[10px] font-semibold text-ink-muted uppercase">MAR</span>
+</div>
+</div>
+<!-- Role & Company Details -->
+<div class="flex-1 min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label text-label font-bold text-ink truncate">Razorpay</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-mono text-caption text-primary-strong font-semibold">11:30 AM IST</span>
+</div>
+<h2 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-0.5 leading-snug">
+                Senior Product Designer
+              </h2>
+<p class="font-caption text-caption text-ink-muted mt-0.5">Checkout Experience Group</p>
+</div>
+</div>
+<!-- Interviewers & Stage -->
+<div class="p-2.5 rounded-xl bg-sunken neu-inset-sm border border-outline flex items-start gap-2">
+<span class="material-symbols-outlined text-primary-strong shrink-0 mt-0.5" data-icon="record_voice_over" style="font-size: 18px;">record_voice_over</span>
+<div class="text-xs">
+<span class="font-semibold text-ink">Round 2: System Design &amp; Whiteboard</span>
+<p class="font-caption text-caption text-muted mt-0.5">With Priya Nair (Lead UX Designer) · 45 mins</p>
+</div>
+</div>
+<!-- Action Buttons Group -->
+<div class="grid grid-cols-5 gap-space-xs pt-1">
+<!-- Primary Action: Join Google Meet -->
+<a class="col-span-4 neu-btn-primary bg-primary-strong hover:bg-primary-pressed text-white py-2.5 px-space-md rounded-full font-button text-button flex items-center justify-center gap-2 transition-transform duration-150 active:scale-95 text-center" href="#join-interview">
+<span class="material-symbols-outlined text-white" data-icon="videocam" style="font-size: 20px;">videocam</span>
+<span>Join Google Meet</span>
+</a>
+<!-- Secondary Action: Prep Notes -->
+<button aria-label="Open interview prep notes" class="col-span-1 neu-raised-pill bg-base hover:bg-sunken border border-outline text-ink rounded-full flex items-center justify-center active:scale-95 transition-transform duration-150" type="button">
+<span class="material-symbols-outlined text-ink" data-icon="description" style="font-size: 20px;">description</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 5. APPLICATIONS LIST WITH STATUS CHIPS -->
+<section class="space-y-space-sm pt-space-xs">
+<!-- Section Header -->
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-4 text-headline-4 text-lg font-bold text-ink">Active Applications</h2>
+<span class="font-mono text-caption font-bold px-2 py-0.5 rounded-full bg-sunken neu-inset-sm border border-outline text-ink-muted">4</span>
+</div>
+<a class="font-label text-label text-xs font-bold text-primary-strong hover:underline flex items-center gap-0.5" href="#all-applications">
+            View all
+            <span class="material-symbols-outlined" data-icon="chevron_right" style="font-size: 16px;">chevron_right</span>
+</a>
+</div>
+<!-- Application Cards Stack -->
+<div class="space-y-space-sm">
+<!-- Application 1: Swiggy -->
+<article class="p-space-md rounded-2xl bg-base neu-raised-sm border border-hairline relative">
+<div class="flex justify-between items-start gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink">Swiggy</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Bengaluru (Hybrid)</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-0.5">Staff UI/UX Designer</h3>
+</div>
+<!-- Match Percentage Dial Indicator -->
+<div class="w-10 h-10 rounded-xl bg-sunken neu-inset-sm border border-outline flex flex-col items-center justify-center shrink-0">
+<span class="font-mono text-caption text-[11px] font-bold text-primary-strong">94%</span>
+<span class="text-[8px] font-mono uppercase text-muted leading-none">Match</span>
+</div>
+</div>
+<!-- Metadata Row -->
+<div class="mt-space-xs flex items-center justify-between border-t border-hairline/60 pt-2.5">
+<span class="font-mono text-body-sm text-sm font-semibold text-ink">₹32–40 LPA</span>
+<!-- Status Chip: Offer Issued (Orange Tonal) -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FBE4D3] neu-inset-sm border border-[#9A3412]/40 text-[#9A3412]">
+<span class="material-symbols-outlined" data-icon="mail" style="font-size: 14px;">mail</span>
+<span class="font-caption text-caption text-xs font-bold">Offer Issued</span>
+</div>
+</div>
+</article>
+<!-- Application 2: Cred -->
+<article class="p-space-md rounded-2xl bg-base neu-raised-sm border border-hairline relative">
+<div class="flex justify-between items-start gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink">Cred</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Bengaluru</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-0.5">Senior Product Designer</h3>
+</div>
+<div class="w-10 h-10 rounded-xl bg-sunken neu-inset-sm border border-outline flex flex-col items-center justify-center shrink-0">
+<span class="font-mono text-caption text-[11px] font-bold text-tertiary">89%</span>
+<span class="text-[8px] font-mono uppercase text-muted leading-none">Match</span>
+</div>
+</div>
+<div class="mt-space-xs flex items-center justify-between border-t border-hairline/60 pt-2.5">
+<span class="font-mono text-body-sm text-sm font-semibold text-ink">₹28–36 LPA</span>
+<!-- Status Chip: Technical Interview (Blue Tonal) -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E6EBF7] neu-inset-sm border border-[#1D4ED8]/40 text-[#1D4ED8]">
+<span class="material-symbols-outlined" data-icon="calendar_month" style="font-size: 14px;">calendar_month</span>
+<span class="font-caption text-caption text-xs font-bold">Technical Interview</span>
+</div>
+</div>
+</article>
+<!-- Application 3: Zerodha -->
+<article class="p-space-md rounded-2xl bg-base neu-raised-sm border border-hairline relative">
+<div class="flex justify-between items-start gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink">Zerodha</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Remote</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-0.5">Design Systems Specialist</h3>
+</div>
+<div class="w-10 h-10 rounded-xl bg-sunken neu-inset-sm border border-outline flex flex-col items-center justify-center shrink-0">
+<span class="font-mono text-caption text-[11px] font-bold text-purple-700">92%</span>
+<span class="text-[8px] font-mono uppercase text-muted leading-none">Match</span>
+</div>
+</div>
+<div class="mt-space-xs flex items-center justify-between border-t border-hairline/60 pt-2.5">
+<span class="font-mono text-body-sm text-sm font-semibold text-ink">₹24–30 LPA</span>
+<!-- Status Chip: Shortlisted (Violet Tonal) -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#ECE5F7] neu-inset-sm border border-[#6D28D9]/40 text-[#6D28D9]">
+<span class="material-symbols-outlined" data-icon="star" data-weight="fill" style="font-size: 14px; font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-caption text-caption text-xs font-bold">Shortlisted</span>
+</div>
+</div>
+</article>
+<!-- Application 4: PhonePe -->
+<article class="p-space-md rounded-2xl bg-base neu-raised-sm border border-hairline relative">
+<div class="flex justify-between items-start gap-2">
+<div>
+<div class="flex items-center gap-2">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink">PhonePe</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Pune / Hybrid</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-0.5">UX Architect</h3>
+</div>
+<div class="w-10 h-10 rounded-xl bg-sunken neu-inset-sm border border-outline flex flex-col items-center justify-center shrink-0">
+<span class="font-mono text-caption text-[11px] font-bold text-muted">85%</span>
+<span class="text-[8px] font-mono uppercase text-muted leading-none">Match</span>
+</div>
+</div>
+<div class="mt-space-xs flex items-center justify-between border-t border-hairline/60 pt-2.5">
+<span class="font-mono text-body-sm text-sm font-semibold text-ink">₹30–38 LPA</span>
+<!-- Status Chip: Under Review (Blue/Neutral) -->
+<div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#E6EBF7] neu-inset-sm border border-[#1D4ED8]/40 text-[#1D4ED8]">
+<span class="material-symbols-outlined" data-icon="search" style="font-size: 14px;">search</span>
+<span class="font-caption text-caption text-xs font-bold">Under Review</span>
+</div>
+</div>
+</article>
+</div>
+</section>
+<!-- 6. SAVED JOBS CAROUSEL -->
+<section class="space-y-space-sm pt-space-xs pb-space-md">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<h2 class="font-headline-4 text-headline-4 text-lg font-bold text-ink">Saved Jobs</h2>
+<span class="font-mono text-caption font-bold px-2 py-0.5 rounded-full bg-sunken neu-inset-sm border border-outline text-ink-muted">6</span>
+</div>
+<span class="font-caption text-caption text-muted flex items-center gap-1">
+<span class="material-symbols-outlined text-primary-container" data-icon="bookmark" data-weight="fill" style="font-size: 16px; font-variation-settings: 'FILL' 1;">bookmark</span>
+            Priority queue
+          </span>
+</div>
+<!-- Horizontal Scrollable Container with Snap -->
+<div class="flex gap-space-md overflow-x-auto no-scrollbar py-2 -mx-space-md px-space-md snap-x">
+<!-- Saved Job Card A: Flipkart -->
+<article class="min-w-[270px] max-w-[280px] snap-center rounded-2xl bg-base neu-raised-sm border border-hairline p-space-md relative flex flex-col justify-between shrink-0">
+<!-- Bookmark Ribbon Metaphor Top Right -->
+<div class="absolute top-0 right-4 w-7 h-9 bg-primary-container shadow-md flex items-center justify-center rounded-b-sm border-t-0 border border-primary-strong/40">
+<span class="material-symbols-outlined text-white" data-icon="bookmark" data-weight="fill" style="font-size: 18px; font-variation-settings: 'FILL' 1;">bookmark</span>
+</div>
+<div>
+<div class="flex items-center gap-2 pr-8">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink truncate">Flipkart</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Bengaluru</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-1">Lead Experience Designer</h3>
+<p class="font-mono text-sm font-semibold text-primary-strong mt-2">₹35–45 LPA</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-hairline/80 flex items-center justify-between">
+<span class="font-mono text-[11px] text-muted">Saved 3d ago</span>
+<button class="neu-raised-pill px-3 py-1 bg-base text-ink font-button-sm text-button-sm font-semibold rounded-full border border-hairline hover:text-primary-strong active:scale-95 transition-transform" type="button">
+                Apply Now
+              </button>
+</div>
+</article>
+<!-- Saved Job Card B: Freshworks -->
+<article class="min-w-[270px] max-w-[280px] snap-center rounded-2xl bg-base neu-raised-sm border border-hairline p-space-md relative flex flex-col justify-between shrink-0">
+<!-- Bookmark Ribbon Metaphor Top Right -->
+<div class="absolute top-0 right-4 w-7 h-9 bg-primary-container shadow-md flex items-center justify-center rounded-b-sm border-t-0 border border-primary-strong/40">
+<span class="material-symbols-outlined text-white" data-icon="bookmark" data-weight="fill" style="font-size: 18px; font-variation-settings: 'FILL' 1;">bookmark</span>
+</div>
+<div>
+<div class="flex items-center gap-2 pr-8">
+<span class="font-ws-card-title text-ws-card-title font-bold text-ink truncate">Freshworks</span>
+<span class="w-1 h-1 rounded-full bg-outline"></span>
+<span class="font-caption text-caption text-muted">Chennai</span>
+</div>
+<h3 class="font-headline-4 text-headline-4 text-base font-bold text-ink mt-1">Senior Design System Lead</h3>
+<p class="font-mono text-sm font-semibold text-primary-strong mt-2">₹26–34 LPA</p>
+</div>
+<div class="mt-space-md pt-space-xs border-t border-hairline/80 flex items-center justify-between">
+<span class="font-mono text-[11px] text-muted">Saved 1w ago</span>
+<button class="neu-raised-pill px-3 py-1 bg-base text-ink font-button-sm text-button-sm font-semibold rounded-full border border-hairline hover:text-primary-strong active:scale-95 transition-transform" type="button">
+                Apply Now
+              </button>
+</div>
+</article>
+</div>
+</section>
+</div>
+<!-- 7. BOTTOM NAVIGATION BAR (Shared Component: BottomNavBar) -->
+<!-- Destination count: 4, labels: ["Home", "Jobs", "Applications", "Profile"] -->
+<!-- ACTIVE STATE: Applications (Candidate dashboard tracking active applications) -->
+<!-- Executing exact JSON blueprint styles -->
+<nav aria-label="Main Navigation" class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-space-md py-space-xs bg-base dark:bg-dark-base pb-safe shadow-[0_-2px_6px_rgba(203,197,186,0.5)] dark:shadow-[0_-2px_6px_rgba(14,15,17,0.7)]">
+<!-- Nav Item 1: Home (Inactive) -->
+<a class="flex flex-col items-center justify-center text-ink-muted dark:text-dark-ink-muted px-space-sm py-space-xxs hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 transition-transform" href="#home">
+<span class="material-symbols-outlined" data-icon="home" style="font-size: 22px;">home</span>
+<span class="font-caption text-caption mt-0.5">Home</span>
+</a>
+<!-- Nav Item 2: Jobs (Inactive) -->
+<a class="flex flex-col items-center justify-center text-ink-muted dark:text-dark-ink-muted px-space-sm py-space-xxs hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 transition-transform" href="#jobs">
+<span class="material-symbols-outlined" data-icon="work" style="font-size: 22px;">work</span>
+<span class="font-caption text-caption mt-0.5">Jobs</span>
+</a>
+<!-- Nav Item 3: Applications (ACTIVE STATE - Sunk with inset well, high contrast brand accent) -->
+<a aria-current="page" class="flex flex-col items-center justify-center bg-sunken dark:bg-dark-sunken shadow-[inset_2px_2px_4px_#CBC5BA,_inset_-2px_-2px_4px_#FFFFFF] dark:shadow-[inset_2px_2px_4px_#0E0F11,_inset_-2px_-2px_4px_#2A2D33] text-primary-strong dark:text-primary-container rounded-xl px-space-sm py-space-xxs border-b-2 border-primary-strong dark:border-primary-container active:scale-95 transition-transform duration-150" href="#applications">
+<span class="material-symbols-outlined" data-icon="assignment" data-weight="fill" style="font-size: 22px; font-variation-settings: 'FILL' 1;">assignment</span>
+<span class="font-caption text-caption font-bold mt-0.5">Applications</span>
+</a>
+<!-- Nav Item 4: Profile (Inactive) -->
+<a class="flex flex-col items-center justify-center text-ink-muted dark:text-dark-ink-muted px-space-sm py-space-xxs hover:text-primary dark:hover:text-inverse-primary transition-colors duration-150 active:scale-95 transition-transform" href="#profile">
+<span class="material-symbols-outlined" data-icon="person" style="font-size: 22px;">person</span>
+<span class="font-caption text-caption mt-0.5">Profile</span>
+</a>
+</nav>
+</main>
+</body></html>
