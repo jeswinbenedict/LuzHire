@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
@@ -174,6 +175,7 @@ Future<GoRouter> pumpLuzHire(
   FakeAccountApi? api,
   String location = '/',
   Size size = const Size(1280, 900),
+  List<Override> overrides = const [],
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1;
@@ -184,6 +186,7 @@ Future<GoRouter> pumpLuzHire(
       overrides: [
         authGatewayProvider.overrideWithValue(g),
         accountApiProvider.overrideWithValue(api ?? FakeAccountApi(g)),
+        ...overrides,
       ],
       child: const LuzHireApp(),
     ),

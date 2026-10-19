@@ -7,8 +7,13 @@ import '../../features/auth/presentation/account_flow_pages.dart';
 import '../../features/auth/presentation/sign_in_page.dart';
 import '../../features/auth/presentation/sign_up_page.dart';
 import '../../features/candidate/candidate_area.dart';
+import '../../features/companies/presentation/companies_pages.dart';
 import '../../features/design_gallery/gallery_page.dart';
 import '../../features/home/home_page.dart';
+import '../../features/jobs/data/jobs_repository.dart';
+import '../../features/jobs/presentation/job_detail_page.dart';
+import '../../features/jobs/presentation/job_search_page.dart';
+import '../../features/jobs/presentation/saved_jobs_page.dart';
 import '../data/enums.dart';
 import '../shell/destinations.dart';
 import '../shell/shell_common.dart';
@@ -53,12 +58,24 @@ final _routes = <RouteBase>[
         SpotlightShell(location: state.uri.path, child: child),
     routes: [
       GoRoute(path: '/', builder: (_, _) => const HomePage()),
-      _placeholder('/jobs', 'Job search', 'Phase 4', Icons.work_outline),
-      _placeholder(
-        '/companies',
-        'Companies',
-        'Phase 4',
-        Icons.apartment_outlined,
+      GoRoute(
+        path: '/jobs',
+        builder: (_, s) => JobSearchPage(
+          query: JobSearchQuery.fromUrlParams(s.uri.queryParameters),
+        ),
+      ),
+      GoRoute(
+        path: '/jobs/:slug',
+        builder: (_, s) => JobDetailPage(slug: s.pathParameters['slug']!),
+      ),
+      GoRoute(
+        path: '/companies',
+        builder: (_, s) =>
+            CompaniesPage(query: s.uri.queryParameters['q'] ?? ''),
+      ),
+      GoRoute(
+        path: '/companies/:slug',
+        builder: (_, s) => CompanyPage(slug: s.pathParameters['slug']!),
       ),
       _placeholder('/news', 'Career news', 'Phase 8', Icons.newspaper_outlined),
       GoRoute(
@@ -100,12 +117,7 @@ final _routes = <RouteBase>[
             'Phase 5',
             Icons.send_outlined,
           ),
-          _placeholder(
-            '/me/saved',
-            'Saved jobs',
-            'Phase 4',
-            Icons.bookmark_border,
-          ),
+          GoRoute(path: '/me/saved', builder: (_, _) => const SavedJobsPage()),
           _placeholder(
             '/me/interviews',
             'Interviews',

@@ -17,7 +17,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
-| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ⬜ |
+| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Built and tested (branch `phase-4-job-board`). Still needed: live "new jobs" banner; real jobs in the cloud database |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | ⬜ |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | ⬜ |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | ⬜ |
@@ -118,7 +118,18 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **Done when:** a new user can sign up on web and Android, lands on the right dashboard, and RLS sees their claims.
 **You provide:** a Firebase project. You add the Firebase Admin service-account JSON as a Vercel env var yourself; never paste it in chat.
 
-## Phase 4 — Public job board (Spotlight)
+## Phase 4 — Public job board (Spotlight) 🟡
+**Done on `phase-4-job-board`** (built from the Stitch designs in `docs/design/`):
+- Job search at `/jobs`: keyword + location, remote, job type, experience, minimum salary, date posted and skills. Every filter lives in the URL, so links are shareable. Layouts: filters | results | live preview at ≥ 1360 px, filters | results from 1024 px, and a "Filters (n)" bottom sheet on phones. Keyset pagination loads the next page while you scroll (with a "Load more" fallback), plus skeletons, empty, error and "not available in this build" states.
+- Job detail at `/jobs/:slug`: header chips, description (small Markdown renderer), responsibilities, requirements, skills, benefits, a company card and "More from <company>". The apply panel (salary, apply, save, copy link, posted / deadline / applicant count) is sticky on desktop and a pinned bottom bar on phones. External jobs open the source site. Native jobs ask visitors to sign in; the in-app apply form comes in Phase 5.
+- Companies at `/companies` (search, verified badge) and `/companies/:slug` (about, benefits, open roles).
+- Saved jobs: a bookmark on every card, synced through Realtime with instant optimistic feedback, the `/me/saved` page, and visitors offered sign-in.
+- Home: "Latest jobs" (real postings only; hidden when there are none).
+- 19 widget tests against in-memory repositories (94 app tests in total).
+
+**Still to do:** the live "new jobs" banner (Realtime broadcast), and real jobs in the cloud database. It is empty until employers post (Phase 6) or feeds are ingested (Phase 8). The seed stays local-only.
+
+**Original scope:**
 - Home (hero search, categories, live "new jobs" banner via Realtime broadcast, honest stats).
 - Job search: keyword + filters (location, remote, type, level, salary slider, skills, posted date), filter bottom sheet on phones / side panel on desktop, list ↔ two-pane detail on expanded, infinite keyset pagination, URL-synced filters (shareable links).
 - Job detail (sticky apply panel/bar, company card, similar jobs), companies directory + company page, saved jobs (bookmark ribbon, synced).

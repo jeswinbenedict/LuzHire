@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/layout/breakpoints.dart';
@@ -6,10 +7,15 @@ import '../../core/layout/content.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/tokens.dart';
 import '../../core/widgets/widgets.dart';
+import '../jobs/application/job_board_providers.dart';
+import '../jobs/data/jobs_repository.dart';
+import '../jobs/presentation/job_widgets.dart';
+import '../../core/router/links.dart';
 
 /// Public home, translated from the Stitch design `docs/design/stitch/
-/// home-desktop.png` / `home-mobile.png`. Live counts, featured jobs and the
-/// "new jobs" banner need data and arrive in Phase 4. No invented statistics.
+/// home-desktop.png` / `home-mobile.png`.
+/// The latest-jobs section shows real postings only and hides itself when
+/// there are none. No invented statistics.
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
 
@@ -24,13 +30,10 @@ class HomePage extends StatelessWidget {
 
   static void _search(BuildContext context, String keyword, [String? loc]) {
     context.go(
-      Uri(
-        path: '/jobs',
-        queryParameters: {
-          if (keyword.isNotEmpty) 'q': keyword,
-          if (loc != null && loc.isNotEmpty) 'location': loc,
-        },
-      ).toString(),
+      pathWithQuery('/jobs', {
+        if (keyword.isNotEmpty) 'q': keyword,
+        if (loc != null && loc.isNotEmpty) 'location': loc,
+      }),
     );
   }
 
@@ -39,7 +42,7 @@ class HomePage extends StatelessWidget {
     return const SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [_Hero(), _Disciplines(), _EmployerBand()],
+        children: [_Hero(), _LatestJobs(), _Disciplines(), _EmployerBand()],
       ),
     );
   }
@@ -128,6 +131,42 @@ class _Hero extends StatelessWidget {
               ],
             ),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Newest six published jobs (Stitch: "featured roles" grid).
+class _LatestJobs extends ConsumerWidget {
+  const _LatestJobs();
+
+  static const query = JobSearchQuery(pageSize: 6);
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final jobs = ref.watch(jobSearchProvider(query)).jobs;
+    if (jobs.isEmpty) return const SizedBox.shrink();
+    final p = context.luz;
+    final t = context.luzText;
+    return LuzContent(
+      vertical: LuzSpace.xl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('JUST POSTED', style: t.eyebrow.copyWith(color: p.accent)),
+          const SizedBox(height: LuzSpace.xs),
+          Row(
+            children: [
+              Expanded(child: Text('Latest jobs', style: t.h3)),
+              LuzTextLink(
+                label: 'See all jobs →',
+                onPressed: () => context.go('/jobs'),
+              ),
+            ],
+          ),
+          const SizedBox(height: LuzSpace.lg),
+          LuzGrid(children: [for (final j in jobs) JobCard(job: j)]),
         ],
       ),
     );

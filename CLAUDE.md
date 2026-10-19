@@ -52,4 +52,5 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [x] Phase 1: Design system & adaptive shell. Components, layout kit, shells, Stitch designs (`docs/design/`) and the live Vercel deploy
 - [x] Phase 2: Backend foundation. Schema, RLS, storage, search, seed, 57 pgTAP assertions and the Dart data layer are done (branch `phase-2-backend`). CI green and applied to the cloud project
 - [x] Phase 3: Auth. API, screens, guards and tests, live on Vercel with Firebase + Supabase (real sign-up verified)
-- [ ] Phases 4–11: see ROADMAP
+- [~] Phase 4: Public job board. Search, detail, companies and saved jobs are done (branch `phase-4-job-board`). Still to do: live new-jobs banner, real data
+- [ ] Phases 5–11: see ROADMAP

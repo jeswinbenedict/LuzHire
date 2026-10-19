@@ -6,6 +6,7 @@ import '../../../core/data/enums.dart';
 import '../../../core/data/failures.dart';
 import '../../../core/data/models.dart';
 import '../../../core/data/supabase_providers.dart';
+import '../../auth/application/auth_controller.dart';
 
 /// Filters for the public job search (FR-05). Maps 1:1 to the
 /// `public.search_jobs` RPC parameters.
@@ -56,6 +57,39 @@ class JobSearchQuery {
     companyId: companyId,
     pageSize: pageSize,
   );
+
+  /// [copyWith] can't clear nullable fields; these can.
+  JobSearchQuery withMinSalary(num? value) =>
+      _with(minAnnualSalary: value, postedWithinDays: postedWithinDays);
+  JobSearchQuery withPostedWithin(int? days) =>
+      _with(minAnnualSalary: minAnnualSalary, postedWithinDays: days);
+
+  JobSearchQuery _with({num? minAnnualSalary, int? postedWithinDays}) =>
+      JobSearchQuery(
+        keyword: keyword,
+        location: location,
+        remoteOnly: remoteOnly,
+        types: types,
+        levels: levels,
+        minAnnualSalary: minAnnualSalary,
+        skills: skills,
+        postedWithinDays: postedWithinDays,
+        companyId: companyId,
+        pageSize: pageSize,
+      );
+
+  /// Keyword and location kept; every filter cleared.
+  JobSearchQuery clearFilters() =>
+      JobSearchQuery(keyword: keyword, location: location);
+
+  /// Filters beyond keyword/location (for the "Filters (n)" button).
+  int get activeFilterCount =>
+      (remoteOnly ? 1 : 0) +
+      types.length +
+      levels.length +
+      (minAnnualSalary != null ? 1 : 0) +
+      skills.length +
+      (postedWithinDays != null ? 1 : 0);
 
   /// Parameters for `search_jobs`, with [after] as the keyset cursor.
   Map<String, dynamic> toRpcParams({Job? after}) => {
@@ -155,6 +189,30 @@ class JobsRepository {
     return row == null ? null : Job.fromJson(row);
   });
 
+  /// Jobs by id (e.g. saved jobs), newest first. Unpublished ones drop out
+  /// through RLS.
+  Future<List<Job>> byIds(Iterable<String> ids) => guardDb(() async {
+    if (ids.isEmpty) return const <Job>[];
+    final rows = await _db
+        .from('jobs')
+        .select()
+        .inFilter('id', ids.toList())
+        .order('published_at', ascending: false);
+    return [for (final r in rows) Job.fromJson(r)];
+  });
+
+  /// Names of the skills tagged on [jobId], alphabetical.
+  Future<List<String>> jobSkills(String jobId) => guardDb(() async {
+    final rows = await _db
+        .from('job_skills')
+        .select('skills(name)')
+        .eq('job_id', jobId);
+    return [
+      for (final r in rows)
+        if ((r['skills'] as Map?)?['name'] case final String name) name,
+    ]..sort();
+  });
+
   Future<List<({String slug, String name})>> skills() => guardDb(() async {
     final rows = await _db.from('skills').select('slug, name').order('name');
     return [
@@ -187,10 +245,18 @@ class SavedJobsRepository {
   );
 }
 
-final jobsRepositoryProvider = Provider<JobsRepository>(
-  (ref) => JobsRepository(ref.watch(supabaseClientProvider)),
+/// Thrown by data providers in builds without Supabase config.
+const notConfigured = AppFailure(
+  'Jobs are not available in this build.',
+  code: 'not_configured',
 );
 
-final savedJobsRepositoryProvider = Provider<SavedJobsRepository>(
-  (ref) => SavedJobsRepository(ref.watch(supabaseClientProvider)),
-);
+final jobsRepositoryProvider = Provider<JobsRepository>((ref) {
+  if (!ref.watch(appConfigProvider).isSupabaseConfigured) throw notConfigured;
+  return JobsRepository(ref.watch(supabaseClientProvider));
+});
+
+final savedJobsRepositoryProvider = Provider<SavedJobsRepository>((ref) {
+  if (!ref.watch(appConfigProvider).isSupabaseConfigured) throw notConfigured;
+  return SavedJobsRepository(ref.watch(supabaseClientProvider));
+});
