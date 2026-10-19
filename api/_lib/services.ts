@@ -1,5 +1,5 @@
 // Lazily-initialised server clients. Secrets come only from Vercel env vars:
-//   FIREBASE_SERVICE_ACCOUNT   base64 of the Firebase service-account JSON
+//   FIREBASE_SERVICE_ACCOUNT   Firebase service-account JSON (raw, or base64 of it)
 //   SUPABASE_URL               https://<ref>.supabase.co
 //   SUPABASE_SERVICE_ROLE_KEY  service role key (bypasses RLS — server only!)
 import { cert, getApps, initializeApp } from 'firebase-admin/app';
@@ -13,13 +13,32 @@ function required(name: string): string {
   return value;
 }
 
+/** Accepts the service-account JSON as-is or base64-encoded. */
+export function parseServiceAccount(value: string): Record<string, unknown> {
+  const raw = value.trim();
+  const text = raw.startsWith('{') ? raw : Buffer.from(raw, 'base64').toString('utf8');
+  try {
+    const parsed: unknown = JSON.parse(text);
+    if (parsed && typeof parsed === 'object' && 'private_key' in parsed && 'client_email' in parsed) {
+      return parsed as Record<string, unknown>;
+    }
+  } catch {
+    // fall through
+  }
+  throw new HttpError(
+    503,
+    'not_configured',
+    'FIREBASE_SERVICE_ACCOUNT is not a valid service-account JSON (raw or base64).',
+  );
+}
+
 let auth: Auth | undefined;
 export function firebaseAuth(): Auth {
   if (!auth) {
     const app =
       getApps()[0] ??
       initializeApp({
-        credential: cert(JSON.parse(Buffer.from(required('FIREBASE_SERVICE_ACCOUNT'), 'base64').toString('utf8'))),
+        credential: cert(parseServiceAccount(required('FIREBASE_SERVICE_ACCOUNT'))),
       });
     auth = getAuth(app);
   }
