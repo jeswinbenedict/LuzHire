@@ -26,6 +26,7 @@ export const LIMITS = {
   claimAdmin: { name: 'claim-admin', max: 5, windowSeconds: 600 },
   admin: { name: 'admin', max: 60, windowSeconds: 60 },
   telemetry: { name: 'telemetry', max: 10, windowSeconds: 60 },
+  csp: { name: 'csp', max: 60, windowSeconds: 60 },
 } satisfies Record<string, Limit>;
 
 /** Throws 429 once [request]'s IP is over [limit]. */
