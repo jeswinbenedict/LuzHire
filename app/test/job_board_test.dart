@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
+import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
 
 import 'support/fakes.dart';
@@ -210,5 +211,44 @@ void main() {
     expect(find.text('Latest jobs'), findsOneWidget);
     expect(find.text('Flutter Developer 1'), findsOneWidget);
     expect(find.text('Flutter Developer 7'), findsNothing);
+  });
+
+  testWidgets('external listings name and link their source', (tester) async {
+    final jobs = FakeJobsRepository([
+      Job(
+        id: 'ext-1',
+        publishedAt: DateTime.utc(2026, 10, 19, 10),
+        slug: 'ext-1',
+        title: 'Remote Flutter Engineer',
+        companyName: 'Askable',
+        employmentType: EmploymentType.contract,
+        workplace: WorkplaceType.remote,
+        status: JobStatus.published,
+        isExternal: true,
+        externalSource: 'remotive',
+        externalUrl: 'https://remotive.com/remote-jobs/x-1',
+      ),
+      Job(
+        id: 'ext-2',
+        publishedAt: DateTime.utc(2026, 10, 19, 9),
+        slug: 'ext-2',
+        title: 'Data Analyst',
+        companyName: 'Acme',
+        employmentType: EmploymentType.fullTime,
+        workplace: WorkplaceType.onsite,
+        status: JobStatus.published,
+        isExternal: true,
+        externalSource: 'adzuna',
+        externalUrl: 'https://www.adzuna.in/land/ad/1',
+      ),
+    ]);
+    final router = await _pump(tester, location: '/jobs', jobs: jobs);
+    expect(find.text('via Remotive'), findsWidgets);
+    expect(find.text('Jobs by Adzuna'), findsWidgets);
+
+    router.go('/jobs/ext-1');
+    await tester.pumpAndSettle();
+    expect(find.text('Apply on Remotive'), findsWidgets);
+    expect(find.text('via Remotive'), findsWidgets);
   });
 }

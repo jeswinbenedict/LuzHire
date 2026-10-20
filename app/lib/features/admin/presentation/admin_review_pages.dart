@@ -86,6 +86,7 @@ class AdminOverviewPage extends ConsumerWidget {
           onRetry: () => ref.invalidate(platformStatsProvider),
           data: (s) => _Overview(stats: s),
         ),
+        const _ImportsCard(),
       ],
     );
   }
@@ -257,6 +258,63 @@ class _Overview extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Latest daily imports from external job feeds.
+class _ImportsCard extends ConsumerWidget {
+  const _ImportsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final runs = ref.watch(ingestRunsProvider).value ?? const <IngestRun>[];
+    final t = context.luzText;
+    final p = context.luz;
+    return LuzCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Job imports', style: t.wsSection),
+          const SizedBox(height: LuzSpace.xs),
+          if (runs.isEmpty)
+            Text(
+              'No imports yet. External feeds run once a day.',
+              style: t.bodySm.copyWith(color: p.inkMuted),
+            )
+          else
+            for (final r in runs)
+              Padding(
+                padding: const EdgeInsets.only(top: LuzSpace.xs),
+                child: Row(
+                  children: [
+                    Icon(
+                      r.error == null
+                          ? Icons.check_circle_outline
+                          : Icons.error_outline,
+                      size: 18,
+                      color: r.error == null ? p.success : p.danger,
+                    ),
+                    const SizedBox(width: LuzSpace.sm),
+                    Expanded(
+                      child: Text(
+                        r.error == null
+                            ? '${r.source}: ${r.inserted} new, ${r.updated} '
+                                  'updated, ${r.closed} closed, ${r.skipped} '
+                                  'skipped'
+                            : '${r.source}: ${r.error}',
+                        style: t.bodySm,
+                      ),
+                    ),
+                    Text(
+                      formatRelative(r.startedAt),
+                      style: t.caption.copyWith(color: p.muted),
+                    ),
+                  ],
+                ),
+              ),
+        ],
+      ),
     );
   }
 }

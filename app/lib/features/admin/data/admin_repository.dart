@@ -19,6 +19,16 @@ class AdminRepository {
     return PlatformStats.fromJson((json as Map).cast());
   });
 
+  /// Latest daily job imports, newest first.
+  Future<List<IngestRun>> ingestRuns() => guardDb(() async {
+    final rows = await _db
+        .from('ingest_runs')
+        .select()
+        .order('started_at', ascending: false)
+        .limit(5);
+    return [for (final r in rows) IngestRun.fromJson(r)];
+  });
+
   // ---------------------------------------------------------- reviews
 
   /// Companies that asked for verification, oldest request first.

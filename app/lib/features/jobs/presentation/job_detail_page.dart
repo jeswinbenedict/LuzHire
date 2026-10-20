@@ -421,8 +421,11 @@ class _Facts extends StatelessWidget {
           ),
         if (!job.isExternal)
           fact(Icons.groups_outlined, 'Applicants', '${job.applicationCount}'),
-        if (job.isExternal && (job.externalSource ?? '').isNotEmpty)
-          fact(Icons.open_in_new, 'Listed on', job.externalSource!),
+        if (job.isExternal && jobSource(job.externalSource) != null)
+          Padding(
+            padding: const EdgeInsets.only(bottom: LuzSpace.sm),
+            child: SourceAttribution(source: job.externalSource),
+          ),
       ],
     );
   }
@@ -442,7 +445,8 @@ class ApplyButton extends ConsumerWidget {
 
     if (job.isExternal && job.externalUrl != null) {
       return LuzButton.accent(
-        label: 'Apply on ${job.externalSource ?? 'company site'}',
+        label:
+            'Apply on ${jobSource(job.externalSource)?.name ?? 'company site'}',
         icon: Icons.open_in_new,
         expand: true,
         onPressed: open

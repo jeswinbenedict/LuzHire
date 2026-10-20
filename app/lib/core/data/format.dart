@@ -83,3 +83,21 @@ String formatPlace(Job job) {
   ];
   return parts.join(' · ');
 }
+
+/// Attribution for external job providers (their terms ask to name and link
+/// them on every listing): display label and home page.
+({String label, String name, String url})? jobSource(String? id) =>
+    switch (id) {
+      'remotive' => (
+        label: 'via Remotive',
+        name: 'Remotive',
+        url: 'https://remotive.com',
+      ),
+      'adzuna' => (
+        label: 'Jobs by Adzuna',
+        name: 'Adzuna',
+        url: 'https://www.adzuna.in',
+      ),
+      null || '' => null,
+      final other => (label: 'via $other', name: other, url: ''),
+    };

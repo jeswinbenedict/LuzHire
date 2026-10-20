@@ -13,6 +13,10 @@ final platformStatsProvider = FutureProvider.autoDispose<PlatformStats>(
   (ref) => ref.watch(adminRepositoryProvider).stats(),
 );
 
+final ingestRunsProvider = FutureProvider.autoDispose<List<IngestRun>>(
+  (ref) => ref.watch(adminRepositoryProvider).ingestRuns(),
+);
+
 final pendingCompaniesProvider = FutureProvider.autoDispose<List<Company>>(
   (ref) => ref.watch(adminRepositoryProvider).pendingCompanies(),
 );

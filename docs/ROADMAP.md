@@ -21,7 +21,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19). Still needed: a live check with real candidate and employer accounts |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | 🟡 Live on main (migration `20261020120000` applied to the cloud 2026-10-20). Still needed: create the first admin account |
-| 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
+| 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | 🟡 Jobs feeds and SEO built and tested (branch `phase-8-ingestion-seo`). Still needed: migration `20261020130000` on the cloud, `CRON_SECRET`; career news (sources to choose) |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | ⬜ |
 | 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | ⬜ |
 | 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Domain (optional) | ⬜ |
@@ -198,7 +198,19 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 **Done when:** every admin action creates an audit row and is reversible where it should be.
 
-## Phase 8 — Data ingestion & SEO
+## Phase 8 — Data ingestion & SEO 🟡
+**Done on `phase-8-ingestion-seo`:**
+- Daily import `GET /api/ingest/jobs` (Vercel Cron at 07:00 IST, `Authorization: Bearer $CRON_SECRET`). Providers, chosen after reading their terms:
+  - **Remotive** (worldwide remote, no key): one call a day (their limit is 4), links back and names Remotive on every listing, and never passes jobs to Google Jobs. External pages are `noindex` with no JobPosting markup. The free feed can be a sample, so missing jobs close only when the feed reports it is complete; otherwise they expire after 30 days.
+  - **Adzuna India** (optional, free keys): "Jobs by Adzuna" link on every listing. Estimated ("predicted") salaries are not shown as real ones.
+  - Arbeitnow was skipped (mostly German-language European jobs).
+- Normalisation: untrusted HTML becomes the app's small Markdown subset (scripts and links dropped), titles become plain text, salary text is read only when unambiguous ("12–18 LPA", "$80–100k", "$45/hour"; "per task" stays blank), employment types are mapped, tags link to existing skills, duplicates are removed within a feed and across providers, and each run is logged in `ingest_runs` (new migration `20261020130000_ingestion.sql`, shown on the admin overview).
+- SEO: `/jobs/:slug` is served by `api/seo/job`: the app's own index.html with the job's title, description, canonical URL and Open Graph tags, JobPosting JSON-LD for LuzHire's own jobs, 404 for unknown and 410 for closed jobs, and a `<noscript>` summary. The Flutter app then boots as normal. `/sitemap.xml` lists public pages, native jobs and verified companies, and `robots.txt` keeps private areas out. The deploy smoke test now checks robots, the sitemap and the 404.
+- Tests: 13 ingestion tests, 6 SEO tests (39 API), 4 pgTAP assertions (101 database), plus attribution and imports widget tests (146 app).
+
+**Still to do:** career news needs sources whose terms allow showing their headlines (yours to pick). The `/news` page stays a placeholder until then.
+
+**Original scope:**
 - `/api/ingest/jobs`: provider adapters, normalisation (salary period!), HTML → Markdown sanitising, cross-provider dedupe, expiry; scheduled by Supabase `pg_cron` + `pg_net`.
 - `/api/ingest/news`: career-specific sources + relevance scoring; Career News screen.
 - SEO: `/jobs/:slug` server-rendered HTML with JobPosting JSON-LD, `/sitemap.xml`, `/robots.txt`, correct 404/410.

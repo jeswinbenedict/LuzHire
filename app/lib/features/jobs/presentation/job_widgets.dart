@@ -12,6 +12,8 @@ import '../../../core/widgets/widgets.dart';
 import '../application/job_board_providers.dart';
 import '../data/jobs_repository.dart';
 
+import 'package:url_launcher/url_launcher.dart';
+
 /// Job card from the Stitch search/home designs: logo socket, title, company,
 /// place, salary (mono) and a save bookmark. [selected] adds the orange
 /// indicator used in the two-pane list.
@@ -136,6 +138,14 @@ class JobCard extends StatelessWidget {
                         ),
                     ],
                   ),
+                  if (job.isExternal &&
+                      jobSource(job.externalSource) != null) ...[
+                    const SizedBox(height: LuzSpace.xxs),
+                    SourceAttribution(
+                      source: job.externalSource,
+                      compact: true,
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -611,6 +621,46 @@ class BulletLine extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// "via Remotive" / "Jobs by Adzuna": names and links the provider of an
+/// external listing, as their terms require.
+class SourceAttribution extends StatelessWidget {
+  const SourceAttribution({
+    super.key,
+    required this.source,
+    this.compact = false,
+  });
+  final String? source;
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context) {
+    final info = jobSource(source);
+    if (info == null) return const SizedBox.shrink();
+    final p = context.luz;
+    final t = context.luzText;
+    final text = Text(
+      info.label,
+      style: (compact ? t.caption : t.bodySm).copyWith(color: p.inkMuted),
+    );
+    if (info.url.isEmpty) return text;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(Icons.open_in_new, size: compact ? 12 : 16, color: p.inkMuted),
+        const SizedBox(width: 4),
+        LuzTextLink(
+          label: info.label,
+          style: compact ? t.caption : t.bodySm,
+          onPressed: () => launchUrl(
+            Uri.parse(info.url),
+            mode: LaunchMode.externalApplication,
+          ),
+        ),
+      ],
     );
   }
 }

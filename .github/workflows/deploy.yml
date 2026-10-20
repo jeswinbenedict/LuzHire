@@ -98,6 +98,12 @@ jobs:
           check /jobs                # deep links must load the app, not 404
           check /employer/pipeline
           check /favicon.svg
+          check /robots.txt
+          check /sitemap.xml
+          # Unknown job pages still load the app but answer 404 (SEO).
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/jobs/no-such-job-0000")
+          echo "/jobs/no-such-job-0000 -> $code"
+          [ "$code" = "404" ] || { echo "::error::unknown job page returned $code"; exit 1; }
           # The live site must be the commit we just deployed.
           for attempt in 1 2 3 4 5 6; do
             curl -s "$URL/api/health" | grep -q "\"commit\":\"${GITHUB_SHA::7}\"" && { echo "live commit: ${GITHUB_SHA::7}"; exit 0; }

@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Disallow: /me
+Disallow: /employer
+Disallow: /admin
+Disallow: /account
+Disallow: /api/
+
+Sitemap: https://luzhire.vercel.app/sitemap.xml

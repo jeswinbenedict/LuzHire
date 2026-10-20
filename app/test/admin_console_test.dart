@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
+import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/core/shell/workspace_page.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
 
@@ -264,5 +265,41 @@ void main() {
       await tester.pumpAndSettle();
       expect(router.state.uri.path, isNot('/admin'));
     });
+  });
+
+  testWidgets('overview shows the latest job imports', (tester) async {
+    final h = _Harness();
+    h.admin.runs.addAll([
+      IngestRun(
+        source: 'remotive',
+        startedAt: DateTime.now(),
+        fetched: 10,
+        inserted: 7,
+        updated: 3,
+        skipped: 0,
+        closed: 1,
+      ),
+      IngestRun(
+        source: 'adzuna',
+        startedAt: DateTime.now(),
+        fetched: 0,
+        inserted: 0,
+        updated: 0,
+        skipped: 0,
+        closed: 0,
+        error: 'api.adzuna.com answered 401',
+      ),
+    ]);
+    await _pump(tester, h, location: '/admin');
+    await tester.scrollUntilVisible(
+      find.text('Job imports'),
+      300,
+      scrollable: _pageScroll,
+    );
+    expect(
+      find.text('remotive: 7 new, 3 updated, 1 closed, 0 skipped'),
+      findsOneWidget,
+    );
+    expect(find.text('adzuna: api.adzuna.com answered 401'), findsOneWidget);
   });
 }

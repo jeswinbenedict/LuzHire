@@ -8,6 +8,14 @@
   "outputDirectory": "app/build/web",
   "rewrites": [
     {
+      "source": "/jobs/:slug",
+      "destination": "/api/seo/job?slug=:slug"
+    },
+    {
+      "source": "/sitemap.xml",
+      "destination": "/api/seo/sitemap"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
@@ -55,6 +63,12 @@
           "value": "public, max-age=0, must-revalidate"
         }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/ingest/jobs",
+      "schedule": "30 1 * * *"
     }
   ]
 }

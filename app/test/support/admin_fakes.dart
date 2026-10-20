@@ -95,6 +95,11 @@ class FakeAdminRepository implements AdminRepository {
     signupsByWeek: [(week: DateTime(2026, 10, 12), count: 5)],
   );
 
+  final runs = <IngestRun>[];
+
+  @override
+  Future<List<IngestRun>> ingestRuns() async => [...runs];
+
   @override
   Future<List<Company>> pendingCompanies() async =>
       companies.where((c) => c.verification == Verification.pending).toList();

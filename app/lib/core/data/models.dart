@@ -755,3 +755,38 @@ class PlatformStats {
     ],
   );
 }
+
+/// One row of public.ingest_runs (daily job imports).
+@immutable
+class IngestRun {
+  const IngestRun({
+    required this.source,
+    required this.startedAt,
+    required this.fetched,
+    required this.inserted,
+    required this.updated,
+    required this.skipped,
+    required this.closed,
+    this.error,
+  });
+
+  final String source;
+  final DateTime startedAt;
+  final int fetched;
+  final int inserted;
+  final int updated;
+  final int skipped;
+  final int closed;
+  final String? error;
+
+  factory IngestRun.fromJson(Json j) => IngestRun(
+    source: j['source'] as String,
+    startedAt: DateTime.parse(j['started_at'] as String),
+    fetched: (j['fetched'] as num).toInt(),
+    inserted: (j['inserted'] as num).toInt(),
+    updated: (j['updated'] as num).toInt(),
+    skipped: (j['skipped'] as num).toInt(),
+    closed: (j['closed'] as num).toInt(),
+    error: j['error'] as String?,
+  );
+}
