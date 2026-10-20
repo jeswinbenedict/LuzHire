@@ -227,7 +227,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **Done when:** push arrives on web and Android; emails render in Gmail and Outlook.
 
 ## Phase 10 — Hardening
-**Status: live on main** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP and on the cloud database, API rate limits, enforced CSP with violation reports, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log; LCP ≤ 1.3 s). Load test done (database copes with 500 users searching every 2 s; trim the search payload next). Still to do: a manual screen-reader and keyboard pass, Sentry (optional).
+**Status: live on main** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP and on the cloud database, API rate limits, enforced CSP with violation reports, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log; LCP ≤ 1.3 s). Load test done (database copes with 500 users searching every 2 s). Search results trimmed to job cards, about 9× smaller (migration `20261020170000`, still to apply to the cloud). Still to do: a manual screen-reader and keyboard pass, Sentry (optional).
 - Performance: deferred imports for employer/admin, image sizing, bundle check, Lighthouse on SEO pages, LCP ≤ 2.5 s on mid-range mobile.
 - Accessibility: full WCAG 2.1 AA pass (screen reader on web/Android, keyboard, contrast, 200 % text).
 - Security: RLS review, OWASP checklist, CSP headers, rate limits on API, dependency audit, secret scan.

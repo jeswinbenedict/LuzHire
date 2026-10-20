@@ -96,3 +96,30 @@ Findings:
 - **Recommended follow-up:** return only the card fields (title, company, summary, salary, tags) from `search_jobs` and load the description when a job is opened. That cuts each results page several-fold, for users on mobile data too.
 - **Vercel's firewall blocks single-source floods.** After 678 good responses for the app shell, Vercel's automatic DDoS mitigation answered `403` with its Security Checkpoint (`X-Vercel-Mitigated: challenge`) to everything from the test IP. Real browsers from that IP pass the checkpoint automatically, and the site stayed up for everyone else: the uptime check from GitHub's servers returned 200 for `/`, `/jobs` and the deep health check during and after the test. So Vercel's CDN and functions cannot be load-tested from one machine; that needs traffic from many IPs (for example a hosted load-testing service), and Vercel's edge is built to scale for cached pages.
 - Server-side protection held: no errors were logged, the database stayed responsive (0.3 s for a 20-result search right after), and nothing needed a restart.
+
+### Search payload trimmed (2026-10-20)
+
+Done in migration `20261020170000_lean_search_jobs.sql`. `search_jobs` keeps
+its name, parameters, keyset cursor and ordering, but each result is now a
+job card: id, source, company id and name, external source, URL and logo,
+title, slug, summary, employment type, experience level, workplace,
+location, salary fields, status, deadline, applicant count and published
+date. It no longer returns `description_md`, responsibilities,
+qualifications, benefits or the `search` tsvector. Of the old payload, the
+tsvector was 44 % and the description 41 %. The app shows an opened job's
+card fields at once and loads the full job by slug for the description
+(`JobsRepository.bySlug`, which now also leaves out the tsvector).
+
+Measured with `curl` against the live Supabase API with the public key.
+Only 10 jobs are published today, so `page_size: 20` returns 10. The
+"after" column asks the live RPC for the new columns (`?select=…`), which is
+exactly what the new function returns once the migration is applied.
+
+| Request | Before | After | Before, gzip | After, gzip |
+|---|---|---|---|---|
+| `search_jobs`, 10 results | 82,861 B | 9,492 B (8.7× smaller) | 37,323 B | 2,863 B (13× smaller) |
+| `search_jobs`, 1 result | 6,543 B | 881 B (7.4× smaller) | 3,018 B | 496 B (6.1× smaller) |
+| Opening a job (`jobs?slug=eq.…`) | 6,543 B | 3,544 B | 3,018 B | 1,663 B |
+
+- A result is about 950 B, so a full 20-result page is about 19 KB (≈ 6 KB gzipped) instead of 50–80 KB. Searches per second were not load-tested again. At these sizes, the connection that capped the test at 75 searches/s should no longer be the limit.
+- The migration is not yet applied to the cloud database. The order of migration and deploy does not matter. The current app reads the new card rows and still loads every opened job by slug. The new app also works with the old RPC.
