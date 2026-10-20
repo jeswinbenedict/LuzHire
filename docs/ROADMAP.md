@@ -206,7 +206,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
   - Arbeitnow was skipped (mostly German-language European jobs).
 - Normalisation: untrusted HTML becomes the app's small Markdown subset (scripts and links dropped), titles become plain text, salary text is read only when unambiguous ("12–18 LPA", "$80–100k", "$45/hour"; "per task" stays blank), employment types are mapped, tags link to existing skills, duplicates are removed within a feed and across providers, and each run is logged in `ingest_runs` (new migration `20261020130000_ingestion.sql`, shown on the admin overview).
 - SEO: `/jobs/:slug` is served by `api/seo/job`: the app's own index.html with the job's title, description, canonical URL and Open Graph tags, JobPosting JSON-LD for LuzHire's own jobs, 404 for unknown and 410 for closed jobs, and a `<noscript>` summary. The Flutter app then boots as normal. `/sitemap.xml` lists public pages, native jobs and verified companies, and `robots.txt` keeps private areas out. The deploy smoke test now checks robots, the sitemap and the 404.
-- Tests: 13 ingestion tests, 6 SEO tests (39 API), 4 pgTAP assertions (101 database), plus attribution and imports widget tests (146 app).
+- Tests: 13 ingestion tests, 6 SEO tests (39 API), 4 pgTAP assertions (97 database), plus attribution and imports widget tests (146 app).
 
 **Still to do:** career news needs sources whose terms allow showing their headlines (yours to pick). The `/news` page stays a placeholder until then.
 
