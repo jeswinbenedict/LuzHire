@@ -20,19 +20,48 @@ class AccountApi {
     required AppRole role,
     String? displayName,
   }) async {
+    final body = await _post('/api/auth/bootstrap', idToken, {
+      'role': role.dbValue,
+      if (displayName != null && displayName.trim().isNotEmpty)
+        'displayName': displayName.trim(),
+    }, fallback: 'Could not finish setting up your account. Try again.');
+    return body['refreshToken'] == true;
+  }
+
+  /// Admin: changes [uid]'s role; they are signed out everywhere.
+  Future<void> changeRole({
+    required String idToken,
+    required String uid,
+    required AppRole role,
+  }) => _post('/api/admin/users/${Uri.encodeComponent(uid)}/role', idToken, {
+    'role': role.dbValue,
+  }, fallback: 'Could not change the role. Try again.');
+
+  /// Admin: suspends or reactivates [uid] (Firebase sign-in and database
+  /// writes follow).
+  Future<void> setStatus({
+    required String idToken,
+    required String uid,
+    required AccountStatus status,
+  }) => _post('/api/admin/users/${Uri.encodeComponent(uid)}/status', idToken, {
+    'status': status.dbValue,
+  }, fallback: 'Could not update the account. Try again.');
+
+  Future<Map<String, dynamic>> _post(
+    String path,
+    String idToken,
+    Map<String, dynamic> payload, {
+    required String fallback,
+  }) async {
     final http.Response res;
     try {
       res = await _http.post(
-        _config.api('/api/auth/bootstrap'),
+        _config.api(path),
         headers: {
           'Authorization': 'Bearer $idToken',
           'Content-Type': 'application/json',
         },
-        body: jsonEncode({
-          'role': role.dbValue,
-          if (displayName != null && displayName.trim().isNotEmpty)
-            'displayName': displayName.trim(),
-        }),
+        body: jsonEncode(payload),
       );
     } catch (_) {
       throw const AppFailure(
@@ -44,12 +73,9 @@ class AccountApi {
     if (res.statusCode != 200) {
       final error = body['error'];
       final message = error is Map ? error['message'] as String? : null;
-      throw AppFailure(
-        message ?? 'Could not finish setting up your account. Try again.',
-        code: 'api/${res.statusCode}',
-      );
+      throw AppFailure(message ?? fallback, code: 'api/${res.statusCode}');
     }
-    return body['refreshToken'] == true;
+    return body;
   }
 
   static Map<String, dynamic> _decode(String raw) {

@@ -14,6 +14,8 @@ import '../../candidate/presentation/candidate_widgets.dart'
     show AsyncBlock, CalendarTile, runWithToast;
 import '../application/employer_providers.dart';
 import 'employer_common.dart';
+import '../../admin/presentation/admin_people_pages.dart'
+    show AnnouncementsBanner;
 
 // ---------------------------------------------------------------- overview
 
@@ -92,6 +94,7 @@ class EmployerOverviewPage extends ConsumerWidget {
             ),
         ],
         children: [
+          const AnnouncementsBanner(),
           const MyInvitationsCard(),
           if (m.company.verification != Verification.verified)
             LuzCard(

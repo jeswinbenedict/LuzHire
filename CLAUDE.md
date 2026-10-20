@@ -55,4 +55,5 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [~] Phase 4: Public job board. Search, detail, companies and saved jobs are done (branch `phase-4-job-board`). Still to do: live new-jobs banner, real data
 - [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are live on main. Still to do: a live check with real accounts
 - [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are live on main. Still to do: a live end-to-end hire
-- [ ] Phases 7–11: see ROADMAP
+- [~] Phase 7: Admin console. Verification, moderation and reports, users (role, suspend), announcements, audit log and stats are done (branch `phase-7-admin-console`). Still to do: cloud migration, first admin account
+- [ ] Phases 8–11: see ROADMAP

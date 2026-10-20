@@ -2,6 +2,7 @@
 import { HttpError } from './http.js';
 
 export type AppRole = 'candidate' | 'employer' | 'admin';
+export type AccountStatus = 'active' | 'suspended';
 const SELF_SERVICE_ROLES: readonly AppRole[] = ['candidate', 'employer'];
 const ALL_ROLES: readonly AppRole[] = ['candidate', 'employer', 'admin'];
 
@@ -21,6 +22,9 @@ export interface AccountDeps {
   /** Inserts the profile row if it does not exist yet. */
   ensureProfile(profile: { id: string; role: AppRole; email: string; display_name: string }): Promise<void>;
   updateProfileRole(uid: string, role: AppRole): Promise<void>;
+  /** Blocks (or re-allows) Firebase sign-in for the user. */
+  setDisabled(uid: string, disabled: boolean): Promise<void>;
+  updateProfileStatus(uid: string, status: AccountStatus): Promise<void>;
   revokeSessions(uid: string): Promise<void>;
   audit(entry: { actor_id: string; action: string; target_id: string; diff: unknown }): Promise<void>;
 }
@@ -99,6 +103,41 @@ export async function changeRole(
     diff: { app_role: body.role },
   });
   return { uid: targetUid, appRole: body.role };
+}
+
+/** POST /api/admin/users/:id/status — admins suspend or reactivate a user. */
+export async function changeStatus(
+  deps: AccountDeps,
+  idToken: string,
+  targetUid: string,
+  body: { status?: unknown },
+): Promise<{ uid: string; status: AccountStatus }> {
+  const caller = await verify(deps, idToken);
+  if (caller.app_role !== 'admin') {
+    throw new HttpError(403, 'forbidden', 'Only admins can suspend accounts.');
+  }
+  if (!targetUid || targetUid.length > 128) {
+    throw new HttpError(400, 'invalid_user', 'Unknown user.');
+  }
+  if (targetUid === caller.uid) {
+    throw new HttpError(400, 'own_status', 'You cannot suspend your own account.');
+  }
+  if (body.status !== 'active' && body.status !== 'suspended') {
+    throw new HttpError(400, 'invalid_status', 'Status must be active or suspended.');
+  }
+  const suspend = body.status === 'suspended';
+  // Database first: writes are blocked at once (restrictive RLS), even
+  // before the last ID token expires.
+  await deps.updateProfileStatus(targetUid, body.status);
+  await deps.setDisabled(targetUid, suspend);
+  if (suspend) await deps.revokeSessions(targetUid);
+  await deps.audit({
+    actor_id: caller.uid,
+    action: suspend ? 'profiles.suspend' : 'profiles.reactivate',
+    target_id: targetUid,
+    diff: { account_status: body.status },
+  });
+  return { uid: targetUid, status: body.status };
 }
 
 async function verify(deps: AccountDeps, idToken: string): Promise<VerifiedToken> {

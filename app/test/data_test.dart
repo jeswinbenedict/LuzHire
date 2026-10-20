@@ -69,6 +69,9 @@ void main() {
     same('interview_status', InterviewStatus.values);
     same('offer_status', OfferStatus.values);
     same('member_role', MemberRole.values);
+    same('account_status', AccountStatus.values);
+    same('announcement_audience', AnnouncementAudience.values);
+    same('report_status', ReportStatus.values);
   });
 
   group('Job', () {

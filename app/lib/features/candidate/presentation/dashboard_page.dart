@@ -13,6 +13,8 @@ import '../application/candidate_providers.dart';
 import 'applications_pages.dart' show ApplicationList;
 import 'candidate_widgets.dart';
 import 'interviews_page.dart' show InterviewCard;
+import '../../admin/presentation/admin_people_pages.dart'
+    show AnnouncementsBanner;
 
 String greeting(DateTime now) => switch (now.hour) {
   < 12 => 'Good morning',
@@ -143,6 +145,7 @@ class CandidateDashboardPage extends ConsumerWidget {
               style: t.body.copyWith(color: p.inkMuted),
             ),
             const SizedBox(height: LuzSpace.lg),
+            const AnnouncementsBanner(),
             if (profile != null)
               LuzCard(
                 child: Column(

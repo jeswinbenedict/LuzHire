@@ -21,6 +21,7 @@ import '../application/job_board_providers.dart';
 import '../data/jobs_repository.dart';
 import 'job_search_page.dart' show JobBoardError;
 import 'job_widgets.dart';
+import '../../admin/presentation/report_button.dart';
 
 /// /jobs/:slug (Stitch: docs/design/stitch/job-detail-*.png).
 class JobDetailPage extends StatelessWidget {
@@ -326,6 +327,14 @@ class _MainColumn extends ConsumerWidget {
           const SizedBox(height: LuzSpace.lg),
           _MoreFromCompany(job: job),
         ],
+        Align(
+          alignment: Alignment.centerLeft,
+          child: ReportButton(
+            targetType: 'job',
+            targetId: job.id,
+            targetName: job.title,
+          ),
+        ),
       ],
     );
   }

@@ -168,6 +168,8 @@ class Profile {
     this.avatarPath,
     this.links = const {},
     this.profileCompletion = 0,
+    this.accountStatus = AccountStatus.active,
+    this.createdAt,
   });
 
   final String id;
@@ -181,6 +183,8 @@ class Profile {
   final String? avatarPath;
   final Map<String, String> links;
   final int profileCompletion;
+  final AccountStatus accountStatus;
+  final DateTime? createdAt;
 
   factory Profile.fromJson(Json j) => Profile(
     id: j['id'] as String,
@@ -196,6 +200,8 @@ class Profile {
       (k, v) => MapEntry(k as String, '$v'),
     ),
     profileCompletion: (j['profile_completion'] as num?)?.toInt() ?? 0,
+    accountStatus: AccountStatus.fromDb(j['account_status'] as String?),
+    createdAt: _date(j['created_at']),
   );
 }
 
@@ -600,5 +606,152 @@ class HiringStats {
         ),
     ],
     avgDaysToHire: _num(j['avg_days_to_hire']),
+  );
+}
+
+/// Mirrors public.reports.
+@immutable
+class Report {
+  const Report({
+    required this.id,
+    required this.reporterId,
+    required this.targetType,
+    required this.targetId,
+    required this.reason,
+    required this.status,
+    required this.createdAt,
+    this.resolvedAt,
+  });
+
+  final String id;
+  final String reporterId;
+
+  /// job, company or profile.
+  final String targetType;
+  final String targetId;
+  final String reason;
+  final ReportStatus status;
+  final DateTime createdAt;
+  final DateTime? resolvedAt;
+
+  factory Report.fromJson(Json j) => Report(
+    id: j['id'] as String,
+    reporterId: j['reporter_id'] as String,
+    targetType: j['target_type'] as String,
+    targetId: j['target_id'] as String,
+    reason: j['reason'] as String,
+    status: ReportStatus.fromDb(j['status'] as String?),
+    createdAt: DateTime.parse(j['created_at'] as String),
+    resolvedAt: _date(j['resolved_at']),
+  );
+}
+
+/// Mirrors public.announcements.
+@immutable
+class Announcement {
+  const Announcement({
+    required this.id,
+    required this.title,
+    required this.bodyMd,
+    required this.audience,
+    required this.createdAt,
+    this.publishedAt,
+  });
+
+  final String id;
+  final String title;
+  final String bodyMd;
+  final AnnouncementAudience audience;
+  final DateTime createdAt;
+  final DateTime? publishedAt;
+
+  bool get isPublished =>
+      publishedAt != null && !publishedAt!.isAfter(DateTime.now());
+
+  factory Announcement.fromJson(Json j) => Announcement(
+    id: j['id'] as String,
+    title: j['title'] as String,
+    bodyMd: j['body_md'] as String,
+    audience: AnnouncementAudience.fromDb(j['audience'] as String?),
+    createdAt: DateTime.parse(j['created_at'] as String),
+    publishedAt: _date(j['published_at']),
+  );
+}
+
+/// One row of public.audit_logs.
+@immutable
+class AuditEntry {
+  const AuditEntry({
+    required this.id,
+    required this.action,
+    required this.targetTable,
+    required this.createdAt,
+    this.actorId,
+    this.actorRole,
+    this.targetId,
+    this.diff,
+  });
+
+  final int id;
+  final String? actorId;
+  final String? actorRole;
+  final String action;
+  final String targetTable;
+  final String? targetId;
+  final Object? diff;
+  final DateTime createdAt;
+
+  factory AuditEntry.fromJson(Json j) => AuditEntry(
+    id: (j['id'] as num).toInt(),
+    actorId: j['actor_id'] as String?,
+    actorRole: j['actor_role'] as String?,
+    action: j['action'] as String,
+    targetTable: j['target_table'] as String,
+    targetId: j['target_id'] as String?,
+    diff: j['diff'],
+    createdAt: DateTime.parse(j['created_at'] as String),
+  );
+}
+
+/// Result of public.admin_platform_stats.
+@immutable
+class PlatformStats {
+  const PlatformStats({
+    required this.users,
+    required this.companies,
+    required this.jobs,
+    required this.suspended,
+    required this.applications,
+    required this.openReports,
+    required this.signupsByWeek,
+  });
+
+  final Map<String, int> users;
+  final Map<String, int> companies;
+  final Map<String, int> jobs;
+  final int suspended;
+  final int applications;
+  final int openReports;
+  final List<({DateTime week, int count})> signupsByWeek;
+
+  static Map<String, int> _counts(Object? v) => {
+    for (final e in ((v as Map?) ?? const {}).entries)
+      e.key as String: (e.value as num).toInt(),
+  };
+
+  factory PlatformStats.fromJson(Json j) => PlatformStats(
+    users: _counts(j['users']),
+    companies: _counts(j['companies']),
+    jobs: _counts(j['jobs']),
+    suspended: (j['suspended'] as num?)?.toInt() ?? 0,
+    applications: (j['applications'] as num?)?.toInt() ?? 0,
+    openReports: (j['open_reports'] as num?)?.toInt() ?? 0,
+    signupsByWeek: [
+      for (final w in (j['signups_by_week'] as List?) ?? const [])
+        (
+          week: DateTime.parse((w as Map)['week'] as String),
+          count: (w['count'] as num).toInt(),
+        ),
+    ],
   );
 }

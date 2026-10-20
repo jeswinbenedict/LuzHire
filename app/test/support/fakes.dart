@@ -166,6 +166,23 @@ class FakeAccountApi extends AccountApi {
     current.role ??= role;
     return true;
   }
+
+  /// Admin calls: (uid, new role or status).
+  final adminCalls = <(String uid, String change)>[];
+
+  @override
+  Future<void> changeRole({
+    required String idToken,
+    required String uid,
+    required AppRole role,
+  }) async => adminCalls.add((uid, role.dbValue));
+
+  @override
+  Future<void> setStatus({
+    required String idToken,
+    required String uid,
+    required AccountStatus status,
+  }) async => adminCalls.add((uid, status.dbValue));
 }
 
 /// Pumps the whole app with fake auth. Returns the router for assertions.

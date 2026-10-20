@@ -16,6 +16,7 @@ import '../../jobs/presentation/job_search_page.dart' show JobBoardError;
 import '../../jobs/presentation/job_widgets.dart';
 import '../data/companies_repository.dart';
 import '../../../core/router/links.dart';
+import '../../admin/presentation/report_button.dart';
 
 String _facts(Company c) => [
   c.industry,
@@ -332,6 +333,11 @@ class _CompanyBody extends ConsumerWidget {
                                 style: t.body.copyWith(color: p.inkMuted),
                               ),
                           ],
+                        ),
+                        ReportButton(
+                          targetType: 'company',
+                          targetId: company.id,
+                          targetName: company.name,
                         ),
                         if (company.website != null) ...[
                           const SizedBox(height: LuzSpace.xs),

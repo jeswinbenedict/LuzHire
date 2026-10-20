@@ -11,6 +11,7 @@ import '../jobs/application/job_board_providers.dart';
 import '../jobs/data/jobs_repository.dart';
 import '../jobs/presentation/job_widgets.dart';
 import '../../core/router/links.dart';
+import '../admin/presentation/admin_people_pages.dart' show AnnouncementsBanner;
 
 /// Public home, translated from the Stitch design `docs/design/stitch/
 /// home-desktop.png` / `home-mobile.png`.
@@ -42,7 +43,13 @@ class HomePage extends StatelessWidget {
     return const SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [_Hero(), _LatestJobs(), _Disciplines(), _EmployerBand()],
+        children: [
+          LuzContent(vertical: 0, child: AnnouncementsBanner()),
+          _Hero(),
+          _LatestJobs(),
+          _Disciplines(),
+          _EmployerBand(),
+        ],
       ),
     );
   }

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/admin/presentation/admin_people_pages.dart';
+import '../../features/admin/presentation/admin_review_pages.dart';
 import '../../features/auth/application/auth_controller.dart';
 import '../../features/auth/presentation/account_flow_pages.dart';
 import '../../features/auth/presentation/sign_in_page.dart';
@@ -176,8 +178,15 @@ final _routes = <RouteBase>[
       child: child,
     ),
     routes: [
-      for (final d in adminDestinations)
-        _placeholder(d.path, d.label, 'Phase 7', d.icon),
+      _page('/admin', (_) => const AdminOverviewPage()),
+      _page('/admin/verification', (_) => const VerificationQueuePage()),
+      _page(
+        '/admin/moderation',
+        (s) => ModerationPage(initialTab: s.uri.queryParameters['tab']),
+      ),
+      _page('/admin/users', (_) => const AdminUsersPage()),
+      _page('/admin/announcements', (_) => const AnnouncementsAdminPage()),
+      _page('/admin/audit', (_) => const AuditLogPage()),
     ],
   ),
 ];

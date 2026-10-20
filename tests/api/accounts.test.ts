@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { bootstrapAccount, changeRole, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
+import { bootstrapAccount, changeRole, changeStatus, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
 import { HttpError, corsHeaders } from '../../api/_lib/http.js';
 
 type Call = [string, ...unknown[]];
@@ -15,6 +15,8 @@ function fakeDeps(tokens: Record<string, VerifiedToken>) {
     async setClaims(uid, claims) { calls.push(['setClaims', uid, claims]); },
     async ensureProfile(p) { calls.push(['ensureProfile', p]); },
     async updateProfileRole(uid, role) { calls.push(['updateProfileRole', uid, role]); },
+    async setDisabled(uid, disabled) { calls.push(['setDisabled', uid, disabled]); },
+    async updateProfileStatus(uid, status) { calls.push(['updateProfileStatus', uid, status]); },
     async revokeSessions(uid) { calls.push(['revokeSessions', uid]); },
     async audit(e) { calls.push(['audit', e]); },
   };
@@ -110,6 +112,38 @@ describe('changeRole', () => {
   it('refuses changing your own role and unknown roles', async () => {
     await expectHttp(changeRole(ctx.deps, 'admin', 'a1', { role: 'candidate' }), 400, 'own_role');
     await expectHttp(changeRole(ctx.deps, 'admin', 'u9', { role: 'superuser' }), 400, 'invalid_role');
+  });
+});
+
+describe('changeStatus', () => {
+  const tokens = {
+    admin: { uid: 'a1', email: 'a@example.com', app_role: 'admin' },
+    employer: { uid: 'e1', email: 'e@example.com', app_role: 'employer' },
+  };
+  let ctx: ReturnType<typeof fakeDeps>;
+  beforeEach(() => { ctx = fakeDeps(tokens); });
+
+  it('suspends: blocks writes, disables sign-in, signs out and audits', async () => {
+    const result = await changeStatus(ctx.deps, 'admin', 'u9', { status: 'suspended' });
+    expect(result).toEqual({ uid: 'u9', status: 'suspended' });
+    expect(ctx.calls.map((c) => c[0])).toEqual([
+      'updateProfileStatus', 'setDisabled', 'revokeSessions', 'audit',
+    ]);
+    expect(ctx.calls[1]).toEqual(['setDisabled', 'u9', true]);
+    expect(ctx.calls[3]?.[1]).toMatchObject({ action: 'profiles.suspend', target_id: 'u9' });
+  });
+
+  it('reactivates without signing anyone out', async () => {
+    await changeStatus(ctx.deps, 'admin', 'u9', { status: 'active' });
+    expect(ctx.calls.map((c) => c[0])).toEqual(['updateProfileStatus', 'setDisabled', 'audit']);
+    expect(ctx.calls[1]).toEqual(['setDisabled', 'u9', false]);
+  });
+
+  it('refuses non-admins, self-suspension and unknown statuses', async () => {
+    await expectHttp(changeStatus(ctx.deps, 'employer', 'u9', { status: 'suspended' }), 403, 'forbidden');
+    await expectHttp(changeStatus(ctx.deps, 'admin', 'a1', { status: 'suspended' }), 400, 'own_status');
+    await expectHttp(changeStatus(ctx.deps, 'admin', 'u9', { status: 'deleted' }), 400, 'invalid_status');
+    expect(ctx.calls).toEqual([]);
   });
 });
 

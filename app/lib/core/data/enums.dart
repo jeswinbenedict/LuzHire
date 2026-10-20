@@ -184,3 +184,39 @@ enum MemberRole with DbEnum {
   bool get canEdit => this != viewer;
   static MemberRole fromDb(String? v) => _fromDb(values, v, viewer);
 }
+
+enum AccountStatus with DbEnum {
+  active('active', 'Active'),
+  suspended('suspended', 'Suspended'),
+  deleted('deleted', 'Deleted');
+
+  const AccountStatus(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static AccountStatus fromDb(String? v) => _fromDb(values, v, active);
+}
+
+enum AnnouncementAudience with DbEnum {
+  all('all', 'Everyone'),
+  candidates('candidates', 'Candidates'),
+  employers('employers', 'Employers');
+
+  const AnnouncementAudience(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static AnnouncementAudience fromDb(String? v) => _fromDb(values, v, all);
+}
+
+enum ReportStatus with DbEnum {
+  open('open', 'Open'),
+  actioned('actioned', 'Actioned'),
+  dismissed('dismissed', 'Dismissed');
+
+  const ReportStatus(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static ReportStatus fromDb(String? v) => _fromDb(values, v, open);
+}

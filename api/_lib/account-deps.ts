@@ -15,6 +15,9 @@ export function liveAccountDeps(): AccountDeps {
     verifyIdToken: (token) => firebaseAuth().verifyIdToken(token, true),
     setClaims: (uid, claims) => firebaseAuth().setCustomUserClaims(uid, claims),
     revokeSessions: (uid) => firebaseAuth().revokeRefreshTokens(uid),
+    async setDisabled(uid, disabled) {
+      await firebaseAuth().updateUser(uid, { disabled });
+    },
     async ensureProfile(profile) {
       const { error } = await supabaseAdmin()
         .from('profiles')
@@ -24,6 +27,13 @@ export function liveAccountDeps(): AccountDeps {
     async updateProfileRole(uid, role) {
       const { error } = await supabaseAdmin().from('profiles').update({ role }).eq('id', uid);
       check(error, 'updateProfileRole');
+    },
+    async updateProfileStatus(uid, status) {
+      const { error } = await supabaseAdmin()
+        .from('profiles')
+        .update({ account_status: status })
+        .eq('id', uid);
+      check(error, 'updateProfileStatus');
     },
     async audit(entry) {
       const { error } = await supabaseAdmin()
