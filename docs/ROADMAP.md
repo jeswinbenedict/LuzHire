@@ -20,7 +20,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Built and tested (branch `phase-4-job-board`). Still needed: live "new jobs" banner; real jobs in the cloud database |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19). Still needed: a live check with real candidate and employer accounts |
 | 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts |
-| 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | 🟡 Built and tested (branch `phase-7-admin-console`). Still needed: apply migration `20261020120000` to the cloud; create the first admin account |
+| 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | 🟡 Live on main (migration `20261020120000` applied to the cloud 2026-10-20). Still needed: create the first admin account |
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | ⬜ |
 | 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | ⬜ |
@@ -191,7 +191,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Audit log `/admin/audit`: newest first, filter by table or actor, load more, and the JSON diff of each change. Entries stay append-only.
 - New migration `20261020120000_admin_console.sql` (review RPCs, `resolve_report`, stats, suspension guards), 16 pgTAP assertions, 3 API tests and 14 widget tests (93 database assertions, 16 API tests, 142 app tests).
 
-**Still to do:** apply the migration to the cloud, and create the first admin (Phase 11 plans a script; until then an existing user's role is changed once in the Supabase SQL editor and Firebase claims through the API).
+**Still to do:** create the first admin (Phase 11 plans a script; until then an existing user's role is changed once in the Supabase SQL editor and Firebase claims through the API).
 
 **Original scope:**
 - Verification queue, job moderation queue, reports, user management (suspend, role change), announcements, audit-log viewer (filters, JSON diff in mono), platform stats.
