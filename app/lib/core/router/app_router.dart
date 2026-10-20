@@ -24,6 +24,8 @@ import '../../features/jobs/data/jobs_repository.dart';
 import '../../features/jobs/presentation/job_detail_page.dart';
 import '../../features/jobs/presentation/job_search_page.dart';
 import '../../features/jobs/presentation/saved_jobs_page.dart';
+import '../../features/news/presentation/news_admin_page.dart';
+import '../../features/news/presentation/news_pages.dart';
 import '../../features/notifications/presentation/notification_settings_page.dart';
 import '../data/enums.dart';
 import '../shell/destinations.dart';
@@ -88,7 +90,14 @@ final _routes = <RouteBase>[
         path: '/companies/:slug',
         builder: (_, s) => CompanyPage(slug: s.pathParameters['slug']!),
       ),
-      _placeholder('/news', 'Career news', 'Phase 8', Icons.newspaper_outlined),
+      GoRoute(
+        path: '/news',
+        builder: (_, s) => NewsPage(topic: s.uri.queryParameters['topic']),
+      ),
+      GoRoute(
+        path: '/news/:slug',
+        builder: (_, s) => NewsArticlePage(slug: s.pathParameters['slug']!),
+      ),
       GoRoute(
         path: '/sign-in',
         builder: (_, s) => SignInPage(from: _from(s)),
@@ -191,6 +200,7 @@ final _routes = <RouteBase>[
       ),
       _page('/admin/users', (_) => const AdminUsersPage()),
       _page('/admin/announcements', (_) => const AnnouncementsAdminPage()),
+      _page('/admin/news', (_) => const NewsAdminPage()),
       _page('/admin/audit', (_) => const AuditLogPage()),
     ],
   ),
@@ -202,12 +212,3 @@ GoRoute _page(String path, Widget Function(GoRouterState s) build) => GoRoute(
   pageBuilder: (context, state) =>
       NoTransitionPage(key: state.pageKey, child: build(state)),
 );
-
-GoRoute _placeholder(String path, String title, String phase, IconData icon) =>
-    GoRoute(
-      path: path,
-      pageBuilder: (context, state) => NoTransitionPage(
-        key: state.pageKey,
-        child: PlaceholderPage(title: title, phase: phase, icon: icon),
-      ),
-    );

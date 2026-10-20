@@ -840,3 +840,69 @@ class IngestRun {
     error: j['error'] as String?,
   );
 }
+
+/// One row of public.news_articles: a headline imported from a career feed
+/// (opens the publisher's site) or an article written by LuzHire admins
+/// (read in the app at /news/:slug).
+@immutable
+class NewsItem {
+  const NewsItem({
+    required this.id,
+    required this.source,
+    required this.title,
+    required this.publishedAt,
+    this.isArticle = false,
+    this.url,
+    this.slug,
+    this.summary,
+    this.imageUrl,
+    this.categories = const [],
+    this.isFeatured = false,
+    this.isPublished = true,
+    this.bodyMd,
+    this.authorName,
+  });
+
+  final String id;
+  final String source;
+  final String title;
+  final DateTime publishedAt;
+  final bool isArticle;
+  final String? url;
+  final String? slug;
+  final String? summary;
+  final String? imageUrl;
+  final List<String> categories;
+  final bool isFeatured;
+  final bool isPublished;
+
+  /// Articles only, and only when loaded for reading.
+  final String? bodyMd;
+  final String? authorName;
+
+  /// Minutes to read an article (about 200 words a minute).
+  int get readMinutes =>
+      ((bodyMd ?? '').split(RegExp(r'\s+')).length / 200).ceil().clamp(1, 60);
+
+  factory NewsItem.fromJson(Json j) => NewsItem(
+    id: j['id'] as String,
+    source: j['source'] as String,
+    title: j['title'] as String,
+    publishedAt: DateTime.parse(j['published_at'] as String),
+    isArticle: j['kind'] == 'article',
+    url: j['url'] as String?,
+    slug: j['slug'] as String?,
+    summary: j['summary'] as String?,
+    imageUrl: j['image_url'] as String?,
+    categories: _strings(j['categories']),
+    isFeatured: j['is_featured'] == true,
+    isPublished: (j['status'] as String? ?? 'published') == 'published',
+    bodyMd: j['body_md'] as String?,
+    authorName: j['author_name'] as String?,
+  );
+
+  @override
+  bool operator ==(Object other) => other is NewsItem && other.id == id;
+  @override
+  int get hashCode => id.hashCode;
+}
