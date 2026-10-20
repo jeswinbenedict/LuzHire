@@ -1,9 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
+import 'package:luzhire/features/jobs/application/job_board_providers.dart';
 
 import 'support/fakes.dart';
 import 'support/job_fakes.dart';
@@ -148,6 +151,96 @@ void main() {
     testWidgets('an unknown job says it is no longer listed', (tester) async {
       await _pump(tester, location: '/jobs/nope');
       expect(find.text('This job is no longer listed'), findsOneWidget);
+    });
+  });
+
+  // Search rows leave out the description (search_jobs returns job cards).
+  group('Job detail from search results', () {
+    Finder loadingDescription() =>
+        find.bySemanticsLabel('Loading the job description');
+
+    testWidgets('the preview pane shows the card at once, then the '
+        'description', (tester) async {
+      final jobs = FakeJobsRepository();
+      await _pump(tester, location: '/jobs', width: 1440, jobs: jobs);
+      jobs.holdDetails = Completer<void>();
+
+      await tester.tap(find.text('Flutter Developer 2'));
+      await tester.pump();
+      expect(find.text('Flutter Developer 2'), findsNWidgets(2));
+      expect(find.text('Build the LuzHire mobile app.'), findsOneWidget);
+      expect(find.text('₹12–18 L / year'), findsWidgets);
+      expect(find.text('Sign in to apply'), findsOneWidget);
+      expect(loadingDescription(), findsOneWidget);
+      expect(find.text('About the role'), findsNothing);
+
+      jobs.holdDetails!.complete();
+      await tester.pumpAndSettle();
+      expect(jobs.detailLoads.last, 'job-2');
+      expect(loadingDescription(), findsNothing);
+      expect(find.text('About the role'), findsOneWidget);
+      expect(find.text('Own the job search screens'), findsOneWidget);
+      expect(find.text('2+ years of Flutter'), findsOneWidget);
+      expect(find.text('Flutter Developer 2'), findsNWidgets(2));
+    });
+
+    testWidgets('the job page opened from a card shows it at once', (
+      tester,
+    ) async {
+      final jobs = FakeJobsRepository();
+      final router = await _pump(
+        tester,
+        location: '/jobs',
+        width: 375,
+        jobs: jobs,
+      );
+      jobs.holdDetails = Completer<void>();
+
+      await tester.tap(find.text('Flutter Developer 2'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 500));
+      expect(router.state.uri.path, '/jobs/job-2');
+      expect(find.text('Flutter Developer 2'), findsOneWidget);
+      expect(find.text('Sign in to apply'), findsOneWidget);
+      expect(loadingDescription(), findsOneWidget);
+      expect(find.text('Responsibilities'), findsNothing);
+
+      jobs.holdDetails!.complete();
+      await tester.pumpAndSettle();
+      expect(loadingDescription(), findsNothing);
+      expect(find.text('Responsibilities'), findsOneWidget);
+      expect(find.text('Health insurance'), findsOneWidget);
+    });
+
+    testWidgets('a description that fails to load can be retried', (
+      tester,
+    ) async {
+      final jobs = FakeJobsRepository();
+      await _pump(tester, location: '/jobs', width: 375, jobs: jobs);
+      jobs.failDetails = true;
+
+      await tester.tap(find.text('Flutter Developer 1'));
+      // Riverpod retries a failed load for about 40 s before giving up.
+      await tester.pump();
+      await tester.pump(const Duration(minutes: 1));
+      await tester.pumpAndSettle();
+      expect(find.text('Flutter Developer 1'), findsOneWidget);
+      expect(find.text("Couldn't load the job description."), findsOneWidget);
+
+      jobs.failDetails = false;
+      await tester.tap(find.text('Try again'));
+      await tester.pumpAndSettle();
+      expect(find.text("Couldn't load the job description."), findsNothing);
+      expect(find.text('Responsibilities'), findsOneWidget);
+    });
+
+    test('previews keep the most recent ${JobPreviews.capacity} jobs', () {
+      final previews = JobPreviews()
+        ..addAll([
+          for (var i = 1; i <= JobPreviews.capacity + 1; i++) fakeJob(i),
+        ]);
+      expect(previews['job-1'], isNull);
+      expect(previews['job-2']?.title, 'Flutter Developer 2');
     });
   });
 

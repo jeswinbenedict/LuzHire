@@ -49,6 +49,7 @@ class JobSearchController extends Notifier<JobSearchState> {
           .read(jobsRepositoryProvider)
           .search(query, after: state.jobs.isEmpty ? null : state.jobs.last);
       if (!ref.mounted) return;
+      ref.read(jobPreviewsProvider).addAll(page);
       state = JobSearchState(
         jobs: [...state.jobs, ...page],
         hasMore: page.length >= query.pageSize,
@@ -81,6 +82,28 @@ final skillsProvider =
     );
 
 // ---------------------------------------------------------------- detail
+
+/// Card fields of jobs seen in search results, by slug. Opening one shows
+/// them at once while [jobBySlugProvider] loads the description.
+class JobPreviews {
+  static const capacity = 500;
+  final _bySlug = <String, Job>{};
+
+  Job? operator [](String slug) => _bySlug[slug];
+
+  void addAll(Iterable<Job> jobs) {
+    for (final job in jobs) {
+      _bySlug
+        ..remove(job.slug)
+        ..[job.slug] = job;
+    }
+    while (_bySlug.length > capacity) {
+      _bySlug.remove(_bySlug.keys.first);
+    }
+  }
+}
+
+final jobPreviewsProvider = Provider<JobPreviews>((ref) => JobPreviews());
 
 final jobBySlugProvider = FutureProvider.autoDispose.family<Job?, String>(
   (ref, slug) => ref.watch(jobsRepositoryProvider).bySlug(slug),

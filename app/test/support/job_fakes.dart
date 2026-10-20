@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/misc.dart' show Override;
 import 'package:luzhire/core/data/enums.dart';
+import 'package:luzhire/core/data/failures.dart';
 import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/features/companies/data/companies_repository.dart';
 import 'package:luzhire/features/jobs/data/jobs_repository.dart';
@@ -39,6 +40,33 @@ Job fakeJob(
   publishedAt: _now.subtract(Duration(hours: i)),
 );
 
+/// [job] as `search_jobs` returns it: the card fields, no description.
+Job searchRow(Job job) => Job(
+  id: job.id,
+  slug: job.slug,
+  title: job.title,
+  companyName: job.companyName,
+  companyId: job.companyId,
+  employmentType: job.employmentType,
+  workplace: job.workplace,
+  status: job.status,
+  isExternal: job.isExternal,
+  externalUrl: job.externalUrl,
+  externalSource: job.externalSource,
+  logoUrl: job.logoUrl,
+  summary: job.summary,
+  experienceLevel: job.experienceLevel,
+  location: job.location,
+  salaryMin: job.salaryMin,
+  salaryMax: job.salaryMax,
+  salaryCurrency: job.salaryCurrency,
+  salaryPeriod: job.salaryPeriod,
+  deadline: job.deadline,
+  applicationCount: job.applicationCount,
+  publishedAt: job.publishedAt,
+  hasDetails: false,
+);
+
 /// [count] jobs at Nimbus Labs plus one remote internship at Orbit Works.
 List<Job> fakeJobs([int count = 30]) => [
   for (var i = 1; i <= count; i++) fakeJob(i),
@@ -74,11 +102,20 @@ const fakeCompanies = [
 ];
 
 /// In-memory `search_jobs`: keyword, remote, type and company filters, newest
-/// first, keyset pages.
+/// first, keyset pages of [searchRow]s. [bySlug] returns the full job.
 class FakeJobsRepository implements JobsRepository {
   FakeJobsRepository([List<Job>? jobs]) : jobs = jobs ?? fakeJobs();
   final List<Job> jobs;
   final queries = <JobSearchQuery>[];
+
+  /// Slugs of the full jobs loaded, in order.
+  final detailLoads = <String>[];
+
+  /// While set, [bySlug] waits for it to complete.
+  Completer<void>? holdDetails;
+
+  /// While true, [bySlug] fails like a dropped connection.
+  bool failDetails = false;
 
   @override
   Future<List<Job>> search(JobSearchQuery q, {Job? after}) async {
@@ -98,12 +135,18 @@ class FakeJobsRepository implements JobsRepository {
             .toList()
           ..sort((a, b) => b.publishedAt!.compareTo(a.publishedAt!));
     final start = after == null ? 0 : matches.indexOf(after) + 1;
-    return matches.skip(start).take(q.pageSize).toList();
+    return matches.skip(start).take(q.pageSize).map(searchRow).toList();
   }
 
   @override
-  Future<Job?> bySlug(String slug) async =>
-      jobs.where((j) => j.slug == slug).firstOrNull;
+  Future<Job?> bySlug(String slug) async {
+    detailLoads.add(slug);
+    await holdDetails?.future;
+    if (failDetails) {
+      throw const AppFailure("Couldn't reach LuzHire.", code: 'network');
+    }
+    return jobs.where((j) => j.slug == slug).firstOrNull;
+  }
 
   @override
   Future<List<Job>> byIds(Iterable<String> ids) async =>

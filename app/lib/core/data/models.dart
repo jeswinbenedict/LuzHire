@@ -39,6 +39,7 @@ class Job {
     this.deadline,
     this.applicationCount = 0,
     this.publishedAt,
+    this.hasDetails = true,
   });
 
   final String id;
@@ -67,6 +68,11 @@ class Job {
   final DateTime? deadline;
   final int applicationCount;
   final DateTime? publishedAt;
+
+  /// False for search results (`search_jobs`), which leave out the
+  /// description, responsibilities, qualifications and benefits. The detail
+  /// view loads the full job by slug.
+  final bool hasDetails;
 
   bool get hasSalary => salaryMin != null || salaryMax != null;
 
@@ -99,6 +105,7 @@ class Job {
     deadline: _date(j['deadline']),
     applicationCount: (j['application_count'] as num?)?.toInt() ?? 0,
     publishedAt: _date(j['published_at']),
+    hasDetails: j.containsKey('description_md'),
   );
 
   @override
