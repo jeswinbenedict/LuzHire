@@ -28,6 +28,15 @@ class AccountApi {
     return body['refreshToken'] == true;
   }
 
+  /// Becomes an admin if the caller's verified email is on the owner's
+  /// ADMIN_EMAILS list (POST /api/auth/claim-admin).
+  Future<void> claimAdmin({required String idToken}) => _post(
+    '/api/auth/claim-admin',
+    idToken,
+    const {},
+    fallback: 'Could not claim admin access. Try again.',
+  );
+
   /// Admin: changes [uid]'s role; they are signed out everywhere.
   Future<void> changeRole({
     required String idToken,

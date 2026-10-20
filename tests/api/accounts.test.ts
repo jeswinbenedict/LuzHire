@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { bootstrapAccount, changeRole, changeStatus, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
+import { bootstrapAccount, changeRole, changeStatus, claimAdmin, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
 import { HttpError, corsHeaders } from '../../api/_lib/http.js';
 
 type Call = [string, ...unknown[]];
@@ -143,6 +143,40 @@ describe('changeStatus', () => {
     await expectHttp(changeStatus(ctx.deps, 'employer', 'u9', { status: 'suspended' }), 403, 'forbidden');
     await expectHttp(changeStatus(ctx.deps, 'admin', 'a1', { status: 'suspended' }), 400, 'own_status');
     await expectHttp(changeStatus(ctx.deps, 'admin', 'u9', { status: 'deleted' }), 400, 'invalid_status');
+    expect(ctx.calls).toEqual([]);
+  });
+});
+
+describe('claimAdmin', () => {
+  const tokens = {
+    owner: { uid: 'o1', email: 'Owner@Example.com', email_verified: true, app_role: 'employer' },
+    unverified: { uid: 'u1', email: 'owner@example.com', email_verified: false, app_role: 'employer' },
+    stranger: { uid: 's1', email: 's@example.com', email_verified: true, app_role: 'candidate' },
+    fresh: { uid: 'f1', email: 'owner@example.com', email_verified: true },
+    admin: { uid: 'a1', email: 'owner@example.com', email_verified: true, app_role: 'admin' },
+  };
+  const list = [' owner@example.com ', ''];
+  let ctx: ReturnType<typeof fakeDeps>;
+  beforeEach(() => { ctx = fakeDeps(tokens); });
+
+  it('promotes a verified email on the list and audits it', async () => {
+    const result = await claimAdmin(ctx.deps, 'owner', list);
+    expect(result).toEqual({ appRole: 'admin', refreshToken: true });
+    expect(ctx.calls.map((c) => c[0])).toEqual(['setClaims', 'updateProfileRole', 'audit']);
+    expect(ctx.calls[0]).toEqual(['setClaims', 'o1', { role: 'authenticated', app_role: 'admin' }]);
+    expect(ctx.calls[2]?.[1]).toMatchObject({ action: 'profiles.claim_admin', target_id: 'o1' });
+  });
+
+  it('refuses unverified emails, people not on the list and an empty list', async () => {
+    await expectHttp(claimAdmin(ctx.deps, 'unverified', list), 403, 'not_allowed');
+    await expectHttp(claimAdmin(ctx.deps, 'stranger', list), 403, 'not_allowed');
+    await expectHttp(claimAdmin(ctx.deps, 'owner', []), 403, 'not_allowed');
+    expect(ctx.calls).toEqual([]);
+  });
+
+  it('needs a finished account and is a no-op for admins', async () => {
+    await expectHttp(claimAdmin(ctx.deps, 'fresh', list), 409, 'finish_setup');
+    expect(await claimAdmin(ctx.deps, 'admin', list)).toEqual({ appRole: 'admin', refreshToken: false });
     expect(ctx.calls).toEqual([]);
   });
 });

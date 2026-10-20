@@ -170,6 +170,21 @@ class FakeAccountApi extends AccountApi {
   /// Admin calls: (uid, new role or status).
   final adminCalls = <(String uid, String change)>[];
 
+  /// Emails the fake "ADMIN_EMAILS" allows.
+  Set<String> adminEmails = const {};
+
+  @override
+  Future<void> claimAdmin({required String idToken}) async {
+    final current = gateway._current!;
+    if (!adminEmails.contains(current.email)) {
+      throw const AppFailure(
+        'This account is not on the admin list.',
+        code: 'api/403',
+      );
+    }
+    current.role = AppRole.admin;
+  }
+
   @override
   Future<void> changeRole({
     required String idToken,

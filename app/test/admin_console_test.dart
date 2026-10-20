@@ -230,4 +230,39 @@ void main() {
       expect(h.gov.reports, isEmpty);
     });
   });
+
+  group('First admin', () {
+    testWidgets('an employer on the admin list claims admin', (tester) async {
+      final h = _Harness();
+      final router = await _pump(
+        tester,
+        h,
+        location: '/account',
+        role: AppRole.employer,
+      );
+      h.api.adminEmails = {'employer@example.com'};
+      await _tap(tester, find.text('Claim admin access'));
+      expect(router.state.uri.path, '/admin');
+      expect(find.text('Companies to verify'), findsOneWidget);
+    });
+
+    testWidgets('anyone else is refused and keeps their role', (tester) async {
+      final h = _Harness();
+      final router = await _pump(
+        tester,
+        h,
+        location: '/account',
+        role: AppRole.candidate,
+      );
+      await _tap(tester, find.text('Claim admin access'));
+      expect(
+        find.text('This account is not on the admin list.'),
+        findsOneWidget,
+      );
+      expect(router.state.uri.path, '/account');
+      router.go('/admin');
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, isNot('/admin'));
+    });
+  });
 }

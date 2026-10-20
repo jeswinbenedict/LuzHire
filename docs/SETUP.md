@@ -56,6 +56,7 @@ In the Vercel project → **Settings → Environment Variables** (Production + P
 | 🔴 `FIREBASE_SERVICE_ACCOUNT` | the service-account JSON from step 1.6: open the file in Notepad, copy everything and paste it (base64 also works) |
 | 🔴 `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role / secret key |
 | 🟢 `SUPABASE_URL` | Supabase Project URL |
+| 🟢 `ADMIN_EMAILS` | optional: comma-separated emails allowed to claim admin once (Account → Claim admin access). Remove them after use; later admins are promoted in the console |
 | 🟢 `ALLOWED_ORIGINS` | optional, e.g. a staging domain; localhost is allowed automatically outside production |
 
 Set each secret for **Production and Preview** (not Development). Check that it appears in the list after saving, then delete the downloaded JSON file.

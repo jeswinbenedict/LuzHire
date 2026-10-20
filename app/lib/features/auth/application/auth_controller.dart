@@ -100,6 +100,20 @@ class AuthController extends Notifier<AuthState> {
   Future<void> sendPasswordReset(String email) =>
       _gateway.sendPasswordReset(email);
 
+  /// Claims admin access (owner's allow-list), then refreshes the token so
+  /// the new role applies at once.
+  Future<void> claimAdmin() => _run(() async {
+    final token = await _gateway.idToken();
+    if (token == null) {
+      throw const AppFailure(
+        'Your session ended. Sign in again.',
+        code: 'auth/no-session',
+      );
+    }
+    await ref.read(accountApiProvider).claimAdmin(idToken: token);
+    await _sync();
+  });
+
   Future<void> signOut() async {
     await _gateway.signOut();
     state = const SignedOut();

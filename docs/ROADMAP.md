@@ -191,7 +191,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Audit log `/admin/audit`: newest first, filter by table or actor, load more, and the JSON diff of each change. Entries stay append-only.
 - New migration `20261020120000_admin_console.sql` (review RPCs, `resolve_report`, stats, suspension guards), 16 pgTAP assertions, 3 API tests and 14 widget tests (93 database assertions, 16 API tests, 142 app tests).
 
-**Still to do:** create the first admin (Phase 11 plans a script; until then an existing user's role is changed once in the Supabase SQL editor and Firebase claims through the API).
+**First admin:** the owner lists their email in the Vercel variable `ADMIN_EMAILS`, signs in and uses Account → Claim admin access (`POST /api/auth/claim-admin`: verified email on the list only, audited). Afterwards the email is removed from the list, and further admins are promoted from Users in the console.
 
 **Original scope:**
 - Verification queue, job moderation queue, reports, user management (suspend, role change), announcements, audit-log viewer (filters, JSON diff in mono), platform stats.

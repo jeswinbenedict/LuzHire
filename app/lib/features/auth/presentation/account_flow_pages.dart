@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/brand/luz_logo.dart';
 import '../../../core/data/enums.dart';
+import '../../../core/data/failures.dart';
 import '../../../core/router/auth_redirect.dart';
 import '../../../core/shell/shell_common.dart' show ThemeModeSelector;
 import '../../../core/theme/app_theme.dart';
@@ -479,6 +480,10 @@ class AccountPage extends ConsumerWidget {
                   ],
                 ),
               ),
+              if (auth.role != AppRole.admin) ...[
+                const SizedBox(height: LuzSpace.lg),
+                const _ClaimAdminCard(),
+              ],
               const SizedBox(height: LuzSpace.lg),
               LuzButton(
                 label: 'Sign out',
@@ -489,6 +494,59 @@ class AccountPage extends ConsumerWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+/// First-admin setup: works only for a verified email the project owner
+/// listed in ADMIN_EMAILS (Vercel). Everyone else gets a clear refusal.
+class _ClaimAdminCard extends ConsumerStatefulWidget {
+  const _ClaimAdminCard();
+
+  @override
+  ConsumerState<_ClaimAdminCard> createState() => _ClaimAdminCardState();
+}
+
+class _ClaimAdminCardState extends ConsumerState<_ClaimAdminCard> {
+  bool _busy = false;
+
+  Future<void> _claim() async {
+    setState(() => _busy = true);
+    try {
+      await ref.read(authControllerProvider.notifier).claimAdmin();
+      if (!mounted) return;
+      showLuzToast(context, 'You are now an administrator', icon: Icons.check);
+      context.go('/admin');
+    } on AppFailure catch (e) {
+      if (mounted) showLuzToast(context, e.message, icon: Icons.error_outline);
+    } finally {
+      if (mounted) setState(() => _busy = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final t = context.luzText;
+    final p = context.luz;
+    return LuzCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Admin access', style: t.wsSection),
+          const SizedBox(height: LuzSpace.xs),
+          Text(
+            'Only for the LuzHire team: works if the project owner added your '
+            'email to the admin list.',
+            style: t.bodySm.copyWith(color: p.inkMuted),
+          ),
+          const SizedBox(height: LuzSpace.sm),
+          LuzButton(
+            label: _busy ? 'Checking…' : 'Claim admin access',
+            icon: Icons.admin_panel_settings_outlined,
+            onPressed: _busy ? null : _claim,
+          ),
+        ],
       ),
     );
   }

@@ -105,6 +105,38 @@ export async function changeRole(
   return { uid: targetUid, appRole: body.role };
 }
 
+/**
+ * POST /api/auth/claim-admin — bootstraps the first admin(s) without a
+ * back door: only a verified email listed in the ADMIN_EMAILS environment
+ * variable (set by the project owner in Vercel) can become admin. Remove the
+ * email from the list afterwards; later admins are promoted in the console.
+ */
+export async function claimAdmin(
+  deps: AccountDeps,
+  idToken: string,
+  adminEmails: readonly string[],
+): Promise<{ appRole: AppRole; refreshToken: boolean }> {
+  const token = await verify(deps, idToken);
+  if (token.app_role === 'admin') return { appRole: 'admin', refreshToken: false };
+  const email = token.email?.trim().toLowerCase();
+  const allowed = adminEmails.map((e) => e.trim().toLowerCase()).filter((e) => e.length > 0);
+  if (!email || !token.email_verified || !allowed.includes(email)) {
+    throw new HttpError(403, 'not_allowed', 'This account is not on the admin list.');
+  }
+  if (!isRole(token.app_role, ALL_ROLES)) {
+    throw new HttpError(409, 'finish_setup', 'Finish setting up your account first.');
+  }
+  await deps.setClaims(token.uid, claimsFor('admin'));
+  await deps.updateProfileRole(token.uid, 'admin');
+  await deps.audit({
+    actor_id: token.uid,
+    action: 'profiles.claim_admin',
+    target_id: token.uid,
+    diff: { app_role: [token.app_role, 'admin'] },
+  });
+  return { appRole: 'admin', refreshToken: true };
+}
+
 /** POST /api/admin/users/:id/status — admins suspend or reactivate a user. */
 export async function changeStatus(
   deps: AccountDeps,
