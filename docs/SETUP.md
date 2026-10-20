@@ -109,7 +109,7 @@ Sign-up never grants admin. After your own account exists (sign up normally as a
 
 In-app notifications need nothing. Push and email are sent by `/api/notify/dispatch`, which a Supabase **database webhook** calls whenever a notification is created:
 1. Vercel: add `NOTIFY_SECRET`, `SMTP_USER` and `SMTP_PASSWORD` (§3), then redeploy.
-2. Supabase → **Database → Webhooks → Create a new hook**: name `notify_dispatch`, table `public.notifications`, event **Insert**, type **HTTP Request**, method **POST**, URL `https://luzhire.vercel.app/api/notify/dispatch`, timeout `10000` ms, HTTP header `Authorization` = `Bearer <NOTIFY_SECRET>`.
+2. Supabase → **Database → Webhooks → Create a new hook**: name `notify_dispatch`, table `public.notifications`, event **Insert**, type **HTTP Request**, method **POST**, URL `https://luzhire.vercel.app/api/notify/dispatch`, timeout `10000` ms, HTTP header `Authorization` = `Bearer <NOTIFY_SECRET>` (the word Bearer, one space, then the secret; without `Bearer ` every call gets 401).
 3. In LuzHire: Account → **Notification settings** → *Turn on push notifications*, then *Send a test notification*. The push and the email should arrive within seconds.
 
 Each notification is delivered once (the database claims it), only from the last hour, only to verified email addresses, and only for the groups the user left on. Admins can read what was sent in `notification_deliveries`. Android push additionally needs the Android app registered in Firebase (`FIREBASE_ANDROID_APP_ID`); iOS needs an Apple Push key (paid Apple developer account).
