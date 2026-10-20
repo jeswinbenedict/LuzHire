@@ -39,7 +39,7 @@ select is(
   (select array_agg(a.name order by a.ord)
    from pg_proc p, unnest(p.proargnames, p.proargmodes) with ordinality as a(name, mode, ord)
    where p.oid = 'public.search_jobs'::regproc and a.mode = 't'),
-  array['id', 'source', 'company_id', 'company_name', 'external_logo_url',
+  array['id', 'source', 'company_id', 'company_name', 'company_logo_path', 'external_logo_url',
         'external_source', 'external_url', 'title', 'slug', 'summary',
         'employment_type', 'experience_level', 'workplace', 'location_text',
         'salary_min', 'salary_max', 'salary_currency', 'salary_period',

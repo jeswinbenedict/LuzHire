@@ -21,6 +21,7 @@ Future<GoRouter> _pump(
   double width = 1280,
   FakeJobsRepository? jobs,
   FakeSavedJobsRepository? saved,
+  FakeCompaniesRepository? companies,
   AppRole? signedIn,
 }) => pumpLuzHire(
   tester,
@@ -29,7 +30,7 @@ Future<GoRouter> _pump(
   gateway: FakeAuthGateway(
     signedIn: signedIn == null ? null : signedInAs(signedIn),
   ),
-  overrides: jobBoardOverrides(jobs: jobs, saved: saved),
+  overrides: jobBoardOverrides(jobs: jobs, saved: saved, companies: companies),
 );
 
 void main() {
@@ -288,6 +289,35 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
+    testWidgets('imported companies are listed with their open roles', (
+      tester,
+    ) async {
+      final router = await _pump(
+        tester,
+        location: '/companies',
+        width: 375,
+        jobs: FakeJobsRepository([...fakeJobs(3), fakeExternalJob()]),
+        companies: FakeCompaniesRepository(externals: [fakeExternalCompany]),
+      );
+      expect(find.text('Askable'), findsOneWidget);
+      expect(find.text('1 open role'), findsOneWidget);
+      final logo = tester.widget<LuzLogoSocket>(
+        find.byWidgetPredicate(
+          (w) => w is LuzLogoSocket && w.name == 'Askable',
+        ),
+      );
+      expect(logo.logoUrl, 'https://remotive.com/job/1/logo');
+
+      await tester.ensureVisible(find.text('Askable'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Askable'));
+      await tester.pumpAndSettle();
+      expect(router.state.uri.path, '/companies/jobs-at-askable');
+      expect(find.text('Remote Flutter Engineer'), findsOneWidget);
+      expect(find.text('Flutter Developer 1'), findsNothing);
+      expect(find.text('Report'), findsNothing);
+    });
+
     testWidgets('search narrows the directory', (tester) async {
       final router = await _pump(tester, location: '/companies');
       await tester.enterText(find.byType(TextField).first, 'orbit');
@@ -297,6 +327,24 @@ void main() {
       expect(find.text('Orbit Works'), findsOneWidget);
       expect(find.text('Nimbus Labs'), findsNothing);
     });
+  });
+
+  testWidgets('home shows the companies hiring now', (tester) async {
+    final router = await _pump(
+      tester,
+      location: '/',
+      jobs: FakeJobsRepository([...fakeJobs(3), fakeExternalJob()]),
+      companies: FakeCompaniesRepository(externals: [fakeExternalCompany]),
+    );
+    expect(find.text('Companies hiring now'), findsOneWidget);
+    final stripLogo = find.byWidgetPredicate(
+      (w) => w is LuzLogoSocket && w.name == 'Askable' && w.size == 56,
+    );
+    await tester.ensureVisible(stripLogo);
+    await tester.pumpAndSettle();
+    await tester.tap(stripLogo);
+    await tester.pumpAndSettle();
+    expect(router.state.uri.path, '/companies/jobs-at-askable');
   });
 
   testWidgets('home shows the latest jobs', (tester) async {

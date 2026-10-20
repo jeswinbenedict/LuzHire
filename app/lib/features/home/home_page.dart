@@ -10,6 +10,10 @@ import '../../core/widgets/widgets.dart';
 import '../jobs/application/job_board_providers.dart';
 import '../jobs/data/jobs_repository.dart';
 import '../jobs/presentation/job_widgets.dart';
+import '../companies/data/companies_repository.dart';
+import '../companies/presentation/companies_pages.dart' show openRolesLabel;
+import '../../core/data/failures.dart';
+import '../../core/data/models.dart';
 import '../../core/router/links.dart';
 import '../admin/presentation/admin_people_pages.dart' show AnnouncementsBanner;
 
@@ -47,6 +51,7 @@ class HomePage extends StatelessWidget {
           LuzContent(vertical: 0, child: AnnouncementsBanner()),
           _Hero(),
           _LatestJobs(),
+          _HiringCompanies(),
           _Disciplines(),
           _EmployerBand(),
         ],
@@ -180,6 +185,102 @@ class _LatestJobs extends ConsumerWidget {
           ),
           const SizedBox(height: LuzSpace.lg),
           LuzGrid(children: [for (final j in jobs) JobCard(job: j)]),
+        ],
+      ),
+    );
+  }
+}
+
+/// Logos of the companies with the most open roles; each opens its page.
+class _HiringCompanies extends ConsumerWidget {
+  const _HiringCompanies();
+
+  static const shown = 8;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final companies = ref
+        .watch(companyListProvider(''))
+        .companies
+        .where((c) => (c.openJobs ?? 0) > 0)
+        .take(shown)
+        .toList();
+    if (companies.isEmpty) return const SizedBox.shrink();
+    final p = context.luz;
+    final t = context.luzText;
+    String? logo(Company c) {
+      try {
+        return ref.watch(companiesRepositoryProvider).logoUrl(c);
+      } on AppFailure {
+        return null;
+      }
+    }
+
+    return LuzContent(
+      vertical: LuzSpace.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('HIRING NOW', style: t.eyebrow.copyWith(color: p.accent)),
+          const SizedBox(height: LuzSpace.xs),
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: LuzSpace.md,
+            children: [
+              Text('Companies hiring now', style: t.h3),
+              LuzTextLink(
+                label: 'All companies →',
+                onPressed: () => context.go('/companies'),
+              ),
+            ],
+          ),
+          const SizedBox(height: LuzSpace.lg),
+          Wrap(
+            spacing: LuzSpace.md,
+            runSpacing: LuzSpace.md,
+            children: [
+              for (final c in companies)
+                SizedBox(
+                  width: 132,
+                  child: LuzPressable(
+                    radius: LuzRadius.lg,
+                    semanticLabel: '${c.name}, ${openRolesLabel(c.openJobs!)}',
+                    onPressed: () => context.go('/companies/${c.slug}'),
+                    builder: (context, pressed, hovered) => LuzSurface(
+                      depth: pressed
+                          ? LuzDepth.insetSm
+                          : hovered
+                          ? LuzDepth.raisedLg
+                          : LuzDepth.raisedMd,
+                      radius: LuzRadius.lg,
+                      padding: const EdgeInsets.all(LuzSpace.sm),
+                      child: Column(
+                        children: [
+                          LuzLogoSocket(
+                            name: c.name,
+                            logoUrl: logo(c),
+                            size: 56,
+                          ),
+                          const SizedBox(height: LuzSpace.xs),
+                          Text(
+                            c.name,
+                            style: t.label,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            textAlign: TextAlign.center,
+                          ),
+                          Text(
+                            openRolesLabel(c.openJobs!),
+                            style: t.caption.copyWith(color: p.inkMuted),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ],
       ),
     );

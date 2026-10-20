@@ -22,6 +22,7 @@ class JobSearchQuery {
     this.skills = const {},
     this.postedWithinDays,
     this.companyId,
+    this.employer,
     this.pageSize = 20,
   });
 
@@ -34,6 +35,9 @@ class JobSearchQuery {
   final Set<String> skills; // skill slugs
   final int? postedWithinDays;
   final String? companyId;
+
+  /// Name of an imported company (no company id): its open roles.
+  final String? employer;
   final int pageSize;
 
   JobSearchQuery copyWith({
@@ -55,6 +59,7 @@ class JobSearchQuery {
     skills: skills ?? this.skills,
     postedWithinDays: postedWithinDays ?? this.postedWithinDays,
     companyId: companyId,
+    employer: employer,
     pageSize: pageSize,
   );
 
@@ -75,6 +80,7 @@ class JobSearchQuery {
         skills: skills,
         postedWithinDays: postedWithinDays,
         companyId: companyId,
+        employer: employer,
         pageSize: pageSize,
       );
 
@@ -102,6 +108,7 @@ class JobSearchQuery {
     if (skills.isNotEmpty) 'skill_slugs': skills.toList(),
     'posted_within_days': ?postedWithinDays,
     'company': ?companyId,
+    'employer': ?employer,
     if (after != null) ...{
       'after_published': after.publishedAt?.toUtc().toIso8601String(),
       'after_id': after.id,
@@ -153,6 +160,7 @@ class JobSearchQuery {
       setEquals(other.skills, skills) &&
       other.postedWithinDays == postedWithinDays &&
       other.companyId == companyId &&
+      other.employer == employer &&
       other.pageSize == pageSize;
 
   @override
@@ -166,6 +174,7 @@ class JobSearchQuery {
     Object.hashAllUnordered(skills),
     postedWithinDays,
     companyId,
+    employer,
     pageSize,
   );
 }
@@ -178,7 +187,7 @@ const _jobColumns =
     'employment_type, experience_level, workplace, location_text, '
     'salary_min, salary_max, salary_currency, salary_period, '
     'responsibilities, qualifications, benefits, status, deadline, '
-    'application_count, published_at';
+    'application_count, published_at, companies(logo_path)';
 
 class JobsRepository {
   JobsRepository(this._db);
@@ -193,7 +202,7 @@ class JobsRepository {
           'search_jobs',
           params: query.toRpcParams(after: after),
         );
-        return [for (final r in rows) Job.fromJson((r as Map).cast())];
+        return [for (final r in rows) _job((r as Map).cast())];
       });
 
   Future<Job?> bySlug(String slug) => guardDb(() async {
@@ -202,8 +211,22 @@ class JobsRepository {
         .select(_jobColumns)
         .eq('slug', slug)
         .maybeSingle();
-    return row == null ? null : Job.fromJson(row);
+    return row == null ? null : _job(row);
   });
+
+  /// A LuzHire company's own logo stands in where a feed logo would be.
+  Job _job(Json row) {
+    final path =
+        row['company_logo_path'] as String? ??
+        (row['companies'] as Map?)?['logo_path'] as String?;
+    if (path == null || row['external_logo_url'] != null) {
+      return Job.fromJson(row);
+    }
+    return Job.fromJson({
+      ...row,
+      'external_logo_url': _db.storage.from('company-media').getPublicUrl(path),
+    });
+  }
 
   /// Jobs by id (e.g. saved jobs), newest first. Unpublished ones drop out
   /// through RLS.
@@ -214,7 +237,7 @@ class JobsRepository {
         .select(_jobColumns)
         .inFilter('id', ids.toList())
         .order('published_at', ascending: false);
-    return [for (final r in rows) Job.fromJson(r)];
+    return [for (final r in rows) _job(r)];
   });
 
   /// Names of the skills tagged on [jobId], alphabetical.

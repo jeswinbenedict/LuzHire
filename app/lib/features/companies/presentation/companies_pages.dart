@@ -62,7 +62,8 @@ class _CompaniesPageState extends ConsumerState<CompaniesPage> {
             Semantics(header: true, child: Text('Companies', style: t.h2)),
             const SizedBox(height: LuzSpace.xs),
             Text(
-              'Employers hiring on LuzHire. Verified companies have been '
+              'Every company with open roles: employers on LuzHire and the '
+              'companies behind jobs we import. Verified companies have been '
               'reviewed by our team.',
               style: t.body.copyWith(color: p.inkMuted),
             ),
@@ -94,7 +95,7 @@ class _CompaniesPageState extends ConsumerState<CompaniesPage> {
                     ? 'No companies yet'
                     : 'No companies match "${widget.query}"',
                 message: widget.query.isEmpty
-                    ? 'Employers appear here once they create a company profile.'
+                    ? 'Companies appear here as soon as they have open roles.'
                     : 'Check the spelling or try a shorter name.',
                 actionLabel: widget.query.isEmpty ? null : 'Show all',
                 onAction: widget.query.isEmpty ? null : () => _go(''),
@@ -180,6 +181,15 @@ class CompanyCard extends ConsumerWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
                   ],
+                  if (company.openJobs != null) ...[
+                    const SizedBox(height: LuzSpace.xs),
+                    Text(
+                      openRolesLabel(company.openJobs!),
+                      style: t.label.copyWith(
+                        color: company.openJobs! > 0 ? p.accent : p.muted,
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -189,6 +199,12 @@ class CompanyCard extends ConsumerWidget {
     );
   }
 }
+
+String openRolesLabel(int n) => switch (n) {
+  0 => 'No open roles',
+  1 => '1 open role',
+  _ => '$n open roles',
+};
 
 class _CompanyCardSkeleton extends StatelessWidget {
   const _CompanyCardSkeleton();
@@ -262,7 +278,9 @@ class _CompanyBody extends ConsumerWidget {
     } on AppFailure {
       logo = null;
     }
-    final query = JobSearchQuery(companyId: company.id);
+    final query = company.isExternal
+        ? JobSearchQuery(employer: company.name)
+        : JobSearchQuery(companyId: company.id);
     final jobs = ref.watch(jobSearchProvider(query));
     final facts = _facts(company);
 
@@ -332,13 +350,19 @@ class _CompanyBody extends ConsumerWidget {
                                 facts,
                                 style: t.body.copyWith(color: p.inkMuted),
                               ),
+                            if (company.isExternal)
+                              Text(
+                                'Roles imported from job boards',
+                                style: t.body.copyWith(color: p.inkMuted),
+                              ),
                           ],
                         ),
-                        ReportButton(
-                          targetType: 'company',
-                          targetId: company.id,
-                          targetName: company.name,
-                        ),
+                        if (!company.isExternal)
+                          ReportButton(
+                            targetType: 'company',
+                            targetId: company.id,
+                            targetName: company.name,
+                          ),
                         if (company.website != null) ...[
                           const SizedBox(height: LuzSpace.xs),
                           LuzTextLink(
