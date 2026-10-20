@@ -219,7 +219,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** API keys for chosen providers (entered as Vercel env vars), after checking their terms.
 
 ## Phase 9 — Notifications
-**Status: built on branch `phase-9-notifications`** (migration, dispatcher, settings screen, workspace bell, web service worker; 116 pgTAP assertions, 53 API tests, 166 Flutter tests). Still to do: apply the migration to the cloud, add the email/webhook settings (SETUP.md §6), verify push and email live.
+**Status: live on main** (migration applied to the cloud; dispatcher, settings screen, workspace bell, web service worker; 116 pgTAP assertions, 53 API tests, 166 Flutter tests). Still to do: add the mailbox, `NOTIFY_SECRET` and webhook (SETUP.md §6), then verify push and email live.
 - In-app (already realtime) + preferences screen.
 - Push: FCM for web (service worker) and Android/iOS; DB webhook → `/api/notify/dispatch`.
 - Transactional email templates (application received, stage change, interview, offer).
