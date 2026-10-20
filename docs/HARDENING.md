@@ -57,6 +57,25 @@ Still manual: a screen-reader pass with NVDA (web) and TalkBack (Android), and k
 - **Load test (500 concurrent users):** not yet run. It loads the live Supabase and Vercel free tiers, so it needs the owner's go-ahead.
 - **Sentry:** replaced for now by the first-party error log above (no extra account). Can be added later with a DSN.
 
-## After deploy
+## After deploy (2026-10-20, live commit 17850ee)
 
-_To be filled in from the live site once Phase 10 is deployed._
+Lighthouse 13.5, mobile emulation, same settings as the baseline (several
+runs; the performance score varies ±4 with the test machine's CPU):
+
+| Page | Perf | LCP | TBT | Transferred | Fonts start | Best practices |
+|---|---|---|---|---|---|---|
+| `/` before | 74 | 1.0 s | 720 ms | 3,781 KiB | 1.64 s | 77 |
+| `/` after | 71–75 | 0.8–1.1 s | 700–900 ms | 3,561 KiB | 0.15 s | 81 |
+| `/jobs` before | 72 | 0.8 s | 850 ms | 3,794 KiB | 1.64 s | 77 |
+| `/jobs` after | 68–73 | 0.9–1.3 s | 820–1,070 ms | 3,526 KiB | 0.15 s | 81 |
+
+- **LCP target met** (≤ 2.5 s on emulated mid-range mobile). Accessibility and SEO stay at 100.
+- 220–270 KiB less to download, fonts start 1.5 s earlier, and the console is clean (the CORS logo errors are gone).
+- The score is held back by main-thread time while the browser compiles Flutter's WASM (engine and app code). Only a smaller app or engine reduces that: a later Flutter release, or deferred loading once Flutter supports it for WASM.
+- The remaining best-practices item is deprecation warnings inside Flutter's engine files (`skwasm.js`, `main.dart.mjs`), fixed only by a Flutter upgrade.
+
+Live checks after deploy:
+- Migrations `20261020150000` and `20261020160000` are applied to the cloud database, which passes the same invariants (RLS everywhere, definer functions pin `search_path`, no visitor write policies).
+- Rate limit: the 11th error report in a minute from one IP gets `429` with `Retry-After: 60`.
+- `/api/health?deep=1` reports `"database":"ok"`; `/api/img` serves Remotive logos (200 PNG) and refuses other hosts (403).
+- CSP: report-only found one source (FlutterFire's inline script loader), fixed by `web/firebase-sdk.js`. Enforced from 7741ef8; home, the job board, an SEO job page, companies, both workspaces and notification settings load with sign-in and push working. One block appeared afterwards (Google sign-in's connectivity check to `www.google.com`), now allowed.

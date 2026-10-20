@@ -227,7 +227,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **Done when:** push arrives on web and Android; emails render in Gmail and Outlook.
 
 ## Phase 10 — Hardening
-**Status: built on branch `phase-10-hardening`** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP, API rate limits, CSP in report-only, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log). Still to do: apply 2 migrations to the cloud, deploy, enforce CSP after a clean live console, re-measure Lighthouse, screen-reader pass, load test (needs owner's go-ahead).
+**Status: live on main** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP and on the cloud database, API rate limits, enforced CSP with violation reports, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log; LCP ≤ 1.3 s). Still to do: a manual screen-reader and keyboard pass, the 500-user load test (needs the owner's go-ahead), Sentry (optional).
 - Performance: deferred imports for employer/admin, image sizing, bundle check, Lighthouse on SEO pages, LCP ≤ 2.5 s on mid-range mobile.
 - Accessibility: full WCAG 2.1 AA pass (screen reader on web/Android, keyboard, contrast, 200 % text).
 - Security: RLS review, OWASP checklist, CSP headers, rate limits on API, dependency audit, secret scan.
