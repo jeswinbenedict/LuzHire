@@ -18,8 +18,8 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
 | 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Built and tested (branch `phase-4-job-board`). Still needed: live "new jobs" banner; real jobs in the cloud database |
-| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Built and tested (branch `phase-5-candidate-portal`). Still needed: apply migration `20261019120000` to the cloud; live check with a real employer (Phase 6) |
-| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Built and tested (branch `phase-6-employer-workspace`). Still needed: apply migration `20261019130000` to the cloud; end-to-end hire with real accounts |
+| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19). Still needed: a live check with real candidate and employer accounts |
+| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | ⬜ |
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | ⬜ |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | ⬜ |

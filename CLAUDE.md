@@ -53,6 +53,6 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [x] Phase 2: Backend foundation. Schema, RLS, storage, search, seed, 57 pgTAP assertions and the Dart data layer are done (branch `phase-2-backend`). CI green and applied to the cloud project
 - [x] Phase 3: Auth. API, screens, guards and tests, live on Vercel with Firebase + Supabase (real sign-up verified)
 - [~] Phase 4: Public job board. Search, detail, companies and saved jobs are done (branch `phase-4-job-board`). Still to do: live new-jobs banner, real data
-- [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are done (branch `phase-5-candidate-portal`). Still to do: cloud migration, live check with an employer
-- [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are done (branch `phase-6-employer-workspace`). Still to do: cloud migration, live end-to-end hire
+- [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are live on main. Still to do: a live check with real accounts
+- [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are live on main. Still to do: a live end-to-end hire
 - [ ] Phases 7–11: see ROADMAP
