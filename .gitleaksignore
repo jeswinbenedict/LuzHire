@@ -1,0 +1,3 @@
+# Reviewed gitleaks findings that are not secrets (one fingerprint per line).
+# A made-up JWT in the error-log scrubbing test; the test now builds it at runtime.
+0e67d62bd5a9681a93882c68aa9141959ce9347f:tests/api/error-log.test.ts:jwt:7
