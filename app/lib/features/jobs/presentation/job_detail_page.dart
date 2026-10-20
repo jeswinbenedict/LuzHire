@@ -33,7 +33,9 @@ class JobDetailPage extends StatelessWidget {
 }
 
 /// The job itself. [embedded] is the preview pane beside search results:
-/// one column, with the apply panel on top.
+/// one column, with the apply panel on top. A job opened from search results
+/// shows its card fields at once and its description when the full job has
+/// loaded.
 class JobDetailView extends ConsumerWidget {
   const JobDetailView({super.key, required this.slug, this.embedded = false});
 
@@ -43,6 +45,10 @@ class JobDetailView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final job = ref.watch(jobBySlugProvider(slug));
+    final preview = ref.watch(jobPreviewsProvider)[slug];
+    if (!job.hasValue && preview != null) {
+      return _JobBody(job: preview, embedded: embedded);
+    }
     return job.when(
       loading: () => const Center(child: LuzSkeleton(width: 220, height: 16)),
       error: (e, _) => Center(
@@ -299,6 +305,7 @@ class _MainColumn extends ConsumerWidget {
               style: t.bodyLg.copyWith(color: p.inkMuted),
             ),
           ),
+        if (!job.hasDetails) _PendingDetails(slug: job.slug),
         if (job.descriptionMd.trim().isNotEmpty)
           section('About the role', [SimpleMarkdown(job.descriptionMd)]),
         if (job.responsibilities.isNotEmpty)
@@ -336,6 +343,55 @@ class _MainColumn extends ConsumerWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+/// Stands in for the description while the full job loads, or offers a retry
+/// if it could not be loaded.
+class _PendingDetails extends ConsumerWidget {
+  const _PendingDetails({required this.slug});
+  final String slug;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = context.luz;
+    final t = context.luzText;
+    final full = ref.watch(jobBySlugProvider(slug));
+    final failed = full.hasError && !full.isLoading;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: LuzSpace.lg),
+      child: failed
+          ? Wrap(
+              spacing: LuzSpace.xs,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text(
+                  "Couldn't load the job description.",
+                  style: t.body.copyWith(color: p.inkMuted),
+                ),
+                LuzTextLink(
+                  label: 'Try again',
+                  onPressed: () => ref.invalidate(jobBySlugProvider(slug)),
+                ),
+              ],
+            )
+          : Semantics(
+              container: true,
+              label: 'Loading the job description',
+              child: const Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  LuzSkeleton(width: 140, height: 18),
+                  SizedBox(height: LuzSpace.sm),
+                  LuzSkeleton(),
+                  SizedBox(height: LuzSpace.xs),
+                  LuzSkeleton(),
+                  SizedBox(height: LuzSpace.xs),
+                  LuzSkeleton(width: 220),
+                ],
+              ),
+            ),
     );
   }
 }

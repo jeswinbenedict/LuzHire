@@ -91,6 +91,14 @@ void main() {
       expect(job.publishedAt, DateTime.utc(2026, 10, 18, 9));
     });
 
+    test('search rows have no details; full rows do', () {
+      expect(Job.fromJson(jobRow()).hasDetails, isFalse);
+      expect(
+        Job.fromJson(jobRow(overrides: {'description_md': ''})).hasDetails,
+        isTrue,
+      );
+    });
+
     test('salary always shows its period', () {
       expect(formatSalary(Job.fromJson(jobRow())), '₹12–18 L / year');
       expect(

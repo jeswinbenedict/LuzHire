@@ -170,11 +170,23 @@ class JobSearchQuery {
   );
 }
 
+/// The job columns [Job.fromJson] reads: everything but the search vector
+/// and bookkeeping, which would double the size of a job.
+const _jobColumns =
+    'id, source, company_id, company_name, external_logo_url, '
+    'external_source, external_url, title, slug, description_md, summary, '
+    'employment_type, experience_level, workplace, location_text, '
+    'salary_min, salary_max, salary_currency, salary_period, '
+    'responsibilities, qualifications, benefits, status, deadline, '
+    'application_count, published_at';
+
 class JobsRepository {
   JobsRepository(this._db);
   final SupabaseClient _db;
 
   /// One page of results; pass the last job of the previous page as [after].
+  /// Results are job cards without the description ([Job.hasDetails] is
+  /// false); [bySlug] loads the full job.
   Future<List<Job>> search(JobSearchQuery query, {Job? after}) =>
       guardDb(() async {
         final rows = await _db.rpc<List<dynamic>>(
@@ -185,7 +197,11 @@ class JobsRepository {
       });
 
   Future<Job?> bySlug(String slug) => guardDb(() async {
-    final row = await _db.from('jobs').select().eq('slug', slug).maybeSingle();
+    final row = await _db
+        .from('jobs')
+        .select(_jobColumns)
+        .eq('slug', slug)
+        .maybeSingle();
     return row == null ? null : Job.fromJson(row);
   });
 
@@ -195,7 +211,7 @@ class JobsRepository {
     if (ids.isEmpty) return const <Job>[];
     final rows = await _db
         .from('jobs')
-        .select()
+        .select(_jobColumns)
         .inFilter('id', ids.toList())
         .order('published_at', ascending: false);
     return [for (final r in rows) Job.fromJson(r)];

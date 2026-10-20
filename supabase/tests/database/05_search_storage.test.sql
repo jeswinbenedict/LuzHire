@@ -1,7 +1,7 @@
 -- Job search RPC and storage access rules.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(12);
 
 insert into public.profiles (id, role, email, display_name) values
   ('t-cand1', 'candidate', 't-cand1@example.com', 'Cand One'),
@@ -9,10 +9,10 @@ insert into public.profiles (id, role, email, display_name) values
   ('t-emp1',  'employer',  't-emp1@example.com',  'Emp One');
 insert into public.companies (id, owner_id, name, verification)
 values ('40000000-0000-4000-a000-000000000001', 't-emp1', 'Zyxwv Search Co', 'verified');
-insert into public.jobs (id, company_id, company_name, title, employment_type, workplace, status, published_at, salary_min, salary_max, salary_currency, salary_period) values
-  ('40000000-0000-4000-b000-000000000001', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Wizard', 'full_time', 'remote', 'published', now() - interval '1 hour', 40, 50, 'USD', 'hour'),
-  ('40000000-0000-4000-b000-000000000002', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Apprentice', 'full_time', 'onsite', 'published', now() - interval '2 hours', 60000, 80000, 'USD', 'year'),
-  ('40000000-0000-4000-b000-000000000003', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Draft', 'full_time', 'remote', 'draft', null, null, null, null, null);
+insert into public.jobs (id, company_id, company_name, title, employment_type, workplace, status, published_at, salary_min, salary_max, salary_currency, salary_period, description_md) values
+  ('40000000-0000-4000-b000-000000000001', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Wizard', 'full_time', 'remote', 'published', now() - interval '1 hour', 40, 50, 'USD', 'hour', 'The full Wizard description.'),
+  ('40000000-0000-4000-b000-000000000002', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Apprentice', 'full_time', 'onsite', 'published', now() - interval '2 hours', 60000, 80000, 'USD', 'year', default),
+  ('40000000-0000-4000-b000-000000000003', '40000000-0000-4000-a000-000000000001', '', 'Qwerty Flutter Draft', 'full_time', 'remote', 'draft', null, null, null, null, null, default);
 
 -- ---- search as a visitor
 select set_config('request.jwt.claims', '', true);
@@ -33,6 +33,25 @@ select isnt(
   'keyset pagination returns the next job'
 );
 select is((select count(*)::int from public.search_jobs(q => 'Zyxwv')), 2, 'search matches company name');
+-- Results are job cards: no description, lists or search vector (a page was
+-- 50-80 KB). The detail view loads the full job by slug.
+select is(
+  (select array_agg(a.name order by a.ord)
+   from pg_proc p, unnest(p.proargnames, p.proargmodes) with ordinality as a(name, mode, ord)
+   where p.oid = 'public.search_jobs'::regproc and a.mode = 't'),
+  array['id', 'source', 'company_id', 'company_name', 'external_logo_url',
+        'external_source', 'external_url', 'title', 'slug', 'summary',
+        'employment_type', 'experience_level', 'workplace', 'location_text',
+        'salary_min', 'salary_max', 'salary_currency', 'salary_period',
+        'status', 'deadline', 'application_count', 'published_at']::text[],
+  'search results carry only the job card fields'
+);
+select is(
+  (select j.description_md from public.jobs j
+   where j.slug = (select slug from public.search_jobs(q => 'qwerty', page_size => 1))),
+  'The full Wizard description.',
+  'a visitor loads the full description of a search result by its slug'
+);
 
 -- ---- storage: resumes
 reset role;
