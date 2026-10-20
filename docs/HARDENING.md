@@ -54,7 +54,7 @@ Still manual: a screen-reader pass with NVDA (web) and TalkBack (Android), and k
 - **Uptime:** `.github/workflows/uptime.yml` checks `/`, `/jobs` and the deep health check every 30 minutes; GitHub emails the owner when a run fails.
 - **Error log:** see Security → Logging. The admin overview shows the latest 10 entries.
 - **Backups:** the free Supabase plan has no downloadable backups. Phase 11 moves production to the Pro plan (daily backups). Until then, take a manual dump before risky changes: `npx supabase db dump --linked -f backup.sql` (needs `supabase login` and `link`). Never commit the file (it contains user data).
-- **Load test (500 concurrent users):** not yet run. It loads the live Supabase and Vercel free tiers, so it needs the owner's go-ahead.
+- **Load test (500 concurrent users):** run on 2026-10-20, see *Load test* below.
 - **Sentry:** replaced for now by the first-party error log above (no extra account). Can be added later with a DSN.
 
 ## After deploy (2026-10-20, live commit 17850ee)
@@ -79,3 +79,20 @@ Live checks after deploy:
 - Rate limit: the 11th error report in a minute from one IP gets `429` with `Retry-After: 60`.
 - `/api/health?deep=1` reports `"database":"ok"`; `/api/img` serves Remotive logos (200 PNG) and refuses other hosts (403).
 - CSP: report-only found one source (FlutterFire's inline script loader), fixed by `web/firebase-sdk.js`. Enforced from 7741ef8; home, the job board, an SEO job page, companies, both workspaces and notification settings load with sign-in and push working. One block appeared afterwards (Google sign-in's connectivity check to `www.google.com`), now allowed.
+
+## Load test (2026-10-20)
+
+[autocannon](https://github.com/mcollina/autocannon) 8.0.0 from one laptop,
+500 concurrent connections, 15 s per scenario, against the live site.
+
+| Scenario | Rate | Requests | OK | p50 | p90 | p99 |
+|---|---|---|---|---|---|---|
+| Job search, 20 results (`search_jobs` on Supabase, public key) | capped 250/s, reached 75/s | 1,121 | 100 % | 1.29 s | 4.96 s | 10.5 s |
+| Job search, 1 result | capped 250/s, reached 241/s | 3,610 | 100 % | 0.35 s | 1.15 s | 3.35 s |
+| App shell, API function, SEO page (Vercel) | uncapped / 500/s | stopped | see below | | | |
+
+Findings:
+- **The database copes with 500 users searching every 2 seconds** (241 searches/s, no errors or timeouts on the free plan). The 20-result run was held back by the payload: each page is 50 KB because `search_jobs` returns every job's full description (even 1 result is 7.5 KB), so 75 searches/s already filled this laptop's connection (≈ 30 Mbit/s).
+- **Recommended follow-up:** return only the card fields (title, company, summary, salary, tags) from `search_jobs` and load the description when a job is opened. That cuts each results page several-fold, for users on mobile data too.
+- **Vercel's firewall blocks single-source floods.** After 678 good responses for the app shell, Vercel's automatic DDoS mitigation answered `403` with its Security Checkpoint (`X-Vercel-Mitigated: challenge`) to everything from the test IP. Real browsers from that IP pass the checkpoint automatically, and the site stayed up for everyone else: the uptime check from GitHub's servers returned 200 for `/`, `/jobs` and the deep health check during and after the test. So Vercel's CDN and functions cannot be load-tested from one machine; that needs traffic from many IPs (for example a hosted load-testing service), and Vercel's edge is built to scale for cached pages.
+- Server-side protection held: no errors were logged, the database stayed responsive (0.3 s for a 20-result search right after), and nothing needed a restart.
