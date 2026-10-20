@@ -1,8 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
+
+/// Gives a small control a 48 × 48 dp hit area on touch devices (DESIGN.md
+/// §10, WCAG target size) without changing how it looks; mouse layouts keep
+/// their compact size. Use inside a [LuzPressable] builder so the tappable
+/// and semantic area grows with it.
+class LuzMinTarget extends StatelessWidget {
+  const LuzMinTarget({super.key, required this.child});
+  final Widget child;
+
+  static const touch = 48.0;
+
+  @override
+  Widget build(BuildContext context) {
+    if (context.isPointer) return child;
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: touch, minHeight: touch),
+      child: Align(widthFactor: 1, heightFactor: 1, child: child),
+    );
+  }
+}
 
 /// Shared interaction shell for moulded controls: keyboard activation,
 /// hover/press tracking, a visible focus ring, and button semantics.

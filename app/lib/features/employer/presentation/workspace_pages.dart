@@ -99,22 +99,28 @@ class EmployerOverviewPage extends ConsumerWidget {
           if (m.company.verification != Verification.verified)
             LuzCard(
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.shield_outlined, color: p.warning),
                   const SizedBox(width: LuzSpace.sm),
                   Expanded(
-                    child: Text(
-                      m.company.verification == Verification.pending
-                          ? 'Verification requested. New jobs wait for an admin '
-                                'review until it is approved.'
-                          : 'Your company is not verified, so new jobs wait for '
-                                'an admin review.',
-                      style: t.bodySm,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          m.company.verification == Verification.pending
+                              ? 'Verification requested. New jobs wait for an '
+                                    'admin review until it is approved.'
+                              : 'Your company is not verified, so new jobs '
+                                    'wait for an admin review.',
+                          style: t.bodySm,
+                        ),
+                        LuzTextLink(
+                          label: 'Company settings',
+                          onPressed: () => context.go('/employer/company'),
+                        ),
+                      ],
                     ),
-                  ),
-                  LuzTextLink(
-                    label: 'Company settings',
-                    onPressed: () => context.go('/employer/company'),
                   ),
                 ],
               ),

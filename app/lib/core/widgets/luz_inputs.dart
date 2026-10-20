@@ -83,6 +83,7 @@ class _LuzTextFieldState extends State<LuzTextField> {
     final hasError = widget.error != null;
     final focused = _focus.hasFocus;
     final multiline = widget.maxLines > 1;
+    final fieldHeight = zone.isWorkspace && context.isPointer ? 38.0 : 50.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,11 +101,10 @@ class _LuzTextFieldState extends State<LuzTextField> {
             vertical: multiline ? LuzSpace.sm : 0,
           ),
           child: ConstrainedBox(
-            constraints: multiline
-                ? const BoxConstraints(minHeight: 96)
-                : BoxConstraints.tightFor(
-                    height: zone.isWorkspace && context.isPointer ? 38 : 50,
-                  ),
+            // A minimum, not a fixed height, so 200 % text can grow it.
+            constraints: BoxConstraints(
+              minHeight: multiline ? 96 : fieldHeight,
+            ),
             child: Row(
               crossAxisAlignment: multiline
                   ? CrossAxisAlignment.start
@@ -115,27 +115,41 @@ class _LuzTextFieldState extends State<LuzTextField> {
                   const SizedBox(width: LuzSpace.sm),
                 ],
                 Expanded(
-                  child: TextField(
-                    controller: widget.controller,
-                    focusNode: _focus,
-                    enabled: widget.enabled,
-                    autofocus: widget.autofocus,
-                    obscureText: widget.obscureText,
-                    keyboardType: widget.keyboardType,
-                    textInputAction: widget.textInputAction,
-                    onChanged: widget.onChanged,
-                    onSubmitted: widget.onSubmitted,
-                    autofillHints: widget.autofillHints,
-                    minLines: multiline ? 3 : 1,
-                    maxLines: widget.maxLines,
-                    inputFormatters: widget.maxLength == null
-                        ? null
-                        : [LengthLimitingTextInputFormatter(widget.maxLength)],
-                    style: t.body.copyWith(color: p.ink),
-                    decoration: InputDecoration.collapsed(
-                      hintText: widget.hint,
-                      hintStyle: t.body.copyWith(color: p.muted),
-                    ).copyWith(semanticCounterText: ''),
+                  // The editable box fills the field's height so the whole
+                  // visible field is the touch / semantics target.
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight: multiline ? 0 : fieldHeight,
+                    ),
+                    child: TextField(
+                      textAlignVertical: multiline
+                          ? TextAlignVertical.top
+                          : TextAlignVertical.center,
+                      controller: widget.controller,
+                      focusNode: _focus,
+                      enabled: widget.enabled,
+                      autofocus: widget.autofocus,
+                      obscureText: widget.obscureText,
+                      keyboardType: widget.keyboardType,
+                      textInputAction: widget.textInputAction,
+                      onChanged: widget.onChanged,
+                      onSubmitted: widget.onSubmitted,
+                      autofillHints: widget.autofillHints,
+                      minLines: multiline ? 3 : 1,
+                      maxLines: widget.maxLines,
+                      inputFormatters: widget.maxLength == null
+                          ? null
+                          : [
+                              LengthLimitingTextInputFormatter(
+                                widget.maxLength,
+                              ),
+                            ],
+                      style: t.body.copyWith(color: p.ink),
+                      decoration: InputDecoration.collapsed(
+                        hintText: widget.hint,
+                        hintStyle: t.body.copyWith(color: p.muted),
+                      ).copyWith(semanticCounterText: ''),
+                    ),
                   ),
                 ),
                 ?widget.suffix,
@@ -191,42 +205,44 @@ class LuzToggle extends StatelessWidget {
       radius: LuzRadius.pill,
       semanticLabel: semanticLabel,
       toggled: value,
-      builder: (context, pressed, _) => SizedBox(
-        width: _w,
-        height: _h,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: LuzSurface(
-                depth: LuzDepth.insetSm,
-                radius: LuzRadius.pill,
-                duration: LuzMotion.toggle,
-                color: value && enabled ? LuzBrand.primary : null,
-              ),
-            ),
-            AnimatedAlign(
-              duration: MediaQuery.disableAnimationsOf(context)
-                  ? Duration.zero
-                  : LuzMotion.toggle,
-              curve: Curves.easeOutBack,
-              alignment: value ? Alignment.centerRight : Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.all(3),
+      builder: (context, pressed, _) => LuzMinTarget(
+        child: SizedBox(
+          width: _w,
+          height: _h,
+          child: Stack(
+            children: [
+              Positioned.fill(
                 child: LuzSurface(
-                  depth: enabled ? LuzDepth.raisedXs : LuzDepth.flat,
+                  depth: LuzDepth.insetSm,
                   radius: LuzRadius.pill,
-                  color: p.base,
-                  child: SizedBox.square(
-                    dimension: _knob,
-                    // Non-colour cue for the on state.
-                    child: value
-                        ? Icon(Icons.check, size: 14, color: p.ink)
-                        : null,
+                  duration: LuzMotion.toggle,
+                  color: value && enabled ? LuzBrand.primary : null,
+                ),
+              ),
+              AnimatedAlign(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : LuzMotion.toggle,
+                curve: Curves.easeOutBack,
+                alignment: value ? Alignment.centerRight : Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.all(3),
+                  child: LuzSurface(
+                    depth: enabled ? LuzDepth.raisedXs : LuzDepth.flat,
+                    radius: LuzRadius.pill,
+                    color: p.base,
+                    child: SizedBox.square(
+                      dimension: _knob,
+                      // Non-colour cue for the on state.
+                      child: value
+                          ? Icon(Icons.check, size: 14, color: p.ink)
+                          : null,
+                    ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

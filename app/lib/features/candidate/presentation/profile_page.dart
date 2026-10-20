@@ -337,10 +337,12 @@ class _AvatarRowState extends ConsumerState<_AvatarRow> {
         url = null;
       }
     }
-    return Row(
+    return Wrap(
+      spacing: LuzSpace.md,
+      runSpacing: LuzSpace.sm,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         LuzAvatar(name: widget.profile.displayName, imageUrl: url, size: 64),
-        const SizedBox(width: LuzSpace.md),
         LuzButton(
           label: _busy
               ? 'Uploading…'

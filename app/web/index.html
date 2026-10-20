@@ -16,6 +16,17 @@
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <link rel="icon" type="image/png" sizes="48x48" href="favicon.png">
 
+  <!-- Flutter fetches these only after the engine starts; preloading them
+       overlaps the downloads with main.dart.wasm (Phase 10). Same-origin
+       fetch() needs crossorigin to reuse the preload. -->
+  <link rel="preload" href="assets/FontManifest.json" as="fetch" crossorigin>
+  <link rel="preload" href="assets/assets/fonts/Inter-Variable.ttf" as="fetch" crossorigin>
+  <link rel="preload" href="assets/assets/fonts/PlusJakartaSans-Variable.ttf" as="fetch" crossorigin>
+  <link rel="preload" href="assets/assets/fonts/JetBrainsMono-Variable.ttf" as="fetch" crossorigin>
+  <link rel="preload" href="assets/fonts/MaterialIcons-Regular.otf" as="fetch" crossorigin>
+  <link rel="preload" href="assets/fonts/fallback/Roboto-Regular.ttf" as="fetch" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com">
+
   <title>LuzHire</title>
   <link rel="manifest" href="manifest.json">
 
@@ -47,15 +58,7 @@
     </svg>
     <div class="name">LuzHire</div>
   </div>
-  <script>
-    // Remove the splash once Flutter renders its first frame.
-    window.addEventListener('flutter-first-frame', function () {
-      var s = document.getElementById('splash');
-      if (!s) return;
-      s.style.opacity = '0';
-      setTimeout(function () { s.remove(); }, 300);
-    });
-  </script>
+  <script src="splash.js"></script>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

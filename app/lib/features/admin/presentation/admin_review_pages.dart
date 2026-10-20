@@ -87,6 +87,8 @@ class AdminOverviewPage extends ConsumerWidget {
           data: (s) => _Overview(stats: s),
         ),
         const _ImportsCard(),
+        const SizedBox(height: LuzSpace.lg),
+        const _ErrorsCard(),
       ],
     );
   }
@@ -214,7 +216,16 @@ class _Overview extends StatelessWidget {
                 Text('No sign-ups yet.', style: t.bodySm)
               else
                 SizedBox(
-                  height: 140,
+                  // 100 px of bars plus two caption lines, which grow with
+                  // the OS text size.
+                  height:
+                      100 +
+                      2 *
+                          MediaQuery.textScalerOf(context).scale(
+                            (t.caption.fontSize ?? 12) *
+                                (t.caption.height ?? 1.4),
+                          ) +
+                      8,
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
@@ -313,6 +324,64 @@ class _ImportsCard extends ConsumerWidget {
                   ],
                 ),
               ),
+        ],
+      ),
+    );
+  }
+}
+
+/// Latest app crashes and API errors (Phase 10 error log).
+class _ErrorsCard extends ConsumerWidget {
+  const _ErrorsCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final errors =
+        ref.watch(recentErrorsProvider).value ?? const <AppErrorEntry>[];
+    final t = context.luzText;
+    final p = context.luz;
+    return LuzCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('App errors', style: t.wsSection),
+          const SizedBox(height: LuzSpace.xs),
+          if (errors.isEmpty)
+            Text(
+              'No errors reported in the last 30 days.',
+              style: t.bodySm.copyWith(color: p.inkMuted),
+            ),
+          for (final e in errors)
+            Padding(
+              padding: const EdgeInsets.only(top: LuzSpace.xs),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.bug_report_outlined, size: 18, color: p.danger),
+                  const SizedBox(width: LuzSpace.sm),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(e.message, style: t.bodySm),
+                        Text(
+                          [
+                            e.source,
+                            if (e.route != null) e.route!,
+                            if (e.release != null) 'build ${e.release}',
+                          ].join(' · '),
+                          style: t.caption.copyWith(color: p.muted),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Text(
+                    formatRelative(e.createdAt),
+                    style: t.caption.copyWith(color: p.muted),
+                  ),
+                ],
+              ),
+            ),
         ],
       ),
     );

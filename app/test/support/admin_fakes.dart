@@ -96,6 +96,10 @@ class FakeAdminRepository implements AdminRepository {
   );
 
   final runs = <IngestRun>[];
+  final errors = <AppErrorEntry>[];
+
+  @override
+  Future<List<AppErrorEntry>> recentErrors() async => [...errors];
 
   @override
   Future<List<IngestRun>> ingestRuns() async => [...runs];

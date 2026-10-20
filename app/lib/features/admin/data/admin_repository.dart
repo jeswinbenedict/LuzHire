@@ -29,6 +29,16 @@ class AdminRepository {
     return [for (final r in rows) IngestRun.fromJson(r)];
   });
 
+  /// Newest entries of the error log (app crashes and API errors).
+  Future<List<AppErrorEntry>> recentErrors() => guardDb(() async {
+    final rows = await _db
+        .from('app_errors')
+        .select('source, message, route, release, created_at')
+        .order('created_at', ascending: false)
+        .limit(10);
+    return [for (final r in rows) AppErrorEntry.fromJson(r)];
+  });
+
   // ---------------------------------------------------------- reviews
 
   /// Companies that asked for verification, oldest request first.

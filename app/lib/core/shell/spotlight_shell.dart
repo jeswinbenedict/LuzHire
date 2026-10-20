@@ -142,7 +142,9 @@ class _TopNav extends StatelessWidget {
               Expanded(
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  clipBehavior: Clip.none,
+                  // Clipped so links that do not fit never paint over the
+                  // buttons; the padding keeps the pills' shadows inside.
+                  padding: const EdgeInsets.symmetric(vertical: 10),
                   child: Row(
                     children: [
                       for (var i = 1; i < destinations.length - 1; i++)
@@ -376,7 +378,7 @@ class _BottomNav extends StatelessWidget {
                       final d = destinations[i];
                       return Padding(
                         padding: const EdgeInsets.symmetric(
-                          vertical: 6,
+                          vertical: 4,
                           horizontal: 4,
                         ),
                         child: Column(
@@ -398,13 +400,19 @@ class _BottomNav extends StatelessWidget {
                               ),
                             ),
                             const SizedBox(height: 3),
-                            Text(
-                              d.label,
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: context.luzText.caption.copyWith(
-                                color: on ? p.ink : p.muted,
-                                fontWeight: on ? FontWeight.w700 : null,
+                            // Tab labels stop growing at 130 % (like system
+                            // tab bars) so the bar keeps its height; each tab
+                            // also has its icon and accessible name.
+                            MediaQuery.withClampedTextScaling(
+                              maxScaleFactor: 1.3,
+                              child: Text(
+                                d.label,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: context.luzText.caption.copyWith(
+                                  color: on ? p.ink : p.muted,
+                                  fontWeight: on ? FontWeight.w700 : null,
+                                ),
                               ),
                             ),
                           ],

@@ -32,35 +32,39 @@ class LuzFilterChip extends StatelessWidget {
       radius: LuzRadius.pill,
       semanticLabel: label,
       selected: selected,
-      builder: (context, pressed, _) => LuzSurface(
-        depth: (selected || pressed) ? LuzDepth.insetSm : LuzDepth.raisedXs,
-        radius: LuzRadius.pill,
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (selected) ...[
-              Container(
-                width: 7,
-                height: 7,
-                decoration: BoxDecoration(
-                  color: p.accent,
-                  shape: BoxShape.circle,
+      builder: (context, pressed, _) => LuzMinTarget(
+        child: LuzSurface(
+          depth: (selected || pressed) ? LuzDepth.insetSm : LuzDepth.raisedXs,
+          radius: LuzRadius.pill,
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (selected) ...[
+                Container(
+                  width: 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: p.accent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+                const SizedBox(width: LuzSpace.xs),
+              ] else if (icon != null) ...[
+                Icon(icon, size: 16, color: p.inkMuted),
+                const SizedBox(width: LuzSpace.xs - 2),
+              ],
+              Flexible(
+                child: Text(
+                  label,
+                  style: context.luzText.label.copyWith(
+                    color: p.ink,
+                    fontWeight: selected ? FontWeight.w600 : null,
+                  ),
                 ),
               ),
-              const SizedBox(width: LuzSpace.xs),
-            ] else if (icon != null) ...[
-              Icon(icon, size: 16, color: p.inkMuted),
-              const SizedBox(width: LuzSpace.xs - 2),
             ],
-            Text(
-              label,
-              style: context.luzText.label.copyWith(
-                color: p.ink,
-                fontWeight: selected ? FontWeight.w600 : null,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -134,12 +138,14 @@ class LuzStatusChip extends StatelessWidget {
             Icon(icon, size: 13, color: c.foreground),
             const SizedBox(width: LuzSpace.xxs),
           ],
-          Text(
-            label,
-            style: context.luzText.caption.copyWith(
-              color: c.foreground,
-              fontWeight: FontWeight.w600,
-              decoration: strikethrough ? TextDecoration.lineThrough : null,
+          Flexible(
+            child: Text(
+              label,
+              style: context.luzText.caption.copyWith(
+                color: c.foreground,
+                fontWeight: FontWeight.w600,
+                decoration: strikethrough ? TextDecoration.lineThrough : null,
+              ),
             ),
           ),
         ],

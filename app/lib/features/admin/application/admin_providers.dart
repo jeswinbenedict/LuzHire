@@ -17,6 +17,10 @@ final ingestRunsProvider = FutureProvider.autoDispose<List<IngestRun>>(
   (ref) => ref.watch(adminRepositoryProvider).ingestRuns(),
 );
 
+final recentErrorsProvider = FutureProvider.autoDispose<List<AppErrorEntry>>(
+  (ref) => ref.watch(adminRepositoryProvider).recentErrors(),
+);
+
 final pendingCompaniesProvider = FutureProvider.autoDispose<List<Company>>(
   (ref) => ref.watch(adminRepositoryProvider).pendingCompanies(),
 );

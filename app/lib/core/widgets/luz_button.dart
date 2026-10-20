@@ -161,23 +161,25 @@ class LuzIconButton extends StatelessWidget {
       tooltip: tooltip,
       semanticLabel: tooltip,
       selected: selected,
-      builder: (context, pressed, _) => LuzSurface(
-        depth: !enabled
-            ? LuzDepth.flat
-            : (pressed || selected)
-            ? LuzDepth.insetSm
-            : LuzDepth.raisedXs,
-        radius: LuzRadius.pill,
-        child: SizedBox.square(
-          dimension: size,
-          child: Icon(
-            icon,
-            size: size * 0.45,
-            color: !enabled
-                ? p.disabled
-                : selected
-                ? p.accent
-                : p.inkMuted,
+      builder: (context, pressed, _) => LuzMinTarget(
+        child: LuzSurface(
+          depth: !enabled
+              ? LuzDepth.flat
+              : (pressed || selected)
+              ? LuzDepth.insetSm
+              : LuzDepth.raisedXs,
+          radius: LuzRadius.pill,
+          child: SizedBox.square(
+            dimension: size,
+            child: Icon(
+              icon,
+              size: size * 0.45,
+              color: !enabled
+                  ? p.disabled
+                  : selected
+                  ? p.accent
+                  : p.inkMuted,
+            ),
           ),
         ),
       ),
@@ -205,15 +207,17 @@ class LuzTextLink extends StatelessWidget {
       onPressed: onPressed,
       radius: LuzRadius.xs,
       semanticLabel: label,
-      builder: (context, pressed, hovered) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 2),
-        child: Text(
-          label,
-          style: (style ?? context.luzText.label).copyWith(
-            color: p.accent,
-            fontWeight: FontWeight.w600,
-            decoration: hovered || pressed ? TextDecoration.underline : null,
-            decorationColor: p.accent,
+      builder: (context, pressed, hovered) => LuzMinTarget(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 2),
+          child: Text(
+            label,
+            style: (style ?? context.luzText.label).copyWith(
+              color: p.accent,
+              fontWeight: FontWeight.w600,
+              decoration: hovered || pressed ? TextDecoration.underline : null,
+              decorationColor: p.accent,
+            ),
           ),
         ),
       ),

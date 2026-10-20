@@ -1,4 +1,5 @@
 // Shared HTTP helpers for Vercel Functions (Web Request/Response API).
+import { logServerError } from './error-log.js';
 
 export class HttpError extends Error {
   constructor(
@@ -52,9 +53,12 @@ export function handle(fn: (request: Request) => Promise<Response>) {
       return await fn(request);
     } catch (e) {
       if (e instanceof HttpError) {
-        return json(request, e.status, { error: { code: e.code, message: e.message } });
+        const res = json(request, e.status, { error: { code: e.code, message: e.message } });
+        if (e.status === 429) res.headers.set('Retry-After', '60');
+        return res;
       }
       console.error(e);
+      await logServerError(request, e);
       return json(request, 500, { error: { code: 'internal', message: 'Something went wrong.' } });
     }
   };

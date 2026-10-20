@@ -4,6 +4,7 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'app.dart';
 import 'bootstrap.dart';
+import 'core/telemetry/error_reporter.dart';
 import 'features/auth/application/auth_controller.dart';
 
 Future<void> main() async {
@@ -12,6 +13,7 @@ Future<void> main() async {
   // and matches the SPA rewrite in vercel.json. No-op on mobile.
   usePathUrlStrategy();
   final config = await bootstrapServices();
+  ErrorReporter(config).install();
   runApp(
     ProviderScope(
       overrides: [appConfigProvider.overrideWithValue(config)],

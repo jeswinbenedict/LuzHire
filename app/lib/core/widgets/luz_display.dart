@@ -1,10 +1,32 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_button.dart';
+import 'luz_pressable.dart' show LuzMinTarget;
 import 'luz_surface.dart';
 import 'luz_zone.dart';
+
+/// Job-provider hosts whose images carry no CORS headers. Flutter web draws
+/// images on a canvas, which needs CORS, so these load through /api/img (a
+/// cached same-origin copy). Keep in sync with IMAGE_HOSTS in
+/// api/_lib/image-proxy.ts.
+const _proxiedImageHosts = {'remotive.com', 'www.remotive.com'};
+
+/// The URL to load [url] from on this platform.
+String networkImageUrl(String url) {
+  if (!kIsWeb) return url;
+  final uri = Uri.tryParse(url);
+  if (uri == null || !_proxiedImageHosts.contains(uri.host)) return url;
+  return Uri.base
+      .resolveUri(Uri(path: '/api/img', queryParameters: {'u': url}))
+      .toString();
+}
+
+/// Decodes at the displayed size instead of the source size (less memory).
+int _decodeSize(BuildContext context, double logical) =>
+    (logical * MediaQuery.devicePixelRatioOf(context)).ceil();
 
 /// Circular avatar set into an inset socket; falls back to initials.
 class LuzAvatar extends StatelessWidget {
@@ -40,8 +62,9 @@ class LuzAvatar extends StatelessWidget {
             dimension: size - 4,
             child: imageUrl != null
                 ? Image.network(
-                    imageUrl!,
+                    networkImageUrl(imageUrl!),
                     fit: BoxFit.cover,
+                    cacheWidth: _decodeSize(context, size - 4),
                     errorBuilder: (_, _, _) => _fallback(context, p),
                   )
                 : _fallback(context, p),
@@ -97,8 +120,9 @@ class LuzLogoSocket extends StatelessWidget {
               ? ClipRRect(
                   borderRadius: BorderRadius.circular(6),
                   child: Image.network(
-                    logoUrl!,
+                    networkImageUrl(logoUrl!),
                     fit: BoxFit.contain,
+                    cacheWidth: _decodeSize(context, size - 12),
                     errorBuilder: (_, _, _) => _letter(context, p, letter),
                   ),
                 )
@@ -247,15 +271,20 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
         Icon(icon, size: 20, color: p.muted),
         const SizedBox(width: LuzSpace.sm),
         Expanded(
-          child: TextField(
-            controller: c,
-            focusNode: focus,
-            onSubmitted: _submit,
-            textInputAction: TextInputAction.search,
-            style: t.body.copyWith(color: p.ink),
-            decoration: InputDecoration.collapsed(
-              hintText: hint,
-              hintStyle: t.body.copyWith(color: p.muted),
+          // 48 dp tall so the whole row is the touch / semantics target.
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(minHeight: LuzMinTarget.touch),
+            child: TextField(
+              controller: c,
+              focusNode: focus,
+              onSubmitted: _submit,
+              textInputAction: TextInputAction.search,
+              textAlignVertical: TextAlignVertical.center,
+              style: t.body.copyWith(color: p.ink),
+              decoration: InputDecoration.collapsed(
+                hintText: hint,
+                hintStyle: t.body.copyWith(color: p.muted),
+              ),
             ),
           ),
         ),
@@ -303,9 +332,9 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 44, child: keyword),
+                keyword,
                 Divider(height: 1, color: p.hairline),
-                SizedBox(height: 44, child: location),
+                location,
                 const SizedBox(height: LuzSpace.sm),
                 button,
               ],

@@ -333,28 +333,30 @@ class AccountArea extends ConsumerWidget {
           radius: LuzRadius.pill,
           tooltip: 'Account: ${user.displayName}',
           semanticLabel: 'Account menu for ${user.displayName}',
-          builder: (context, pressed, _) => LuzSurface(
-            depth: pressed ? LuzDepth.insetSm : LuzDepth.raisedXs,
-            radius: LuzRadius.pill,
-            padding: EdgeInsets.fromLTRB(4, 4, compact ? 4 : 12, 4),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                LuzAvatar(name: user.displayName, size: 32),
-                if (!compact) ...[
-                  const SizedBox(width: 8),
-                  ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 140),
-                    child: Text(
-                      user.displayName,
-                      overflow: TextOverflow.ellipsis,
-                      style: context.luzText.label,
+          builder: (context, pressed, _) => LuzMinTarget(
+            child: LuzSurface(
+              depth: pressed ? LuzDepth.insetSm : LuzDepth.raisedXs,
+              radius: LuzRadius.pill,
+              padding: EdgeInsets.fromLTRB(4, 4, compact ? 4 : 12, 4),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  LuzAvatar(name: user.displayName, size: 32),
+                  if (!compact) ...[
+                    const SizedBox(width: 8),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 140),
+                      child: Text(
+                        user.displayName,
+                        overflow: TextOverflow.ellipsis,
+                        style: context.luzText.label,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 4),
-                  Icon(Icons.expand_more, size: 18, color: context.luz.muted),
+                    const SizedBox(width: 4),
+                    Icon(Icons.expand_more, size: 18, color: context.luz.muted),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

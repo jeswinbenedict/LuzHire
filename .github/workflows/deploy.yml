@@ -67,7 +67,7 @@ jobs:
         run: |
           printf '%s' "${APP_ENV_JSON:-$(cat env/example.json)}" > env/production.json
           flutter pub get
-          flutter build web --wasm --release --no-web-resources-cdn --dart-define-from-file=env/production.json
+          flutter build web --wasm --release --no-web-resources-cdn --dart-define-from-file=env/production.json --dart-define=APP_RELEASE=${GITHUB_SHA::7}
 
       - name: Deploy prebuilt output
         id: deploy
@@ -100,6 +100,9 @@ jobs:
           check /favicon.svg
           check /robots.txt
           check /sitemap.xml
+          check '/api/health?deep=1'   # the API can reach the database
+          check /splash.js
+          check /firebase-messaging-sw.js
           # Unknown job pages still load the app but answer 404 (SEO).
           code=$(curl -s -o /dev/null -w '%{http_code}' "$URL/jobs/no-such-job-0000")
           echo "/jobs/no-such-job-0000 -> $code"

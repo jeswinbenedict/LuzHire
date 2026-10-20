@@ -757,6 +757,32 @@ class PlatformStats {
 }
 
 /// One row of public.ingest_runs (daily job imports).
+/// Mirrors public.app_errors (admin-only error log).
+@immutable
+class AppErrorEntry {
+  const AppErrorEntry({
+    required this.source,
+    required this.message,
+    required this.createdAt,
+    this.route,
+    this.release,
+  });
+
+  final String source;
+  final String message;
+  final DateTime createdAt;
+  final String? route;
+  final String? release;
+
+  factory AppErrorEntry.fromJson(Json j) => AppErrorEntry(
+    source: j['source'] as String,
+    message: j['message'] as String,
+    createdAt: DateTime.parse(j['created_at'] as String),
+    route: j['route'] as String?,
+    release: j['release'] as String?,
+  );
+}
+
 @immutable
 class IngestRun {
   const IngestRun({

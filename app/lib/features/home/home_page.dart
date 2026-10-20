@@ -86,9 +86,11 @@ class _Hero extends StatelessWidget {
               children: [
                 Icon(Icons.verified_outlined, size: 16, color: p.accent),
                 const SizedBox(width: LuzSpace.xs),
-                Text(
-                  'Verified employers only',
-                  style: t.caption.copyWith(color: p.ink),
+                Flexible(
+                  child: Text(
+                    'Verified employers only',
+                    style: t.caption.copyWith(color: p.ink),
+                  ),
                 ),
               ],
             ),
@@ -163,9 +165,13 @@ class _LatestJobs extends ConsumerWidget {
         children: [
           Text('JUST POSTED', style: t.eyebrow.copyWith(color: p.accent)),
           const SizedBox(height: LuzSpace.xs),
-          Row(
+          // Wraps under the heading when large text leaves no room.
+          Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            spacing: LuzSpace.md,
             children: [
-              Expanded(child: Text('Latest jobs', style: t.h3)),
+              Text('Latest jobs', style: t.h3),
               LuzTextLink(
                 label: 'See all jobs →',
                 onPressed: () => context.go('/jobs'),
@@ -296,7 +302,12 @@ class _DisciplineTile extends StatelessWidget {
             const SizedBox(height: LuzSpace.sm),
             Row(
               children: [
-                Text('Browse jobs', style: t.label.copyWith(color: p.ink)),
+                Flexible(
+                  child: Text(
+                    'Browse jobs',
+                    style: t.label.copyWith(color: p.ink),
+                  ),
+                ),
                 const SizedBox(width: LuzSpace.xxs),
                 Icon(Icons.arrow_forward, size: 16, color: p.ink),
               ],

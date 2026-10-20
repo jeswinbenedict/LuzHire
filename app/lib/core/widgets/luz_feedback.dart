@@ -90,37 +90,40 @@ class LuzEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.luz;
     final t = context.luzText;
+    // Scrolls when large text makes it taller than the space it is given.
     return Center(
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 420),
-        child: Padding(
-          padding: const EdgeInsets.all(LuzSpace.xl),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              LuzSurface(
-                depth: LuzDepth.insetMd,
-                radius: LuzRadius.pill,
-                child: SizedBox.square(
-                  dimension: 88,
-                  child: Icon(icon, size: 36, color: p.accent),
+      child: SingleChildScrollView(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Padding(
+            padding: const EdgeInsets.all(LuzSpace.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                LuzSurface(
+                  depth: LuzDepth.insetMd,
+                  radius: LuzRadius.pill,
+                  child: SizedBox.square(
+                    dimension: 88,
+                    child: Icon(icon, size: 36, color: p.accent),
+                  ),
                 ),
-              ),
-              const SizedBox(height: LuzSpace.lg),
-              Text(title, style: t.h4, textAlign: TextAlign.center),
-              if (message != null) ...[
-                const SizedBox(height: LuzSpace.xs),
-                Text(
-                  message!,
-                  style: t.body.copyWith(color: p.muted),
-                  textAlign: TextAlign.center,
-                ),
-              ],
-              if (actionLabel != null) ...[
                 const SizedBox(height: LuzSpace.lg),
-                LuzButton(label: actionLabel!, onPressed: onAction),
+                Text(title, style: t.h4, textAlign: TextAlign.center),
+                if (message != null) ...[
+                  const SizedBox(height: LuzSpace.xs),
+                  Text(
+                    message!,
+                    style: t.body.copyWith(color: p.muted),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+                if (actionLabel != null) ...[
+                  const SizedBox(height: LuzSpace.lg),
+                  LuzButton(label: actionLabel!, onPressed: onAction),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

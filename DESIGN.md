@@ -22,7 +22,7 @@ colors:
   muted: "#5A5F66"
   disabled: "#9A9EA6"          # disabled text only
   on-dark: "#FFFFFF"
-  outline: "#85817A"           # 1px outline on inputs and checkboxes (>= 3:1 vs base)
+  outline: "#7D7973"           # 1px outline on inputs and checkboxes (>= 3:1 vs base and sunken)
   hairline: "#DAD6CE"          # dividers inside a raised panel (decorative)
 
   # ---------- dark theme (graphite) ----------
@@ -39,7 +39,7 @@ colors:
   dark-hairline: "#2B2E34"
 
   # ---------- semantic ----------
-  success: "#15803D"
+  success: "#166534"
   dark-success: "#3DD68C"
   warning: "#854D0E"           # dark yellow, kept distinct from the brand orange
   dark-warning: "#FACC15"
