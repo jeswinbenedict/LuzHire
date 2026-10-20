@@ -228,6 +228,45 @@ class JobsRepository {
     });
   }
 
+  /// Jobs ranked for the signed-in user, each with [Job.matchReasons];
+  /// visitors get the newest jobs.
+  Future<List<Job>> recommended({int pageSize = 12}) => guardDb(() async {
+    final rows = await _db.rpc<List<dynamic>>(
+      'recommended_jobs',
+      params: {'page_size': pageSize},
+    );
+    return [for (final r in rows) _job((r as Map).cast())];
+  });
+
+  /// Jobs within [radiusKm] of a point, nearest first ([Job.distanceKm]).
+  Future<List<Job>> near({
+    required double latitude,
+    required double longitude,
+    double radiusKm = 50,
+    int pageSize = 30,
+  }) => guardDb(() async {
+    final rows = await _db.rpc<List<dynamic>>(
+      'jobs_near',
+      params: {
+        'lat': latitude,
+        'lng': longitude,
+        'radius_km': radiusKm,
+        'page_size': pageSize,
+      },
+    );
+    return [for (final r in rows) _job((r as Map).cast())];
+  });
+
+  /// Cities with open roles, most first.
+  Future<List<HiringLocation>> hiringLocations() => guardDb(() async {
+    final rows = await _db
+        .from('hiring_locations')
+        .select()
+        .order('open_jobs', ascending: false)
+        .limit(300);
+    return [for (final r in rows) HiringLocation.fromJson(r)];
+  });
+
   /// Jobs by id (e.g. saved jobs), newest first. Unpublished ones drop out
   /// through RLS.
   Future<List<Job>> byIds(Iterable<String> ids) => guardDb(() async {

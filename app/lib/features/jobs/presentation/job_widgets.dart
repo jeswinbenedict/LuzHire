@@ -146,6 +146,30 @@ class JobCard extends StatelessWidget {
                       compact: true,
                     ),
                   ],
+                  if (job.matchReasons.isNotEmpty ||
+                      job.distanceKm != null) ...[
+                    const SizedBox(height: LuzSpace.xs),
+                    Wrap(
+                      spacing: LuzSpace.xs,
+                      runSpacing: LuzSpace.xxs,
+                      children: [
+                        if (job.distanceKm != null)
+                          LuzStatusChip(
+                            label: job.distanceKm! < 1
+                                ? 'Under 1 km away'
+                                : '${job.distanceKm!.round()} km away',
+                            tone: LuzChipTone.blue,
+                            icon: Icons.near_me_outlined,
+                          ),
+                        for (final r in job.matchReasons.take(2))
+                          LuzStatusChip(
+                            label: r,
+                            tone: LuzChipTone.orange,
+                            icon: Icons.auto_awesome_outlined,
+                          ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),

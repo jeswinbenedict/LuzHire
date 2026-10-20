@@ -40,6 +40,8 @@ class Job {
     this.applicationCount = 0,
     this.publishedAt,
     this.hasDetails = true,
+    this.matchReasons = const [],
+    this.distanceKm,
   });
 
   final String id;
@@ -74,6 +76,12 @@ class Job {
   /// view loads the full job by slug.
   final bool hasDetails;
 
+  /// Why `recommended_jobs` picked this job ("Matches 3 of your skills").
+  final List<String> matchReasons;
+
+  /// From `jobs_near`: how far the job is from the chosen point.
+  final double? distanceKm;
+
   bool get hasSalary => salaryMin != null || salaryMax != null;
 
   factory Job.fromJson(Json j) => Job(
@@ -106,6 +114,8 @@ class Job {
     applicationCount: (j['application_count'] as num?)?.toInt() ?? 0,
     publishedAt: _date(j['published_at']),
     hasDetails: j.containsKey('description_md'),
+    matchReasons: _strings(j['match_reasons']),
+    distanceKm: _num(j['distance_km']),
   );
 
   @override
@@ -905,4 +915,42 @@ class NewsItem {
   bool operator ==(Object other) => other is NewsItem && other.id == id;
   @override
   int get hashCode => id.hashCode;
+}
+
+/// A city with open roles (public.hiring_locations), for the hiring map.
+@immutable
+class HiringLocation {
+  const HiringLocation({
+    required this.cityId,
+    required this.name,
+    required this.countryCode,
+    required this.latitude,
+    required this.longitude,
+    required this.openJobs,
+    this.state,
+    this.companies = 0,
+  });
+
+  final int cityId;
+  final String name;
+  final String? state;
+  final String countryCode;
+  final double latitude;
+  final double longitude;
+  final int openJobs;
+  final int companies;
+
+  /// "Pune, Maharashtra" or "Singapore, SG".
+  String get label => '$name, ${state ?? countryCode}';
+
+  factory HiringLocation.fromJson(Json j) => HiringLocation(
+    cityId: (j['city_id'] as num).toInt(),
+    name: j['name'] as String,
+    state: j['state'] as String?,
+    countryCode: j['country_code'] as String,
+    latitude: (j['latitude'] as num).toDouble(),
+    longitude: (j['longitude'] as num).toDouble(),
+    openJobs: (j['open_jobs'] as num?)?.toInt() ?? 0,
+    companies: (j['companies'] as num?)?.toInt() ?? 0,
+  );
 }

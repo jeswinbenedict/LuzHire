@@ -231,6 +231,20 @@ class _Header extends StatelessWidget {
                 style: t.bodySm.copyWith(color: p.inkMuted),
               ),
             ),
+            // Phones: icon only, so the row fits beside "Filters (n)".
+            if (showFilterButton)
+              LuzIconButton(
+                icon: Icons.map_outlined,
+                tooltip: 'Hiring map',
+                onPressed: () => context.go('/jobs/map'),
+              )
+            else
+              LuzButton(
+                label: 'Map',
+                icon: Icons.map_outlined,
+                onPressed: () => context.go('/jobs/map'),
+              ),
+            const SizedBox(width: LuzSpace.xs),
             if (showFilterButton)
               LuzButton(
                 label: n == 0 ? 'Filters' : 'Filters ($n)',

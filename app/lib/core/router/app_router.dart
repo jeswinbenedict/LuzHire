@@ -21,6 +21,7 @@ import '../../features/employer/presentation/pipeline_page.dart';
 import '../../features/employer/presentation/workspace_pages.dart';
 import '../../features/home/home_page.dart';
 import '../../features/jobs/data/jobs_repository.dart';
+import '../../features/jobs/presentation/hiring_map_page.dart';
 import '../../features/jobs/presentation/job_detail_page.dart';
 import '../../features/jobs/presentation/job_search_page.dart';
 import '../../features/jobs/presentation/saved_jobs_page.dart';
@@ -77,6 +78,8 @@ final _routes = <RouteBase>[
           query: JobSearchQuery.fromUrlParams(s.uri.queryParameters),
         ),
       ),
+      // Before /jobs/:slug, which would otherwise take "map" as a slug.
+      GoRoute(path: '/jobs/map', builder: (_, _) => const HiringMapPage()),
       GoRoute(
         path: '/jobs/:slug',
         builder: (_, s) => JobDetailPage(slug: s.pathParameters['slug']!),
