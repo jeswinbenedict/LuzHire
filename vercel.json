@@ -55,7 +55,7 @@
       ]
     },
     {
-      "source": "/(index.html|flutter_bootstrap.js|flutter_service_worker.js|main.dart.js|main.dart.wasm|main.dart.mjs|version.json|manifest.json|splash.js|firebase-messaging-sw.js)",
+      "source": "/(index.html|flutter_bootstrap.js|flutter_service_worker.js|main.dart.js|main.dart.wasm|main.dart.mjs|version.json|manifest.json|splash.js|firebase-sdk.js|firebase-messaging-sw.js)",
       "headers": [
         {
           "key": "Cache-Control",

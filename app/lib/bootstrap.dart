@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/app_config.dart';
+import 'core/config/firebase_sdk_loader.dart';
 
 /// Starts Firebase and Supabase when this build has their config. Without it
 /// the app still runs (public pages, design gallery) and sign-in shows a
@@ -10,6 +11,7 @@ import 'core/config/app_config.dart';
 Future<AppConfig> bootstrapServices() async {
   final config = AppConfig.fromEnvironment();
   if (config.isFirebaseConfigured) {
+    await waitForFirebaseSdk();
     await Firebase.initializeApp(options: config.firebaseOptions);
   }
   if (config.isSupabaseConfigured) {
