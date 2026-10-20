@@ -56,5 +56,5 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are live on main. Still to do: a live check with real accounts
 - [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are live on main. Still to do: a live end-to-end hire
 - [~] Phase 7: Admin console. Verification, moderation and reports, users (role, suspend), announcements, audit log and stats are live on main. Still to do: the first admin account
-- [~] Phase 8: Ingestion and SEO. Remotive/Adzuna imports (daily cron), SEO job pages, sitemap and robots are done (branch `phase-8-ingestion-seo`). Still to do: cloud migration, CRON_SECRET, career news sources
+- [~] Phase 8: Ingestion and SEO. Remotive/Adzuna imports (daily cron), SEO job pages, sitemap and robots are live on main (daily import running). Still to do: career news sources, optional Adzuna keys
 - [ ] Phases 9–11: see ROADMAP

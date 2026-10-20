@@ -129,6 +129,19 @@ void main() {
     test('place combines city and workplace', () {
       expect(formatPlace(Job.fromJson(jobRow())), 'Bengaluru, IN · Hybrid');
       expect(
+        formatPlace(
+          Job.fromJson(
+            jobRow(
+              overrides: {
+                'workplace': 'remote',
+                'location_text': 'Remote (Worldwide)',
+              },
+            ),
+          ),
+        ),
+        'Remote (Worldwide)',
+      );
+      expect(
         formatPlace(Job.fromJson(jobRow(overrides: {'workplace': 'onsite'}))),
         'Bengaluru, IN',
       );

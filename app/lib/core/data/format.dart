@@ -76,9 +76,15 @@ String formatRelative(DateTime when, {DateTime? now}) {
 
 /// "Bengaluru, IN · Hybrid".
 String formatPlace(Job job) {
+  final location = job.location ?? '';
+  // "Remote (Worldwide)" already says remote; don't repeat it.
+  final saysWorkplace = location.toLowerCase().contains(
+    job.workplace.label.toLowerCase(),
+  );
   final parts = [
-    if ((job.location ?? '').isNotEmpty) job.location!,
-    if (job.workplace != WorkplaceType.onsite || (job.location ?? '').isEmpty)
+    if (location.isNotEmpty) location,
+    if ((job.workplace != WorkplaceType.onsite || location.isEmpty) &&
+        !saysWorkplace)
       job.workplace.label,
   ];
   return parts.join(' · ');
