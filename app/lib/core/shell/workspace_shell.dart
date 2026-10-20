@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/notifications/presentation/notification_list.dart'
+    show NotificationBell;
 import '../layout/app_shortcuts.dart';
 import '../layout/breakpoints.dart';
 import '../theme/app_theme.dart';
@@ -383,16 +385,7 @@ class _TopBar extends StatelessWidget {
             ],
             const ThemeSwitchButton(),
             const SizedBox(width: LuzSpace.sm),
-            LuzIconButton(
-              icon: Icons.notifications_none,
-              tooltip: 'Notifications',
-              size: 40,
-              onPressed: () => showLuzToast(
-                context,
-                'Notifications arrive in Phase 9.',
-                icon: Icons.notifications_none,
-              ),
-            ),
+            const NotificationBell(),
             const SizedBox(width: LuzSpace.sm),
             const AccountArea(compact: true),
           ],

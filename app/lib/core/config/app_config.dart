@@ -21,6 +21,7 @@ class AppConfig {
     required this.firebaseAndroidAppId,
     required this.firebaseIosAppId,
     required this.firebaseIosBundleId,
+    this.firebaseVapidKey = '',
   });
 
   factory AppConfig.fromEnvironment() => const AppConfig(
@@ -39,6 +40,7 @@ class AppConfig {
     firebaseAndroidAppId: String.fromEnvironment('FIREBASE_ANDROID_APP_ID'),
     firebaseIosAppId: String.fromEnvironment('FIREBASE_IOS_APP_ID'),
     firebaseIosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
+    firebaseVapidKey: String.fromEnvironment('FIREBASE_VAPID_KEY'),
   );
 
   final String env;
@@ -56,6 +58,10 @@ class AppConfig {
   final String firebaseAndroidAppId;
   final String firebaseIosAppId;
   final String firebaseIosBundleId;
+
+  /// Optional public Web Push (VAPID) key from Firebase console → Cloud
+  /// Messaging. Empty = the Firebase SDK's built-in key.
+  final String firebaseVapidKey;
 
   static bool _real(String v) => v.isNotEmpty && !v.startsWith('replace-');
 

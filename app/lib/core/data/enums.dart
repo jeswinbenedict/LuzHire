@@ -1,5 +1,4 @@
-// Dart mirrors of the Postgres enums in
-// supabase/migrations/20261018120000_foundation.sql.
+// Dart mirrors of the Postgres enums in supabase/migrations/.
 // test/data_test.dart fails if the two ever drift apart.
 
 import 'package:flutter/material.dart' show IconData, Icons;
@@ -219,4 +218,82 @@ enum ReportStatus with DbEnum {
   final String dbValue;
   final String label;
   static ReportStatus fromDb(String? v) => _fromDb(values, v, open);
+}
+
+/// Preference groups for notifications (public.notification_category).
+enum NotificationCategory with DbEnum {
+  applications(
+    'applications',
+    'Applications',
+    'New applications, status changes and withdrawals',
+    Icons.description_outlined,
+  ),
+  interviews(
+    'interviews',
+    'Interviews',
+    'Interviews scheduled, moved or cancelled',
+    Icons.event_outlined,
+  ),
+  offers(
+    'offers',
+    'Offers',
+    'Offers and replies to offers',
+    Icons.handshake_outlined,
+  ),
+  team('team', 'Team', 'Invitations and new teammates', Icons.group_outlined),
+  account(
+    'account',
+    'Account and reviews',
+    'Company and job reviews, report outcomes and test messages',
+    Icons.verified_user_outlined,
+  );
+
+  const NotificationCategory(
+    this.dbValue,
+    this.label,
+    this.description,
+    this.icon,
+  );
+  @override
+  final String dbValue;
+  final String label;
+  final String description;
+  final IconData icon;
+  static NotificationCategory fromDb(String? v) => _fromDb(values, v, account);
+
+  /// The groups that can actually reach someone with [role].
+  static List<NotificationCategory> forRole(AppRole role) => switch (role) {
+    AppRole.candidate => const [applications, interviews, offers, account],
+    AppRole.employer => const [applications, offers, team, account],
+    AppRole.admin => values,
+  };
+}
+
+enum PushPlatform with DbEnum {
+  web('web'),
+  android('android'),
+  ios('ios');
+
+  const PushPlatform(this.dbValue);
+  @override
+  final String dbValue;
+}
+
+enum DeliveryChannel with DbEnum {
+  push('push'),
+  email('email');
+
+  const DeliveryChannel(this.dbValue);
+  @override
+  final String dbValue;
+}
+
+enum DeliveryStatus with DbEnum {
+  sent('sent'),
+  failed('failed'),
+  skipped('skipped');
+
+  const DeliveryStatus(this.dbValue);
+  @override
+  final String dbValue;
 }

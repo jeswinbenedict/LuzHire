@@ -2,8 +2,9 @@
 //   FIREBASE_SERVICE_ACCOUNT   Firebase service-account JSON (raw, or base64 of it)
 //   SUPABASE_URL               https://<ref>.supabase.co
 //   SUPABASE_SERVICE_ROLE_KEY  service role key (bypasses RLS — server only!)
-import { cert, getApps, initializeApp } from 'firebase-admin/app';
+import { cert, getApps, initializeApp, type App } from 'firebase-admin/app';
 import { getAuth, type Auth } from 'firebase-admin/auth';
+import { getMessaging, type Messaging } from 'firebase-admin/messaging';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { HttpError } from './http.js';
 
@@ -32,17 +33,25 @@ export function parseServiceAccount(value: string): Record<string, unknown> {
   );
 }
 
+function firebaseApp(): App {
+  return (
+    getApps()[0] ??
+    initializeApp({
+      credential: cert(parseServiceAccount(required('FIREBASE_SERVICE_ACCOUNT'))),
+    })
+  );
+}
+
 let auth: Auth | undefined;
 export function firebaseAuth(): Auth {
-  if (!auth) {
-    const app =
-      getApps()[0] ??
-      initializeApp({
-        credential: cert(parseServiceAccount(required('FIREBASE_SERVICE_ACCOUNT'))),
-      });
-    auth = getAuth(app);
-  }
+  auth ??= getAuth(firebaseApp());
   return auth;
+}
+
+let messaging: Messaging | undefined;
+export function firebaseMessaging(): Messaging {
+  messaging ??= getMessaging(firebaseApp());
+  return messaging;
 }
 
 let db: SupabaseClient | undefined;

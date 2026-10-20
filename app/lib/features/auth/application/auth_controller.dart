@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/config/app_config.dart';
 import '../../../core/data/enums.dart';
 import '../../../core/data/failures.dart';
+import '../../notifications/application/notification_providers.dart'
+    show forgetPushDevice;
 import '../data/account_api.dart';
 import '../data/auth_gateway.dart';
 import '../domain/auth_state.dart';
@@ -115,6 +117,7 @@ class AuthController extends Notifier<AuthState> {
   });
 
   Future<void> signOut() async {
+    await forgetPushDevice(ref);
     await _gateway.signOut();
     state = const SignedOut();
   }

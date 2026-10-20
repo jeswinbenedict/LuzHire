@@ -480,6 +480,27 @@ class AccountPage extends ConsumerWidget {
                   ],
                 ),
               ),
+              const SizedBox(height: LuzSpace.lg),
+              LuzCard(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Notifications', style: t.wsSection),
+                    const SizedBox(height: LuzSpace.xs),
+                    Text(
+                      'Push on this device, and which updates also arrive '
+                      'by push or email.',
+                      style: t.bodySm.copyWith(color: p.inkMuted),
+                    ),
+                    const SizedBox(height: LuzSpace.sm),
+                    LuzButton(
+                      label: 'Notification settings',
+                      icon: Icons.notifications_outlined,
+                      onPressed: () => context.go('/account/notifications'),
+                    ),
+                  ],
+                ),
+              ),
               if (auth.role != AppRole.admin) ...[
                 const SizedBox(height: LuzSpace.lg),
                 const _ClaimAdminCard(),

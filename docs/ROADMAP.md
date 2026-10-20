@@ -219,6 +219,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 **You provide:** API keys for chosen providers (entered as Vercel env vars), after checking their terms.
 
 ## Phase 9 — Notifications
+**Status: built on branch `phase-9-notifications`** (migration, dispatcher, settings screen, workspace bell, web service worker; 116 pgTAP assertions, 53 API tests, 166 Flutter tests). Still to do: apply the migration to the cloud, add the email/webhook settings (SETUP.md §6), verify push and email live.
 - In-app (already realtime) + preferences screen.
 - Push: FCM for web (service worker) and Android/iOS; DB webhook → `/api/notify/dispatch`.
 - Transactional email templates (application received, stage change, interview, offer).
@@ -251,5 +252,5 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 | Phase 2 | Supabase project | URL + anon key are public, so you can paste them. Keep the service-role key and DB password in secrets only |
 | Phase 3 | Firebase project (web, Android, iOS apps registered) | Web config is public. Service-account JSON goes into Vercel env vars only |
 | Phase 8 | Job/news provider API keys | Vercel env vars only |
-| Phase 9 | Email provider (e.g. Resend) | Vercel env vars only |
+| Phase 9 | Sending mailbox (e.g. a Gmail with an app password), `NOTIFY_SECRET`, Supabase webhook | Vercel env vars + Supabase dashboard (SETUP.md §6) |
 | Phase 11 | Domain (optional) | DNS settings in Vercel |

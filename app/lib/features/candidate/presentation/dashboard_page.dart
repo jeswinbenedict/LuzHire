@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/data/enums.dart';
-import '../../../core/data/format.dart';
 import '../../../core/data/models.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../jobs/application/job_board_providers.dart';
+import '../../notifications/application/notification_providers.dart'
+    show unreadNotificationCountProvider;
+import '../../notifications/presentation/notification_list.dart';
 import '../application/candidate_providers.dart';
 import 'applications_pages.dart' show ApplicationList;
 import 'candidate_widgets.dart';
@@ -252,113 +254,41 @@ class _StatTile extends StatelessWidget {
   }
 }
 
-/// Live notification list with mark-read (FR-11). Tapping one opens the
-/// related application.
+/// Live notification list with mark-read (FR-11). Tapping one opens its
+/// screen (the related application, interviews, ...).
 class NotificationsCard extends ConsumerWidget {
   const NotificationsCard({super.key, this.limit});
   final int? limit;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final p = context.luz;
-    final t = context.luzText;
-    final value = ref.watch(myNotificationsProvider);
-    final unread = (value.value ?? const []).where((n) => n.isUnread).length;
-    final actions = ref.read(candidateActionsProvider);
+    final unread = ref.watch(unreadNotificationCountProvider);
     return SectionCard(
       title: unread == 0 ? 'Notifications' : 'Notifications ($unread new)',
       icon: Icons.notifications_none,
-      action: unread == 0
-          ? null
-          : LuzTextLink(
-              label: 'Mark all read',
-              onPressed: () =>
-                  runWithToast(context, actions.markAllNotificationsRead),
+      action: const MarkAllReadLink(),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          NotificationList(
+            limit: limit,
+            footer: Align(
+              alignment: Alignment.centerLeft,
+              child: LuzTextLink(
+                label: 'See all notifications',
+                onPressed: () => context.go('/me/notifications'),
+              ),
             ),
-      child: AsyncBlock<List<AppNotification>>(
-        value: value,
-        onRetry: () => ref.invalidate(myNotificationsProvider),
-        data: (all) {
-          final list = limit == null ? all : all.take(limit!).toList();
-          if (list.isEmpty) {
-            return Text(
-              'You are all caught up.',
-              style: t.body.copyWith(color: p.inkMuted),
-            );
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              for (final n in list)
-                Semantics(
-                  label: n.isUnread ? 'Unread' : null,
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(LuzRadius.sm),
-                    onTap: () {
-                      if (n.isUnread) actions.markNotificationRead(n.id);
-                      final appId = n.data['application_id'];
-                      if (appId is String) {
-                        context.go('/me/applications/$appId');
-                      }
-                    },
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                        vertical: LuzSpace.xs,
-                      ),
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(top: 6),
-                            child: Container(
-                              width: 8,
-                              height: 8,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: n.isUnread
-                                    ? p.accent
-                                    : Colors.transparent,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: LuzSpace.sm),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  n.title,
-                                  style: t.label.copyWith(
-                                    fontWeight: n.isUnread
-                                        ? FontWeight.w700
-                                        : FontWeight.w500,
-                                  ),
-                                ),
-                                if ((n.body ?? '').isNotEmpty)
-                                  Text(n.body!, style: t.bodySm),
-                                Text(
-                                  formatRelative(n.createdAt),
-                                  style: t.caption.copyWith(color: p.muted),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              if (limit != null && all.length > limit!)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: LuzTextLink(
-                    label: 'See all notifications',
-                    onPressed: () => context.go('/me/notifications'),
-                  ),
-                ),
-            ],
-          );
-        },
+          ),
+          const SizedBox(height: LuzSpace.sm),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: LuzTextLink(
+              label: 'Notification settings',
+              onPressed: () => context.go(notificationSettingsPath),
+            ),
+          ),
+        ],
       ),
     );
   }

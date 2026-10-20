@@ -342,6 +342,43 @@ class FakeNotificationsRepository implements NotificationsRepository {
 
   @override
   Future<void> delete(String id) async {}
+
+  // ---- preferences and push (Phase 9)
+  final prefs = <NotificationCategory, ChannelPrefs>{};
+  final tokens = <String, PushPlatform>{};
+  int tests = 0;
+  bool failWrites = false;
+
+  @override
+  Future<Map<NotificationCategory, ChannelPrefs>> preferences(
+    String userId,
+  ) async => {
+    for (final c in NotificationCategory.values)
+      c: prefs[c] ?? const ChannelPrefs(),
+  };
+
+  @override
+  Future<void> setPreference(
+    String userId,
+    NotificationCategory category,
+    ChannelPrefs value,
+  ) async {
+    if (failWrites) throw const AppFailure('Could not save.');
+    prefs[category] = value;
+  }
+
+  @override
+  Future<bool> hasPushToken(String token) async => tokens.containsKey(token);
+
+  @override
+  Future<void> registerPushToken(String token, PushPlatform platform) async =>
+      tokens[token] = platform;
+
+  @override
+  Future<void> removePushToken(String token) async => tokens.remove(token);
+
+  @override
+  Future<void> sendTest() async => tests++;
 }
 
 class CandidateFakes {

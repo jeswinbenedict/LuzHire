@@ -60,6 +60,10 @@ In the Vercel project → **Settings → Environment Variables** (Production + P
 | 🔴 `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` | optional: free keys from developer.adzuna.com to import Indian jobs. Without them only Remotive is imported |
 | 🟢 `ADMIN_EMAILS` | optional: comma-separated emails allowed to claim admin once (Account → Claim admin access). Remove them after use; later admins are promoted in the console |
 | 🟢 `ALLOWED_ORIGINS` | optional, e.g. a staging domain; localhost is allowed automatically outside production |
+| 🔴 `NOTIFY_SECRET` | random string (32+ characters) that authorises the Supabase webhook calling `/api/notify/dispatch` (§6). Production only |
+| 🟢 `SMTP_USER` | the mailbox that sends notification emails, e.g. a Gmail address made for LuzHire |
+| 🔴 `SMTP_PASSWORD` | that mailbox's **app password** (Google Account → Security → 2-Step Verification → App passwords), not its normal password |
+| 🟢 `SMTP_HOST`, `SMTP_PORT`, `EMAIL_FROM` | optional; default `smtp.gmail.com`, `465`, `LuzHire <SMTP_USER>`. Any SMTP provider works (Brevo, Resend, …) |
 
 Set each secret for **Production and Preview** (not Development). Check that it appears in the list after saving, then delete the downloaded JSON file.
 
@@ -89,15 +93,26 @@ In GitHub → repo → **Settings → Secrets and variables → Actions**:
   "FIREBASE_WEB_APP_ID": "1:…:web:…",
   "FIREBASE_ANDROID_APP_ID": "",
   "FIREBASE_IOS_APP_ID": "",
-  "FIREBASE_IOS_BUNDLE_ID": "dev.luzhire.luzhire"
+  "FIREBASE_IOS_BUNDLE_ID": "dev.luzhire.luzhire",
+  "FIREBASE_VAPID_KEY": ""
 }
 ```
+`FIREBASE_VAPID_KEY` is optional (public): Firebase console → Project settings → Cloud Messaging → Web Push certificates. Left empty, web push uses the Firebase SDK's built-in key.
 If anything is missing, the Deploy job shows a **"Deploy skipped"** warning instead of silently passing. After every deploy, it smoke-tests `/`, `/api/health`, `/jobs` and `/favicon.svg` on the live URL.
 For local development the same file lives at `app/env/local.json` (git-ignored).
 
 ## 5. First admin account
 
 Sign-up never grants admin. After your own account exists (sign up normally as a job seeker), make it an admin **once** from the Firebase Admin SDK. I'll give you a one-off script, or run it with you, when we reach Phase 7. After that, admins promote others from the admin console (`/api/admin/users/:id/role`, which is audited).
+
+## 6. Notifications (push and email)
+
+In-app notifications need nothing. Push and email are sent by `/api/notify/dispatch`, which a Supabase **database webhook** calls whenever a notification is created:
+1. Vercel: add `NOTIFY_SECRET`, `SMTP_USER` and `SMTP_PASSWORD` (§3), then redeploy.
+2. Supabase → **Database → Webhooks → Create a new hook**: name `notify_dispatch`, table `public.notifications`, event **Insert**, type **HTTP Request**, method **POST**, URL `https://luzhire.vercel.app/api/notify/dispatch`, timeout `10000` ms, HTTP header `Authorization` = `Bearer <NOTIFY_SECRET>`.
+3. In LuzHire: Account → **Notification settings** → *Turn on push notifications*, then *Send a test notification*. The push and the email should arrive within seconds.
+
+Each notification is delivered once (the database claims it), only from the last hour, only to verified email addresses, and only for the groups the user left on. Admins can read what was sent in `notification_deliveries`. Android push additionally needs the Android app registered in Firebase (`FIREBASE_ANDROID_APP_ID`); iOS needs an Apple Push key (paid Apple developer account).
 
 ---
 

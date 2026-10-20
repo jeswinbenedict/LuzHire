@@ -6,9 +6,13 @@ import '../../../core/data/failures.dart';
 import '../../../core/data/models.dart';
 import '../../jobs/application/job_board_providers.dart';
 import '../../jobs/data/jobs_repository.dart';
+import '../../notifications/application/notification_providers.dart';
 import '../../notifications/data/notifications_repository.dart';
 import '../data/applications_repository.dart';
 import '../data/profile_repository.dart';
+
+export '../../notifications/application/notification_providers.dart'
+    show myNotificationsProvider;
 
 String _uid(Ref ref) {
   final uid = ref.watch(currentUidProvider);
@@ -91,13 +95,6 @@ final myOffersProvider = FutureProvider.autoDispose<List<Offer>>((ref) {
   ref.watch(myNotificationsProvider);
   return ref.watch(applicationsRepositoryProvider).offers();
 });
-
-// ---------------------------------------------------------------- notifications
-
-final myNotificationsProvider =
-    StreamProvider.autoDispose<List<AppNotification>>(
-      (ref) => ref.watch(notificationsRepositoryProvider).watch(_uid(ref)),
-    );
 
 // ---------------------------------------------------------------- actions
 

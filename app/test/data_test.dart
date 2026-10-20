@@ -8,12 +8,14 @@ import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/features/jobs/data/jobs_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// Reads `create type public.<name> as enum (...)` values from the migration.
+/// Reads `create type public.<name> as enum (...)` values from the migrations.
 Map<String, List<String>> sqlEnums() {
-  final sql = File('../supabase/migrations/20261018120000_foundation.sql')
-      .readAsStringSync();
+  final sql = [
+    for (final f in Directory('../supabase/migrations').listSync())
+      if (f is File && f.path.endsWith('.sql')) f.readAsStringSync(),
+  ].join(' ');
   final re = RegExp(
-    r"create type public\.(\w+)\s+as enum \(([^)]*)\)",
+    r"create type public\.(\w+)\s+as enum\s*\(([^)]*)\)",
     multiLine: true,
   );
   return {
@@ -72,6 +74,10 @@ void main() {
     same('account_status', AccountStatus.values);
     same('announcement_audience', AnnouncementAudience.values);
     same('report_status', ReportStatus.values);
+    same('notification_category', NotificationCategory.values);
+    same('push_platform', PushPlatform.values);
+    same('delivery_channel', DeliveryChannel.values);
+    same('delivery_status', DeliveryStatus.values);
   });
 
   group('Job', () {

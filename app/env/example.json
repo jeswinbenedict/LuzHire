@@ -11,5 +11,6 @@
   "FIREBASE_WEB_APP_ID": "replace-with-firebase-web-app-id",
   "FIREBASE_ANDROID_APP_ID": "",
   "FIREBASE_IOS_APP_ID": "",
-  "FIREBASE_IOS_BUNDLE_ID": "dev.luzhire.luzhire"
+  "FIREBASE_IOS_BUNDLE_ID": "dev.luzhire.luzhire",
+  "FIREBASE_VAPID_KEY": ""
 }

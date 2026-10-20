@@ -24,6 +24,7 @@ import '../../features/jobs/data/jobs_repository.dart';
 import '../../features/jobs/presentation/job_detail_page.dart';
 import '../../features/jobs/presentation/job_search_page.dart';
 import '../../features/jobs/presentation/saved_jobs_page.dart';
+import '../../features/notifications/presentation/notification_settings_page.dart';
 import '../data/enums.dart';
 import '../shell/destinations.dart';
 import '../shell/shell_common.dart';
@@ -110,6 +111,10 @@ final _routes = <RouteBase>[
       GoRoute(path: loadingPath, builder: (_, _) => const AuthLoadingPage()),
       GoRoute(path: noAccessPath, builder: (_, _) => const NoAccessPage()),
       GoRoute(path: '/account', builder: (_, _) => const AccountPage()),
+      GoRoute(
+        path: '/account/notifications',
+        builder: (_, _) => const NotificationSettingsPage(),
+      ),
       GoRoute(path: '/dev/gallery', builder: (_, _) => const GalleryPage()),
       ShellRoute(
         builder: (context, state, child) =>
