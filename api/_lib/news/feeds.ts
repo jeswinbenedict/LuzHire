@@ -14,8 +14,9 @@ export interface NewsFeed {
 export const FEEDS: NewsFeed[] = [
   // Remote work and careers, from the job board LuzHire already imports.
   { id: 'remotive', label: 'Remotive', url: 'https://remotive.com/blog/feed', base: 0.5 },
-  // Community posts tagged #career.
-  { id: 'devto', label: 'DEV Community', url: 'https://dev.to/feed/tag/career', base: 0.5 },
+  // Community posts tagged #career: anyone can tag, so a post still needs a
+  // career keyword.
+  { id: 'devto', label: 'DEV Community', url: 'https://dev.to/feed/tag/career', base: 0.35 },
   // Mostly tutorials: only career and learning-path posts get through.
   { id: 'freecodecamp', label: 'freeCodeCamp', url: 'https://www.freecodecamp.org/news/rss/', base: 0.1 },
 ];
@@ -128,11 +129,32 @@ const has = (text: string, word: string) => {
   return new RegExp(`(^|[^a-z])${w}${stem ? '' : '(?![a-z])'}`, 'i').test(text);
 };
 
-/** 0–1: how much an item is about careers and work. */
+/**
+ * 0–1: how much an item is about careers and work. Only the title and text
+ * count: a feed's own tags (DEV's "career") would match every post.
+ */
 export function relevanceOf(item: FeedItem, feed: NewsFeed): number {
-  const text = `${plainText(item.title, 300)} ${plainText(item.description, 2000)} ${item.categories.join(' ')}`;
+  const text = `${plainText(item.title, 300)} ${plainText(item.description, 2000)}`;
   const hits = CAREER_WORDS.filter((w) => has(text, w)).length;
   return Math.min(1, Math.round((feed.base + hits * 0.15) * 100) / 100);
+}
+
+const ENGLISH_WORDS = new Set([
+  'the', 'and', 'to', 'of', 'a', 'in', 'for', 'is', 'you', 'your', 'how',
+  'with', 'what', 'why', 'it', 'on', 'are', 'this', 'that', 'be', 'or',
+]);
+
+/**
+ * LuzHire is in English: Latin letters, and common English words in the
+ * title and opening text (Indonesian or Spanish also use Latin letters).
+ */
+export function isEnglish(title: string, text = ''): boolean {
+  const letters = [...title].filter((c) => /\p{L}/u.test(c));
+  if (letters.length === 0) return false;
+  const latin = letters.filter((c) => /[a-z]/i.test(c)).length;
+  if (latin / letters.length < 0.9) return false;
+  const words = `${title} ${text.slice(0, 300)}`.toLowerCase().match(/[a-z']+/g) ?? [];
+  return words.filter((w) => ENGLISH_WORDS.has(w)).length >= 2;
 }
 
 /** LuzHire's news categories for an item (always at least one). */
@@ -151,6 +173,7 @@ export function toNews(items: FeedItem[], feed: NewsFeed, now: Date): NewsItem[]
     if (published < oldest || published > now.getTime() + 86_400_000) continue;
     const relevance = relevanceOf(item, feed);
     if (relevance < MIN_RELEVANCE) continue;
+    if (!isEnglish(plainText(item.title, 300), plainText(item.description, 600))) continue;
     const excerpt = plainText(htmlToMarkdown(item.description, 4000).replace(/\*\*|^#+ |^- /gm, ''), 280);
     out.push({
       source: feed.id,
