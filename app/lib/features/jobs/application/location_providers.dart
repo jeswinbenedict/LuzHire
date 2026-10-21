@@ -57,13 +57,12 @@ final locationServiceProvider = Provider<LocationService>(
   (ref) => DeviceLocationService(),
 );
 
-/// Map tiles (CARTO basemaps on OpenStreetMap data), light or dark to match
-/// the theme. Tests override this with null to draw no tiles.
+/// OpenStreetMap's standard tiles (free with attribution, CORS enabled);
+/// the map darkens them in the dark theme. CARTO's basemaps now need an API
+/// key. Tests override this with null to draw no tiles.
 final mapTileUrlProvider = Provider<String? Function(bool dark)>(
   (ref) =>
-      (dark) =>
-          'https://{s}.basemaps.cartocdn.com/'
-          '${dark ? 'dark_all' : 'light_all'}/{z}/{x}/{y}{r}.png',
+      (dark) => 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
 );
 
 /// Cities with open roles, most first.
