@@ -1,7 +1,7 @@
 -- Geocoding, the hiring map, jobs near a point and recommendations.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(11);
+select plan(13);
 
 select is((select name from public.cities where id = app.city_in('Hybrid - Bangalore, IN')), 'Bengaluru',
   'aliases find a city in free text');
@@ -32,6 +32,13 @@ update public.jobs set location_text = 'Remote' where id = '70000000-0000-4000-b
 select is((select city_id from public.jobs where id = '70000000-0000-4000-b000-000000000003'), null,
   'changing the location re-geocodes the job');
 update public.jobs set location_text = 'Pune' where id = '70000000-0000-4000-b000-000000000003';
+insert into public.jobs (id, company_id, company_name, title, employment_type, workplace, status, location_text) values
+  ('70000000-0000-4000-b000-000000000004', '70000000-0000-4000-a000-000000000001', '', 'Qzx Remote role', 'full_time', 'remote', 'published', 'Remote (Europe, USA, Singapore)');
+select is((select city_id from public.jobs where id = '70000000-0000-4000-b000-000000000004'), null,
+  'remote jobs stay off the map even when their text names a city');
+update public.jobs set workplace = 'hybrid', location_text = 'Hybrid - Pune' where id = '70000000-0000-4000-b000-000000000004';
+select ok((select city_id is not null from public.jobs where id = '70000000-0000-4000-b000-000000000004'),
+  'a job that becomes hybrid gets its city');
 
 select set_config('request.jwt.claims', '', true);
 set local role anon;
