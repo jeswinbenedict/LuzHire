@@ -116,6 +116,38 @@ Each notification is delivered once (the database claims it), only from the last
 
 ---
 
+## 7. Continue on another computer
+
+Everything is on GitHub; the cloud services (Supabase, Firebase, Vercel) need no setup again. Only the git-ignored `app/env/local.json` has to be recreated.
+
+1. Install Git, [Flutter](https://docs.flutter.dev/get-started/install) (stable, 3.47 or newer), [Node.js 24](https://nodejs.org/) and the [GitHub CLI](https://cli.github.com/). Docker is only needed for `npx supabase start`; `npm run db:check` works without it.
+2. Clone and install:
+   ```bash
+   git clone https://github.com/jeswinbenedict/LuzHire.git
+   cd LuzHire
+   npm ci
+   cd app && flutter pub get && cd ..
+   ```
+3. Credit commits to the right account:
+   ```bash
+   git config user.name "A . Jeswin Karunya Benedict"
+   git config user.email "251479040+jeswinbenedict@users.noreply.github.com"
+   ```
+4. Recreate the app config from the GitHub variable (public values only), then change `"APP_ENV"` in it from `"production"` to `"local"`:
+   ```bash
+   gh auth login
+   gh variable get APP_ENV_JSON > app/env/local.json
+   ```
+5. Check that everything works:
+   ```bash
+   npm test
+   npm run db:check
+   cd app && flutter analyze && flutter test
+   flutter run -d chrome --dart-define-from-file=env/local.json
+   ```
+
+Secrets (service-role key, `CRON_SECRET`, Firebase service account, mail password) stay in Vercel and GitHub; they are not needed on the laptop. New database migrations are applied in the Supabase dashboard (SQL editor), as in section 2.
+
 ### Checklist: what to send me
 - [ ] 🟢 Firebase web config (6 values from step 1.4)
 - [ ] 🟢 Supabase Project URL + publishable/anon key
