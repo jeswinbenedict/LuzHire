@@ -223,8 +223,11 @@ class _HiringMap extends ConsumerWidget {
         child: FlutterMap(
           mapController: controller,
           options: MapOptions(
-            initialCenter: const LatLng(21.5, 79),
-            initialZoom: 4,
+            // One city: centred on it; none: India; more: fitted below.
+            initialCenter: points.length == 1
+                ? points.single
+                : const LatLng(21.5, 79),
+            initialZoom: points.length == 1 ? 6 : 4,
             minZoom: 2,
             maxZoom: 14,
             initialCameraFit: points.length > 1
