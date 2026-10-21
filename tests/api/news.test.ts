@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   FEEDS,
+  isEnglish,
   parseFeed,
   relevanceOf,
   runNewsIngest,
@@ -97,6 +98,15 @@ describe('relevance and topics', () => {
   });
 });
 
+describe('isEnglish', () => {
+  it('keeps English titles and drops other scripts', () => {
+    expect(isEnglish('Should a Resume Be One Page or Two?')).toBe(true);
+    expect(isEnglish('Anthropic ยกหุ้น 5% ให้สาธารณะ แล้ว AI กำลังลดการจ้าง')).toBe(false);
+    expect(isEnglish('2026')).toBe(false);
+    expect(isEnglish('Apakah AI Mampu Menggantikan Developer', 'Banyak orang bertanya apakah AI akan')).toBe(false);
+  });
+});
+
 describe('toNews', () => {
   it('keeps relevant, recent items with a plain-text excerpt', () => {
     const news = toNews(parseFeed(RSS), fcc, NOW);
@@ -152,10 +162,10 @@ describe('runNewsIngest', () => {
     await runNewsIngest(d);
     expect(logs.map((l) => [l.source, l.fetched, l.inserted, l.error])).toEqual([
       ['news:remotive', 0, 0, 'remotive.com answered 503'],
-      ['news:devto', 2, 2, null],
+      ['news:devto', 2, 1, null], // the tutorial has no career keyword
       ['news:freecodecamp', 2, 1, null],
     ]);
-    expect(inserted.map((n) => n.source)).toEqual(['devto', 'devto', 'freecodecamp']);
+    expect(inserted.map((n) => n.source)).toEqual(['devto', 'freecodecamp']);
     expect(pruned()).toBe(1);
   });
 });
