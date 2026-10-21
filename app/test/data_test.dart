@@ -78,6 +78,9 @@ void main() {
     same('push_platform', PushPlatform.values);
     same('delivery_channel', DeliveryChannel.values);
     same('delivery_status', DeliveryStatus.values);
+    same('event_kind', EventKind.values);
+    same('event_mode', EventMode.values);
+    same('event_status', EventStatus.values);
   });
 
   group('Job', () {

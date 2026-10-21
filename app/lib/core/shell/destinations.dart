@@ -21,6 +21,13 @@ const spotlightDestinations = [
     group: 'LuzHire',
   ),
   LuzDestination(
+    label: 'Events',
+    path: '/events',
+    icon: Icons.event_outlined,
+    selectedIcon: Icons.event,
+    group: 'LuzHire',
+  ),
+  LuzDestination(
     label: 'Companies',
     path: '/companies',
     icon: Icons.apartment_outlined,
@@ -115,6 +122,13 @@ const employerDestinations = [
     group: 'Employer',
   ),
   LuzDestination(
+    label: 'Events',
+    path: '/employer/events',
+    icon: Icons.event_outlined,
+    selectedIcon: Icons.event,
+    group: 'Employer',
+  ),
+  LuzDestination(
     label: 'Company & team',
     path: '/employer/company',
     icon: Icons.apartment_outlined,
@@ -158,6 +172,13 @@ const adminDestinations = [
     path: '/admin/announcements',
     icon: Icons.campaign_outlined,
     selectedIcon: Icons.campaign,
+    group: 'Admin',
+  ),
+  LuzDestination(
+    label: 'Events',
+    path: '/admin/events',
+    icon: Icons.event_outlined,
+    selectedIcon: Icons.event,
     group: 'Admin',
   ),
   LuzDestination(

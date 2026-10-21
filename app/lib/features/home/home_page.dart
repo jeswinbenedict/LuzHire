@@ -16,6 +16,7 @@ import '../auth/domain/auth_state.dart';
 import '../../core/data/enums.dart';
 import '../companies/data/companies_repository.dart';
 import '../news/presentation/news_pages.dart' show HomeNewsSection;
+import '../events/presentation/events_pages.dart' show HomeEventsSection;
 import '../companies/presentation/companies_pages.dart' show openRolesLabel;
 import '../../core/data/failures.dart';
 import '../../core/data/models.dart';
@@ -59,6 +60,7 @@ class HomePage extends StatelessWidget {
           _LatestJobs(),
           _MapInvite(),
           _HiringCompanies(),
+          HomeEventsSection(),
           HomeNewsSection(),
           _Disciplines(),
           _EmployerBand(),

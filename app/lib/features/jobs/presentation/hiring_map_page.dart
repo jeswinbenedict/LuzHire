@@ -12,6 +12,9 @@ import '../../../core/layout/content.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
+import '../../events/application/events_providers.dart';
+import '../../events/data/events_repository.dart';
+import '../../events/presentation/events_pages.dart' show EventCard;
 import '../application/location_providers.dart';
 import 'job_search_page.dart' show JobBoardError;
 import 'job_widgets.dart';
@@ -333,7 +336,9 @@ class _Bubble extends StatelessWidget {
       button: true,
       selected: selected,
       excludeSemantics: true,
-      label: '${city.name}: ${city.openJobs} open roles',
+      label:
+          '${city.name}: ${city.openJobs} open roles'
+          '${city.events > 0 ? ', ${city.events} upcoming events' : ''}',
       child: GestureDetector(
         onTap: onTap,
         child: MouseRegion(
@@ -356,7 +361,7 @@ class _Bubble extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(4),
                   child: Text(
-                    '${city.openJobs}',
+                    '${city.openJobs + city.events}',
                     style: t.label.copyWith(
                       color: selected ? p.base : p.ink,
                       fontWeight: FontWeight.w700,
@@ -419,6 +424,21 @@ class _Panel extends ConsumerWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
+          if (city != null && city!.events > 0) ...[
+            Semantics(
+              header: true,
+              child: Text('Events in ${city!.name}', style: t.h4),
+            ),
+            const SizedBox(height: LuzSpace.sm),
+            for (final e
+                in ref
+                    .watch(eventListProvider(EventQuery(cityId: city!.cityId)))
+                    .items) ...[
+              EventCard(event: e),
+              const SizedBox(height: LuzSpace.sm),
+            ],
+            const SizedBox(height: LuzSpace.md),
+          ],
           Semantics(header: true, child: Text(title, style: t.h4)),
           const SizedBox(height: LuzSpace.sm),
           jobs.when(
@@ -488,7 +508,12 @@ class _Panel extends ConsumerWidget {
                   const SizedBox(width: LuzSpace.sm),
                   Expanded(child: Text(c.label, style: t.label)),
                   Text(
-                    '${c.openJobs} ${c.openJobs == 1 ? 'role' : 'roles'}',
+                    [
+                      if (c.openJobs > 0)
+                        '${c.openJobs} ${c.openJobs == 1 ? 'role' : 'roles'}',
+                      if (c.events > 0)
+                        '${c.events} ${c.events == 1 ? 'event' : 'events'}',
+                    ].join(' · '),
                     style: t.bodySm.copyWith(color: p.inkMuted),
                   ),
                 ],

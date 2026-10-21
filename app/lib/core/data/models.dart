@@ -929,6 +929,7 @@ class HiringLocation {
     required this.openJobs,
     this.state,
     this.companies = 0,
+    this.events = 0,
   });
 
   final int cityId;
@@ -939,6 +940,9 @@ class HiringLocation {
   final double longitude;
   final int openJobs;
   final int companies;
+
+  /// Upcoming in-person or hybrid events in the city.
+  final int events;
 
   /// "Pune, Maharashtra" or "Singapore, SG".
   String get label => '$name, ${state ?? countryCode}';
@@ -952,5 +956,125 @@ class HiringLocation {
     longitude: (j['longitude'] as num).toDouble(),
     openJobs: (j['open_jobs'] as num?)?.toInt() ?? 0,
     companies: (j['companies'] as num?)?.toInt() ?? 0,
+    events: (j['events'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// A hiring drive, hackathon, competition or webinar (public.events).
+@immutable
+class Opportunity {
+  const Opportunity({
+    required this.id,
+    required this.slug,
+    required this.kind,
+    required this.status,
+    required this.title,
+    required this.organizerName,
+    required this.mode,
+    required this.startsAt,
+    this.summary,
+    this.descriptionMd = '',
+    this.companyId,
+    this.venue,
+    this.location,
+    this.endsAt,
+    this.registrationDeadline,
+    this.registrationUrl,
+    this.eligibility,
+    this.prize,
+    this.teamMin = 1,
+    this.teamMax = 1,
+    this.capacity,
+    this.registrationCount = 0,
+  });
+
+  final String id;
+  final String slug;
+  final EventKind kind;
+  final EventStatus status;
+  final String title;
+  final String organizerName;
+  final EventMode mode;
+  final DateTime startsAt;
+  final String? summary;
+  final String descriptionMd;
+  final String? companyId;
+  final String? venue;
+  final String? location;
+  final DateTime? endsAt;
+  final DateTime? registrationDeadline;
+
+  /// Set when registration happens on the organiser's site.
+  final String? registrationUrl;
+  final String? eligibility;
+  final String? prize;
+  final int teamMin;
+  final int teamMax;
+  final int? capacity;
+  final int registrationCount;
+
+  bool get isTeamEvent => teamMax > 1;
+  bool get registersInApp => registrationUrl == null;
+  DateTime get closesAt => registrationDeadline ?? startsAt;
+  bool isOpenAt(DateTime now) =>
+      status == EventStatus.published && closesAt.isAfter(now) && !isFull;
+  bool get isFull => capacity != null && registrationCount >= capacity!;
+
+  factory Opportunity.fromJson(Json j) => Opportunity(
+    id: j['id'] as String,
+    slug: j['slug'] as String,
+    kind: EventKind.fromDb(j['kind'] as String?),
+    status: EventStatus.fromDb(j['status'] as String?),
+    title: j['title'] as String,
+    organizerName: j['organizer_name'] as String,
+    mode: EventMode.fromDb(j['mode'] as String?),
+    startsAt: DateTime.parse(j['starts_at'] as String),
+    summary: j['summary'] as String?,
+    descriptionMd: (j['description_md'] as String?) ?? '',
+    companyId: j['company_id'] as String?,
+    venue: j['venue'] as String?,
+    location: j['location_text'] as String?,
+    endsAt: _date(j['ends_at']),
+    registrationDeadline: _date(j['registration_deadline']),
+    registrationUrl: j['registration_url'] as String?,
+    eligibility: j['eligibility'] as String?,
+    prize: j['prize'] as String?,
+    teamMin: (j['team_min'] as num?)?.toInt() ?? 1,
+    teamMax: (j['team_max'] as num?)?.toInt() ?? 1,
+    capacity: (j['capacity'] as num?)?.toInt(),
+    registrationCount: (j['registration_count'] as num?)?.toInt() ?? 0,
+  );
+
+  @override
+  bool operator ==(Object other) => other is Opportunity && other.id == id;
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Someone registered for an event (public.event_registrants).
+@immutable
+class EventRegistrant {
+  const EventRegistrant({
+    required this.userId,
+    required this.name,
+    required this.email,
+    required this.registeredAt,
+    this.headline,
+    this.teamName,
+  });
+  final String userId;
+  final String name;
+  final String email;
+  final DateTime registeredAt;
+  final String? headline;
+  final String? teamName;
+
+  factory EventRegistrant.fromJson(Json j) => EventRegistrant(
+    userId: j['user_id'] as String,
+    name: j['display_name'] as String,
+    email: j['email'] as String,
+    registeredAt: DateTime.parse(j['registered_at'] as String),
+    headline: j['headline'] as String?,
+    teamName: j['team_name'] as String?,
   );
 }

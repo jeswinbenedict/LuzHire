@@ -19,6 +19,8 @@ import '../../features/employer/presentation/company_page.dart';
 import '../../features/employer/presentation/jobs_pages.dart';
 import '../../features/employer/presentation/pipeline_page.dart';
 import '../../features/employer/presentation/workspace_pages.dart';
+import '../../features/events/presentation/events_pages.dart';
+import '../../features/events/presentation/organizer_pages.dart';
 import '../../features/home/home_page.dart';
 import '../../features/jobs/data/jobs_repository.dart';
 import '../../features/jobs/presentation/hiring_map_page.dart';
@@ -92,6 +94,21 @@ final _routes = <RouteBase>[
       GoRoute(
         path: '/companies/:slug',
         builder: (_, s) => CompanyPage(slug: s.pathParameters['slug']!),
+      ),
+      GoRoute(
+        path: '/events',
+        builder: (_, s) => OpportunitiesPage(
+          tab: s.uri.queryParameters['type'],
+          mode: switch (s.uri.queryParameters['mode']) {
+            final String m =>
+              EventMode.values.where((x) => x.dbValue == m).firstOrNull,
+            null => null,
+          },
+        ),
+      ),
+      GoRoute(
+        path: '/events/:slug',
+        builder: (_, s) => EventDetailPage(slug: s.pathParameters['slug']!),
       ),
       GoRoute(
         path: '/news',
@@ -183,6 +200,12 @@ final _routes = <RouteBase>[
       _page('/employer/interviews', (_) => const EmployerInterviewsPage()),
       _page('/employer/analytics', (_) => const EmployerAnalyticsPage()),
       _page('/employer/company', (_) => const EmployerCompanyPage()),
+      _page('/employer/events', (_) => const EmployerEventsPage()),
+      _page('/employer/events/new', (_) => const EventEditorPage()),
+      _page(
+        '/employer/events/:id',
+        (s) => EventEditorPage(eventId: s.pathParameters['id']),
+      ),
     ],
   ),
 
@@ -204,6 +227,12 @@ final _routes = <RouteBase>[
       _page('/admin/users', (_) => const AdminUsersPage()),
       _page('/admin/announcements', (_) => const AnnouncementsAdminPage()),
       _page('/admin/news', (_) => const NewsAdminPage()),
+      _page('/admin/events', (_) => const AdminEventsPage()),
+      _page('/admin/events/new', (_) => const EventEditorPage(admin: true)),
+      _page(
+        '/admin/events/:id',
+        (s) => EventEditorPage(eventId: s.pathParameters['id'], admin: true),
+      ),
       _page('/admin/audit', (_) => const AuditLogPage()),
     ],
   ),
