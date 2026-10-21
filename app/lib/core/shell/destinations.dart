@@ -161,6 +161,13 @@ const adminDestinations = [
     group: 'Admin',
   ),
   LuzDestination(
+    label: 'News',
+    path: '/admin/news',
+    icon: Icons.newspaper_outlined,
+    selectedIcon: Icons.newspaper,
+    group: 'Admin',
+  ),
+  LuzDestination(
     label: 'Audit log',
     path: '/admin/audit',
     icon: Icons.receipt_long_outlined,

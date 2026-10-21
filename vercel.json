@@ -77,6 +77,10 @@
     {
       "path": "/api/ingest/jobs",
       "schedule": "30 1 * * *"
+    },
+    {
+      "path": "/api/ingest/news",
+      "schedule": "45 1 * * *"
     }
   ]
 }

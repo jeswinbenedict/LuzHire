@@ -3,7 +3,7 @@
 // caching), so the app loads their logos through /api/img instead.
 // Not an open proxy: only listed hosts, no redirects, raster images only.
 
-export const IMAGE_HOSTS = new Set(['remotive.com', 'www.remotive.com']);
+export const IMAGE_HOSTS = new Set(['remotive.com', 'www.remotive.com', 'cdn.hashnode.com']);
 
 const TYPES = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
 export const MAX_IMAGE_BYTES = 1_000_000;

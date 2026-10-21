@@ -12,7 +12,11 @@ import 'luz_zone.dart';
 /// images on a canvas, which needs CORS, so these load through /api/img (a
 /// cached same-origin copy). Keep in sync with IMAGE_HOSTS in
 /// api/_lib/image-proxy.ts.
-const _proxiedImageHosts = {'remotive.com', 'www.remotive.com'};
+const _proxiedImageHosts = {
+  'remotive.com',
+  'www.remotive.com',
+  'cdn.hashnode.com',
+};
 
 /// The URL to load [url] from on this platform.
 String networkImageUrl(String url) {
