@@ -129,8 +129,12 @@ class Company {
     this.hqLocation,
     this.logoPath,
     this.benefits = const [],
+    this.externalLogoUrl,
+    this.openJobs,
+    this.isExternal = false,
   });
 
+  /// Empty for [isExternal] companies, which exist only through their jobs.
   final String id;
   final String name;
   final String slug;
@@ -143,10 +147,20 @@ class Company {
   final String? logoPath;
   final List<String> benefits;
 
+  /// Logo from the job feed, for [isExternal] companies.
+  final String? externalLogoUrl;
+
+  /// Published jobs (from `company_directory`; null elsewhere).
+  final int? openJobs;
+
+  /// A company behind imported jobs (Remotive, Adzuna), with no LuzHire
+  /// profile.
+  final bool isExternal;
+
   bool get isVerified => verification == Verification.verified;
 
   factory Company.fromJson(Json j) => Company(
-    id: j['id'] as String,
+    id: (j['id'] as String?) ?? '',
     name: j['name'] as String,
     slug: j['slug'] as String,
     verification: Verification.fromDb(j['verification'] as String?),
@@ -157,6 +171,9 @@ class Company {
     hqLocation: j['hq_location'] as String?,
     logoPath: j['logo_path'] as String?,
     benefits: _strings(j['benefits']),
+    externalLogoUrl: j['external_logo_url'] as String?,
+    openJobs: (j['open_jobs'] as num?)?.toInt(),
+    isExternal: j['is_external'] == true,
   );
 }
 

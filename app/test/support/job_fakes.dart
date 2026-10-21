@@ -101,6 +101,33 @@ const fakeCompanies = [
   ),
 ];
 
+/// An imported company, as `company_directory` lists it.
+const fakeExternalCompany = Company(
+  id: '',
+  name: 'Askable',
+  slug: 'jobs-at-askable',
+  verification: Verification.unverified,
+  externalLogoUrl: 'https://remotive.com/job/1/logo',
+  openJobs: 1,
+  isExternal: true,
+);
+
+/// A remote contract imported from Remotive, at [fakeExternalCompany].
+Job fakeExternalJob() => Job(
+  id: 'ext-askable',
+  slug: 'ext-askable',
+  title: 'Remote Flutter Engineer',
+  companyName: 'Askable',
+  employmentType: EmploymentType.contract,
+  workplace: WorkplaceType.remote,
+  status: JobStatus.published,
+  isExternal: true,
+  externalSource: 'remotive',
+  externalUrl: 'https://remotive.com/remote-jobs/x-1',
+  logoUrl: 'https://remotive.com/job/1/logo',
+  publishedAt: _now.subtract(const Duration(minutes: 30)),
+);
+
 /// In-memory `search_jobs`: keyword, remote, type and company filters, newest
 /// first, keyset pages of [searchRow]s. [bySlug] returns the full job.
 class FakeJobsRepository implements JobsRepository {
@@ -130,7 +157,9 @@ class FakeJobsRepository implements JobsRepository {
                       j.companyName.toLowerCase().contains(kw)) &&
                   (!q.remoteOnly || j.workplace == WorkplaceType.remote) &&
                   (q.types.isEmpty || q.types.contains(j.employmentType)) &&
-                  (q.companyId == null || j.companyId == q.companyId),
+                  (q.companyId == null || j.companyId == q.companyId) &&
+                  (q.employer == null ||
+                      j.companyName.toLowerCase() == q.employer!.toLowerCase()),
             )
             .toList()
           ..sort((a, b) => b.publishedAt!.compareTo(a.publishedAt!));
@@ -162,13 +191,17 @@ class FakeJobsRepository implements JobsRepository {
   ];
 }
 
+/// LuzHire employers plus [externals], like `company_directory`.
 class FakeCompaniesRepository implements CompaniesRepository {
+  FakeCompaniesRepository({this.externals = const []});
+  final List<Company> externals;
+
   @override
   Future<List<Company>> list({
     String query = '',
     int offset = 0,
     int limit = 24,
-  }) async => fakeCompanies
+  }) async => [...fakeCompanies, ...externals]
       .where((c) => c.name.toLowerCase().contains(query.toLowerCase()))
       .skip(offset)
       .take(limit)
@@ -176,14 +209,14 @@ class FakeCompaniesRepository implements CompaniesRepository {
 
   @override
   Future<Company?> bySlug(String slug) async =>
-      fakeCompanies.where((c) => c.slug == slug).firstOrNull;
+      [...fakeCompanies, ...externals].where((c) => c.slug == slug).firstOrNull;
 
   @override
   Future<Company?> byId(String id) async =>
       fakeCompanies.where((c) => c.id == id).firstOrNull;
 
   @override
-  String? logoUrl(Company company) => null;
+  String? logoUrl(Company company) => company.externalLogoUrl;
 }
 
 /// Saved jobs with a live stream, like Supabase Realtime.
@@ -215,9 +248,12 @@ class FakeSavedJobsRepository implements SavedJobsRepository {
 List<Override> jobBoardOverrides({
   FakeJobsRepository? jobs,
   FakeSavedJobsRepository? saved,
+  FakeCompaniesRepository? companies,
 }) => [
   jobsRepositoryProvider.overrideWithValue(jobs ?? FakeJobsRepository()),
-  companiesRepositoryProvider.overrideWithValue(FakeCompaniesRepository()),
+  companiesRepositoryProvider.overrideWithValue(
+    companies ?? FakeCompaniesRepository(),
+  ),
   savedJobsRepositoryProvider.overrideWithValue(
     saved ?? FakeSavedJobsRepository(),
   ),
