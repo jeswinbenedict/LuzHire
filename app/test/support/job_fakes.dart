@@ -5,6 +5,7 @@ import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/failures.dart';
 import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/features/companies/data/companies_repository.dart';
+import 'package:luzhire/features/jobs/application/location_providers.dart';
 import 'package:luzhire/features/jobs/data/jobs_repository.dart';
 
 final _now = DateTime.utc(2026, 10, 19, 12);
@@ -144,6 +145,29 @@ class FakeJobsRepository implements JobsRepository {
   /// While true, [bySlug] fails like a dropped connection.
   bool failDetails = false;
 
+  /// Cities on the hiring map; [near] calls are recorded in [nearCalls].
+  List<HiringLocation> locations = const [
+    HiringLocation(
+      cityId: 1,
+      name: 'Pune',
+      state: 'Maharashtra',
+      countryCode: 'IN',
+      latitude: 18.52,
+      longitude: 73.86,
+      openJobs: 3,
+    ),
+    HiringLocation(
+      cityId: 2,
+      name: 'Kochi',
+      state: 'Kerala',
+      countryCode: 'IN',
+      latitude: 9.93,
+      longitude: 76.27,
+      openJobs: 1,
+    ),
+  ];
+  final nearCalls = <NearbyQuery>[];
+
   @override
   Future<List<Job>> search(JobSearchQuery q, {Job? after}) async {
     queries.add(q);
@@ -180,6 +204,35 @@ class FakeJobsRepository implements JobsRepository {
   @override
   Future<List<Job>> byIds(Iterable<String> ids) async =>
       jobs.where((j) => ids.contains(j.id)).toList();
+
+  /// The first three jobs, as `recommended_jobs` explains them.
+  @override
+  Future<List<Job>> recommended({int pageSize = 12}) async => [
+    for (final j in jobs.take(3))
+      searchRow(j).withReasons(const ['Matches 2 of your skills', 'In Pune']),
+  ];
+
+  /// Jobs 1 and 2, 4 and 30 km from any point.
+  @override
+  Future<List<Job>> near({
+    required double latitude,
+    required double longitude,
+    double radiusKm = 50,
+    int pageSize = 30,
+  }) async {
+    nearCalls.add((
+      latitude: latitude,
+      longitude: longitude,
+      radiusKm: radiusKm,
+    ));
+    return [
+      searchRow(jobs[0]).withDistance(4),
+      if (radiusKm >= 30) searchRow(jobs[1]).withDistance(30),
+    ];
+  }
+
+  @override
+  Future<List<HiringLocation>> hiringLocations() async => locations;
 
   @override
   Future<List<String>> jobSkills(String jobId) async => ['Dart', 'Flutter'];
@@ -258,3 +311,41 @@ List<Override> jobBoardOverrides({
     saved ?? FakeSavedJobsRepository(),
   ),
 ];
+
+extension on Job {
+  Job withReasons(List<String> reasons) => _copy(reasons: reasons);
+  Job withDistance(double km) => _copy(distanceKm: km);
+
+  Job _copy({List<String>? reasons, double? distanceKm}) => Job(
+    id: id,
+    slug: slug,
+    title: title,
+    companyName: companyName,
+    companyId: companyId,
+    employmentType: employmentType,
+    workplace: workplace,
+    status: status,
+    location: location,
+    salaryMin: salaryMin,
+    salaryMax: salaryMax,
+    salaryCurrency: salaryCurrency,
+    salaryPeriod: salaryPeriod,
+    summary: summary,
+    publishedAt: publishedAt,
+    hasDetails: false,
+    matchReasons: reasons ?? matchReasons,
+    distanceKm: distanceKm ?? this.distanceKm,
+  );
+}
+
+/// A device at a fixed point, or one that refuses with [failure].
+class FakeLocationService implements LocationService {
+  FakeLocationService({this.failure});
+  final AppFailure? failure;
+
+  @override
+  Future<GeoPoint> current() async {
+    if (failure != null) throw failure!;
+    return (latitude: 18.6, longitude: 73.75);
+  }
+}

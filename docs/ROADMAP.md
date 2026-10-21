@@ -24,6 +24,7 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | 🟡 Live on main (migration applied, `CRON_SECRET` set, first Remotive import of 10 jobs on 2026-10-20). Still needed: career news (sources to choose; `/news` is a placeholder); optional Adzuna keys |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | 🟡 Live on main (web push and email verified 2026-10-20). Still needed: Android push (Firebase Android app + a phone), Outlook rendering check |
 | 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | 🟡 Live on main (load test done 2026-10-20; see `docs/HARDENING.md`). Still needed: apply migration `20261020170000` (lean search) to the cloud, manual screen-reader and keyboard pass; Sentry optional |
+| 10½ | Discovery features | Company directory with logos, career news, hiring map + recommendations, events | Run 5 migrations in Supabase; optional Adzuna keys | 🟡 Live on main (migrations applied 2026-10-21). Still needed: optional Adzuna keys |
 | 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Domain (optional) | ⬜ |
 
 Deployment is **continuous**, not left to the end. From Phase 1 onward every push to `main` deploys to Vercel; Phase 11 is the production cut-over and launch checklist.
@@ -232,6 +233,13 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Accessibility: full WCAG 2.1 AA pass (screen reader on web/Android, keyboard, contrast, 200 % text).
 - Security: RLS review, OWASP checklist, CSP headers, rate limits on API, dependency audit, secret scan.
 - Reliability: Sentry (Flutter + functions), `/api/health` uptime monitor, Supabase backups, load test (500 concurrent users).
+
+## Phase 10½ — Discovery features (PRs #8–#11) 🟡
+**Live on main.** Migrations `20261020170000`, `20261021120000`, `20261021130000`, `20261021140000` and `20261021150000` were applied to the cloud database on 2026-10-21 (one transaction from the SQL editor, recorded in `schema_migrations`). Still to do: first news import (runs at the next morning cron), optional Adzuna India keys for located jobs.
+- **Companies directory with every hiring company** (#8): the `company_directory` view adds the companies behind imported jobs, with their feed logo and open-role counts; imported companies get `/companies/jobs-at-<name>`; job cards show LuzHire companies' own logos; Home shows "Companies hiring now".
+- **Career news** (#9): `/api/ingest/news` (daily cron) imports linked headlines from Remotive's blog, DEV #career and freeCodeCamp, filtered to career topics; admins write articles at `/admin/news` (read at `/news/:slug`), feature stories and hide headlines; `/news` has topics, a featured row and Home section.
+- **Hiring map, jobs near you, recommendations** (#10): a `cities` gazetteer geocodes jobs; `/jobs/map` (OpenStreetMap/CARTO) shows open roles per city and "Jobs near me" by device location; `recommended_jobs()` ranks jobs by skills, headline, city and freshness with reasons ("Picked for you" on Home). Adzuna India keys would add located Indian jobs without code changes.
+- **Opportunities** (#11): Unstop-style `/events` for walk-in and campus drives, hiring challenges, hackathons, competitions and webinars; in-app (individual or team) or external registration with deadline and capacity enforced in Postgres; `/employer/events` with registrants and `/admin/events` review; events on the hiring map.
 
 ## Phase 11 — Production launch on Vercel
 - Production Supabase project (Pro plan recommended: no auto-pause, daily backups) + production Firebase project.

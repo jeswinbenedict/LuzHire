@@ -19,6 +19,9 @@ import 'shell_common.dart';
 /// - ≥ 900 px: raised top navigation with text links.
 /// - < 900 px: compact top bar (logo, theme, menu) + bottom navigation
 ///   for thumb reach; secondary links live in the menu sheet.
+/// Top-level pages that live in the menu sheet on phones.
+const _menuOnlyOnPhones = {'/news'};
+
 /// Bottom/top destinations; the last item points at the signed-in role's home.
 List<LuzDestination> spotlightDestinationsFor(AuthState auth) {
   final role = auth is SignedIn ? auth.role : null;
@@ -76,6 +79,11 @@ class SpotlightShell extends ConsumerWidget {
     final auth = ref.watch(authControllerProvider);
     final dests = spotlightDestinationsFor(auth);
     final selected = selectedIndexFor(dests, location);
+    // Phones keep five tabs; the others are in the menu sheet.
+    final compact = [
+      for (final d in dests)
+        if (!_menuOnlyOnPhones.contains(d.path)) d,
+    ];
 
     return LuzZone(
       kind: LuzZoneKind.spotlight,
@@ -102,9 +110,9 @@ class SpotlightShell extends ConsumerWidget {
           bottomNavigationBar: wide
               ? null
               : _BottomNav(
-                  destinations: dests,
-                  selected: selected,
-                  onSelect: (i) => context.go(dests[i].path),
+                  destinations: compact,
+                  selected: selectedIndexFor(compact, location),
+                  onSelect: (i) => context.go(compact[i].path),
                 ),
         ),
       ),
@@ -318,6 +326,19 @@ class _CompactTopBar extends ConsumerWidget {
             ),
             const SizedBox(height: LuzSpace.md),
           ],
+          for (final d in spotlightDestinations)
+            if (_menuOnlyOnPhones.contains(d.path)) ...[
+              LuzButton(
+                label: d.label,
+                icon: d.icon,
+                expand: true,
+                onPressed: () {
+                  Navigator.of(ctx).pop();
+                  context.go(d.path);
+                },
+              ),
+              const SizedBox(height: LuzSpace.md),
+            ],
           if (employerLink != null)
             LuzButton(
               label: employerLink!.label,

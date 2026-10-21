@@ -40,6 +40,8 @@ class Job {
     this.applicationCount = 0,
     this.publishedAt,
     this.hasDetails = true,
+    this.matchReasons = const [],
+    this.distanceKm,
   });
 
   final String id;
@@ -74,6 +76,12 @@ class Job {
   /// view loads the full job by slug.
   final bool hasDetails;
 
+  /// Why `recommended_jobs` picked this job ("Matches 3 of your skills").
+  final List<String> matchReasons;
+
+  /// From `jobs_near`: how far the job is from the chosen point.
+  final double? distanceKm;
+
   bool get hasSalary => salaryMin != null || salaryMax != null;
 
   factory Job.fromJson(Json j) => Job(
@@ -106,6 +114,8 @@ class Job {
     applicationCount: (j['application_count'] as num?)?.toInt() ?? 0,
     publishedAt: _date(j['published_at']),
     hasDetails: j.containsKey('description_md'),
+    matchReasons: _strings(j['match_reasons']),
+    distanceKm: _num(j['distance_km']),
   );
 
   @override
@@ -838,5 +848,233 @@ class IngestRun {
     skipped: (j['skipped'] as num).toInt(),
     closed: (j['closed'] as num).toInt(),
     error: j['error'] as String?,
+  );
+}
+
+/// One row of public.news_articles: a headline imported from a career feed
+/// (opens the publisher's site) or an article written by LuzHire admins
+/// (read in the app at /news/:slug).
+@immutable
+class NewsItem {
+  const NewsItem({
+    required this.id,
+    required this.source,
+    required this.title,
+    required this.publishedAt,
+    this.isArticle = false,
+    this.url,
+    this.slug,
+    this.summary,
+    this.imageUrl,
+    this.categories = const [],
+    this.isFeatured = false,
+    this.isPublished = true,
+    this.bodyMd,
+    this.authorName,
+  });
+
+  final String id;
+  final String source;
+  final String title;
+  final DateTime publishedAt;
+  final bool isArticle;
+  final String? url;
+  final String? slug;
+  final String? summary;
+  final String? imageUrl;
+  final List<String> categories;
+  final bool isFeatured;
+  final bool isPublished;
+
+  /// Articles only, and only when loaded for reading.
+  final String? bodyMd;
+  final String? authorName;
+
+  /// Minutes to read an article (about 200 words a minute).
+  int get readMinutes =>
+      ((bodyMd ?? '').split(RegExp(r'\s+')).length / 200).ceil().clamp(1, 60);
+
+  factory NewsItem.fromJson(Json j) => NewsItem(
+    id: j['id'] as String,
+    source: j['source'] as String,
+    title: j['title'] as String,
+    publishedAt: DateTime.parse(j['published_at'] as String),
+    isArticle: j['kind'] == 'article',
+    url: j['url'] as String?,
+    slug: j['slug'] as String?,
+    summary: j['summary'] as String?,
+    imageUrl: j['image_url'] as String?,
+    categories: _strings(j['categories']),
+    isFeatured: j['is_featured'] == true,
+    isPublished: (j['status'] as String? ?? 'published') == 'published',
+    bodyMd: j['body_md'] as String?,
+    authorName: j['author_name'] as String?,
+  );
+
+  @override
+  bool operator ==(Object other) => other is NewsItem && other.id == id;
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// A city with open roles (public.hiring_locations), for the hiring map.
+@immutable
+class HiringLocation {
+  const HiringLocation({
+    required this.cityId,
+    required this.name,
+    required this.countryCode,
+    required this.latitude,
+    required this.longitude,
+    required this.openJobs,
+    this.state,
+    this.companies = 0,
+    this.events = 0,
+  });
+
+  final int cityId;
+  final String name;
+  final String? state;
+  final String countryCode;
+  final double latitude;
+  final double longitude;
+  final int openJobs;
+  final int companies;
+
+  /// Upcoming in-person or hybrid events in the city.
+  final int events;
+
+  /// "Pune, Maharashtra" or "Singapore, SG".
+  String get label => '$name, ${state ?? countryCode}';
+
+  factory HiringLocation.fromJson(Json j) => HiringLocation(
+    cityId: (j['city_id'] as num).toInt(),
+    name: j['name'] as String,
+    state: j['state'] as String?,
+    countryCode: j['country_code'] as String,
+    latitude: (j['latitude'] as num).toDouble(),
+    longitude: (j['longitude'] as num).toDouble(),
+    openJobs: (j['open_jobs'] as num?)?.toInt() ?? 0,
+    companies: (j['companies'] as num?)?.toInt() ?? 0,
+    events: (j['events'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// A hiring drive, hackathon, competition or webinar (public.events).
+@immutable
+class Opportunity {
+  const Opportunity({
+    required this.id,
+    required this.slug,
+    required this.kind,
+    required this.status,
+    required this.title,
+    required this.organizerName,
+    required this.mode,
+    required this.startsAt,
+    this.summary,
+    this.descriptionMd = '',
+    this.companyId,
+    this.venue,
+    this.location,
+    this.endsAt,
+    this.registrationDeadline,
+    this.registrationUrl,
+    this.eligibility,
+    this.prize,
+    this.teamMin = 1,
+    this.teamMax = 1,
+    this.capacity,
+    this.registrationCount = 0,
+  });
+
+  final String id;
+  final String slug;
+  final EventKind kind;
+  final EventStatus status;
+  final String title;
+  final String organizerName;
+  final EventMode mode;
+  final DateTime startsAt;
+  final String? summary;
+  final String descriptionMd;
+  final String? companyId;
+  final String? venue;
+  final String? location;
+  final DateTime? endsAt;
+  final DateTime? registrationDeadline;
+
+  /// Set when registration happens on the organiser's site.
+  final String? registrationUrl;
+  final String? eligibility;
+  final String? prize;
+  final int teamMin;
+  final int teamMax;
+  final int? capacity;
+  final int registrationCount;
+
+  bool get isTeamEvent => teamMax > 1;
+  bool get registersInApp => registrationUrl == null;
+  DateTime get closesAt => registrationDeadline ?? startsAt;
+  bool isOpenAt(DateTime now) =>
+      status == EventStatus.published && closesAt.isAfter(now) && !isFull;
+  bool get isFull => capacity != null && registrationCount >= capacity!;
+
+  factory Opportunity.fromJson(Json j) => Opportunity(
+    id: j['id'] as String,
+    slug: j['slug'] as String,
+    kind: EventKind.fromDb(j['kind'] as String?),
+    status: EventStatus.fromDb(j['status'] as String?),
+    title: j['title'] as String,
+    organizerName: j['organizer_name'] as String,
+    mode: EventMode.fromDb(j['mode'] as String?),
+    startsAt: DateTime.parse(j['starts_at'] as String),
+    summary: j['summary'] as String?,
+    descriptionMd: (j['description_md'] as String?) ?? '',
+    companyId: j['company_id'] as String?,
+    venue: j['venue'] as String?,
+    location: j['location_text'] as String?,
+    endsAt: _date(j['ends_at']),
+    registrationDeadline: _date(j['registration_deadline']),
+    registrationUrl: j['registration_url'] as String?,
+    eligibility: j['eligibility'] as String?,
+    prize: j['prize'] as String?,
+    teamMin: (j['team_min'] as num?)?.toInt() ?? 1,
+    teamMax: (j['team_max'] as num?)?.toInt() ?? 1,
+    capacity: (j['capacity'] as num?)?.toInt(),
+    registrationCount: (j['registration_count'] as num?)?.toInt() ?? 0,
+  );
+
+  @override
+  bool operator ==(Object other) => other is Opportunity && other.id == id;
+  @override
+  int get hashCode => id.hashCode;
+}
+
+/// Someone registered for an event (public.event_registrants).
+@immutable
+class EventRegistrant {
+  const EventRegistrant({
+    required this.userId,
+    required this.name,
+    required this.email,
+    required this.registeredAt,
+    this.headline,
+    this.teamName,
+  });
+  final String userId;
+  final String name;
+  final String email;
+  final DateTime registeredAt;
+  final String? headline;
+  final String? teamName;
+
+  factory EventRegistrant.fromJson(Json j) => EventRegistrant(
+    userId: j['user_id'] as String,
+    name: j['display_name'] as String,
+    email: j['email'] as String,
+    registeredAt: DateTime.parse(j['registered_at'] as String),
+    headline: j['headline'] as String?,
+    teamName: j['team_name'] as String?,
   );
 }

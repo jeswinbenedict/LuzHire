@@ -297,3 +297,58 @@ enum DeliveryStatus with DbEnum {
   @override
   final String dbValue;
 }
+
+/// Mirrors public.event_kind. [isHiring] kinds are recruitment events.
+enum EventKind with DbEnum {
+  walkIn('walk_in', 'Walk-in drive', Icons.directions_walk, true),
+  campusDrive('campus_drive', 'Campus drive', Icons.school_outlined, true),
+  hiringChallenge(
+    'hiring_challenge',
+    'Hiring challenge',
+    Icons.emoji_events_outlined,
+    true,
+  ),
+  hackathon('hackathon', 'Hackathon', Icons.code, false),
+  competition(
+    'competition',
+    'Competition',
+    Icons.military_tech_outlined,
+    false,
+  ),
+  webinar('webinar', 'Webinar', Icons.cast_for_education_outlined, false);
+
+  const EventKind(this.dbValue, this.label, this.icon, this.isHiring);
+  @override
+  final String dbValue;
+  final String label;
+  final IconData icon;
+  final bool isHiring;
+  static EventKind fromDb(String? v) => _fromDb(values, v, walkIn);
+}
+
+enum EventMode with DbEnum {
+  inPerson('in_person', 'In person', Icons.place_outlined),
+  online('online', 'Online', Icons.wifi),
+  hybrid('hybrid', 'Hybrid', Icons.sync_alt);
+
+  const EventMode(this.dbValue, this.label, this.icon);
+  @override
+  final String dbValue;
+  final String label;
+  final IconData icon;
+  static EventMode fromDb(String? v) => _fromDb(values, v, online);
+}
+
+enum EventStatus with DbEnum {
+  draft('draft', 'Draft'),
+  pendingReview('pending_review', 'Pending review'),
+  published('published', 'Published'),
+  cancelled('cancelled', 'Cancelled'),
+  rejected('rejected', 'Rejected');
+
+  const EventStatus(this.dbValue, this.label);
+  @override
+  final String dbValue;
+  final String label;
+  static EventStatus fromDb(String? v) => _fromDb(values, v, draft);
+}

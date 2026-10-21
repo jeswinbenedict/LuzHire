@@ -10,7 +10,13 @@ import '../../core/widgets/widgets.dart';
 import '../jobs/application/job_board_providers.dart';
 import '../jobs/data/jobs_repository.dart';
 import '../jobs/presentation/job_widgets.dart';
+import '../jobs/application/location_providers.dart';
+import '../auth/application/auth_controller.dart';
+import '../auth/domain/auth_state.dart';
+import '../../core/data/enums.dart';
 import '../companies/data/companies_repository.dart';
+import '../news/presentation/news_pages.dart' show HomeNewsSection;
+import '../events/presentation/events_pages.dart' show HomeEventsSection;
 import '../companies/presentation/companies_pages.dart' show openRolesLabel;
 import '../../core/data/failures.dart';
 import '../../core/data/models.dart';
@@ -50,8 +56,12 @@ class HomePage extends StatelessWidget {
         children: [
           LuzContent(vertical: 0, child: AnnouncementsBanner()),
           _Hero(),
+          _PickedForYou(),
           _LatestJobs(),
+          _MapInvite(),
           _HiringCompanies(),
+          HomeEventsSection(),
+          HomeNewsSection(),
           _Disciplines(),
           _EmployerBand(),
         ],
@@ -146,6 +156,106 @@ class _Hero extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Signed-in candidates: jobs ranked from their profile, with the reasons.
+class _PickedForYou extends ConsumerWidget {
+  const _PickedForYou();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final auth = ref.watch(authControllerProvider);
+    if (auth is! SignedIn || auth.user.appRole != AppRole.candidate) {
+      return const SizedBox.shrink();
+    }
+    final jobs = (ref.watch(recommendedJobsProvider).value ?? const [])
+        .where((j) => j.matchReasons.any((r) => r != 'New this week'))
+        .take(6)
+        .toList();
+    final p = context.luz;
+    final t = context.luzText;
+    return LuzContent(
+      vertical: LuzSpace.xl,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('PICKED FOR YOU', style: t.eyebrow.copyWith(color: p.accent)),
+          const SizedBox(height: LuzSpace.xs),
+          Text('Recommended from your profile', style: t.h3),
+          const SizedBox(height: LuzSpace.lg),
+          if (jobs.isEmpty)
+            LuzCard(
+              child: Wrap(
+                spacing: LuzSpace.md,
+                runSpacing: LuzSpace.sm,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'Add your skills, headline and city to get jobs matched '
+                    'to you.',
+                    style: t.body.copyWith(color: p.inkMuted),
+                  ),
+                  LuzTextLink(
+                    label: 'Complete your profile →',
+                    onPressed: () => context.go('/me/profile'),
+                  ),
+                ],
+              ),
+            )
+          else
+            LuzGrid(children: [for (final j in jobs) JobCard(job: j)]),
+        ],
+      ),
+    );
+  }
+}
+
+/// Invitation to the hiring map.
+class _MapInvite extends StatelessWidget {
+  const _MapInvite();
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final t = context.luzText;
+    return LuzContent(
+      vertical: LuzSpace.lg,
+      child: LuzCard(
+        child: Wrap(
+          spacing: LuzSpace.lg,
+          runSpacing: LuzSpace.md,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          alignment: WrapAlignment.spaceBetween,
+          children: [
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.map_outlined, color: p.accent, size: 36),
+                const SizedBox(width: LuzSpace.md),
+                Flexible(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Where is hiring happening?', style: t.h4),
+                      Text(
+                        'See open roles city by city, and jobs near you.',
+                        style: t.body.copyWith(color: p.inkMuted),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            LuzButton.accent(
+              label: 'Open the hiring map',
+              icon: Icons.arrow_forward,
+              onPressed: () => context.go('/jobs/map'),
+            ),
+          ],
+        ),
       ),
     );
   }
