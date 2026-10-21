@@ -244,9 +244,8 @@ class _HiringMap extends ConsumerWidget {
             if (tiles != null)
               TileLayer(
                 urlTemplate: tiles,
-                subdomains: const ['a', 'b', 'c', 'd'],
-                retinaMode: RetinaMode.isHighDensity(context),
                 userAgentPackageName: 'app.luzhire',
+                tileBuilder: dark ? darkModeTileBuilder : null,
               ),
             if (me != null)
               CircleLayer(
@@ -302,7 +301,7 @@ class _HiringMap extends ConsumerWidget {
                 ),
                 color: p.base.withValues(alpha: 0.85),
                 child: Text(
-                  '© OpenStreetMap contributors © CARTO',
+                  '© OpenStreetMap contributors',
                   style: t.caption.copyWith(color: p.inkMuted),
                 ),
               ),
