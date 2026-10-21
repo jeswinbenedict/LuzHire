@@ -8,6 +8,10 @@
   "outputDirectory": "app/build/web",
   "rewrites": [
     {
+      "source": "/jobs/map",
+      "destination": "/index.html"
+    },
+    {
       "source": "/jobs/:slug",
       "destination": "/api/seo/job?slug=:slug"
     },
