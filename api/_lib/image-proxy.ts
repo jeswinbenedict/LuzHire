@@ -1,9 +1,14 @@
 // Same-origin copies of third-party job logos. Flutter web draws images on a
-// canvas, which needs CORS; providers such as Remotive send none (and no
+// canvas, which needs CORS; providers such as Remotive and Himalayas send none (and no
 // caching), so the app loads their logos through /api/img instead.
 // Not an open proxy: only listed hosts, no redirects, raster images only.
 
-export const IMAGE_HOSTS = new Set(['remotive.com', 'www.remotive.com', 'cdn.hashnode.com']);
+export const IMAGE_HOSTS = new Set([
+  'remotive.com',
+  'www.remotive.com',
+  'cdn.hashnode.com',
+  'cdn-images.himalayas.app',
+]);
 
 const TYPES = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
 export const MAX_IMAGE_BYTES = 1_000_000;

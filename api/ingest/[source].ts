@@ -1,4 +1,5 @@
-// GET /api/ingest/jobs — imports jobs from the enabled providers.
+// GET /api/ingest/jobs — imports jobs from job boards and feeds.
+// GET /api/ingest/companies — imports India roles from company career boards.
 // GET /api/ingest/news — imports career headlines (api/_lib/news/feeds.ts).
 // One function for both: the Hobby plan allows 12 functions per deployment.
 // Called once a day each by Vercel Cron (vercel.json), which sends
@@ -15,8 +16,8 @@ export const maxDuration = 60;
 export const GET = handle(async (request) => {
   authorizeCron(request, process.env.CRON_SECRET);
   const source = new URL(request.url).pathname.split('/').pop();
-  if (source === 'jobs') {
-    return json(request, 200, { runs: await runIngest(liveIngestDeps(), enabledProviders()) });
+  if (source === 'jobs' || source === 'companies') {
+    return json(request, 200, { runs: await runIngest(liveIngestDeps(), enabledProviders(source)) });
   }
   if (source === 'news') {
     return json(request, 200, { runs: await runNewsIngest(liveNewsDeps()) });

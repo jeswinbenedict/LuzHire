@@ -38,14 +38,15 @@ export interface IngestDeps {
   log(run: RunLog): Promise<void>;
 }
 
+/** Providers run side by side, so slow feeds share the function's time limit. */
 export async function runIngest(deps: IngestDeps, providers: Provider[]): Promise<RunLog[]> {
-  const logs: RunLog[] = [];
   const existing = await deps.existing();
   const now = deps.now().getTime();
-  const tooOld = (iso: string | null) =>
-    iso != null && now - Date.parse(iso) > MAX_AGE_DAYS * 86_400_000;
 
-  for (const provider of providers) {
+  return Promise.all(providers.map(async (provider) => {
+    const maxAge = provider.maxAgeDays === undefined ? MAX_AGE_DAYS : provider.maxAgeDays;
+    const tooOld = (iso: string | null) =>
+      maxAge != null && iso != null && now - Date.parse(iso) > maxAge * 86_400_000;
     const log: RunLog = {
       source: provider.id,
       fetched: 0,
@@ -56,8 +57,9 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
       error: null,
     };
     try {
-      const { jobs, complete } = await provider.fetch(deps.get);
+      const { jobs, complete, covers = () => true, warnings = [] } = await provider.fetch(deps.get);
       log.fetched = jobs.length;
+      if (warnings.length > 0) log.error = warnings.join('; ').slice(0, 500);
 
       const mine = new Map(
         existing
@@ -111,7 +113,7 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
         .filter(
           (e) =>
             e.status === 'published' &&
-            ((complete && !keptIds.has(e.externalId)) ||
+            ((complete && covers(e.externalId) && !keptIds.has(e.externalId)) ||
               (!keptIds.has(e.externalId) && tooOld(e.publishedAt))),
         )
         .map((e) => e.id);
@@ -121,7 +123,6 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
       log.error = e instanceof Error ? e.message.slice(0, 500) : 'Unknown error';
     }
     await deps.log(log);
-    logs.push(log);
-  }
-  return logs;
+    return log;
+  }));
 }

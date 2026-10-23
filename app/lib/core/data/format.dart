@@ -104,6 +104,27 @@ String formatPlace(Job job) {
         name: 'Adzuna',
         url: 'https://www.adzuna.in',
       ),
+      'himalayas' => (
+        label: 'via Himalayas',
+        name: 'Himalayas',
+        url: 'https://himalayas.app',
+      ),
+      'jobicy' => (
+        label: 'via Jobicy',
+        name: 'Jobicy',
+        url: 'https://jobicy.com',
+      ),
+      'remoteok' => (
+        label: 'via Remote OK',
+        name: 'Remote OK',
+        url: 'https://remoteok.com',
+      ),
+      // The company's own careers board (an applicant-tracking system).
+      'greenhouse' || 'lever' || 'ashby' => (
+        label: 'From the company careers page',
+        name: 'company site',
+        url: '',
+      ),
       null || '' => null,
       final other => (label: 'via $other', name: other, url: ''),
     };
