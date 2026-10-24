@@ -429,7 +429,9 @@ void main() {
     Future<double> height(LuzInputMode mode) async {
       await tester.pumpWidget(
         wrap(
-          LuzDense(child: LuzButton(label: 'Map', onPressed: () {})),
+          LuzDense(
+            child: LuzButton(label: 'Map', onPressed: () {}),
+          ),
           mode: mode,
         ),
       );
