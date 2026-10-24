@@ -5,6 +5,7 @@ import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/failures.dart';
 import 'package:luzhire/core/data/format.dart';
 import 'package:luzhire/core/data/models.dart';
+import 'package:luzhire/core/widgets/luz_display.dart' show proxiedImageHosts;
 import 'package:luzhire/features/jobs/data/jobs_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -184,6 +185,19 @@ void main() {
       'Yesterday',
     );
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
+  });
+
+  test('the app proxies exactly the image hosts /api/img accepts', () {
+    final ts = File('../api/_lib/image-proxy.ts').readAsStringSync();
+    final list = RegExp(r'IMAGE_HOSTS = new Set\(\[([\s\S]*?)\]\)')
+        .firstMatch(ts)!
+        .group(1)!;
+    final server = RegExp(
+      r"^\s*'([^']+)'",
+      multiLine: true,
+    ).allMatches(list).map((m) => m.group(1)!).toSet();
+    expect(proxiedImageHosts, server);
+    expect(server, containsAll(['media2.dev.to', 'jobicy.com']));
   });
 
   test('every job feed is credited with a link; career boards are not', () {
