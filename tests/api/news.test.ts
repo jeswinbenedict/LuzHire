@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import {
   FEEDS,
   isEnglish,
+  pageImageOf,
+  pageImages,
   parseFeed,
   relevanceOf,
   runNewsIngest,
@@ -126,10 +128,36 @@ describe('toNews', () => {
   });
 });
 
+describe('page images', () => {
+  it('reads og:image in any attribute order, then twitter:image, https only', () => {
+    expect(pageImageOf('<meta property="og:image" content="https://a.example/x.png?w=1&amp;h=2">')).toBe(
+      'https://a.example/x.png?w=1&h=2',
+    );
+    expect(pageImageOf(`<meta content='https://b.example/y.jpg' name='twitter:image'>`)).toBe('https://b.example/y.jpg');
+    expect(pageImageOf('<meta property="og:image:width" content="1200">')).toBeNull();
+    expect(pageImageOf('<meta property="og:image" content="http://insecure.example/z.png">')).toBeNull();
+    expect(pageImageOf('<html><head><title>No image</title></head></html>')).toBeNull();
+  });
+
+  it('only reads pages on the sites LuzHire imports from', async () => {
+    const asked: string[] = [];
+    const found = await pageImages(
+      ['https://dev.to/x/post', 'https://www.freecodecamp.org/news/y/', 'https://169.254.169.254/latest', 'not a url'],
+      async (url) => {
+        asked.push(url);
+        return '<meta property="og:image" content="https://cdn.example/i.png">';
+      },
+    );
+    expect(asked.sort()).toEqual(['https://dev.to/x/post', 'https://www.freecodecamp.org/news/y/']);
+    expect(found.size).toBe(2);
+  });
+});
+
 describe('runNewsIngest', () => {
-  function deps(feeds: Record<string, string | Error>) {
+  function deps(feeds: Record<string, string | Error>, stored: string[] = []) {
     const inserted: NewsItem[] = [];
     const logs: NewsRunLog[] = [];
+    const imaged = new Map<string, string>();
     let pruned = 0;
     const d: NewsDeps = {
       async getText(url) {
@@ -146,12 +174,48 @@ describe('runNewsIngest', () => {
         pruned++;
         return 0;
       },
+      async withoutImage() {
+        return stored;
+      },
+      async setImages(images) {
+        for (const [k, v] of images) imaged.set(k, v);
+        return images.size;
+      },
       async log(run) {
         logs.push(run);
       },
     };
-    return { d, inserted, logs, pruned: () => pruned };
+    return { d, inserted, logs, imaged, pruned: () => pruned };
   }
+
+  const page = (image: string) =>
+    `<html><head><meta name="viewport" content="width=device-width"><meta content="${image}" property="og:image" /></head></html>`;
+  const DEV_RSS = `<rss><channel><item><title>How to prepare for a job interview</title>
+    <link>https://dev.to/asha/job-interview-tips-1a2b</link><pubDate>Tue, 20 Oct 2026 10:00:00 GMT</pubDate>
+    <description>Practical interview and resume advice for your first developer job search.</description></item></channel></rss>`;
+
+  it('gives image-less feed items the preview image of their article page', async () => {
+    const { d, inserted } = deps({
+      [devto.url]: DEV_RSS,
+      'https://dev.to/asha/job-interview-tips-1a2b': page('https://media2.dev.to/dynamic/image/cover.png'),
+    });
+    await runNewsIngest(d, [devto]);
+    expect(inserted).toHaveLength(1);
+    expect(inserted[0]!.imageUrl).toBe('https://media2.dev.to/dynamic/image/cover.png');
+  });
+
+  it('fills in stored headlines that still have no image', async () => {
+    const { d, imaged, logs } = deps(
+      {
+        'https://dev.to/a/old-post-1': page('https://media2.dev.to/a.png'),
+        'https://dev.to/b/broken-2': new Error('dev.to answered 500'),
+      },
+      ['https://dev.to/a/old-post-1', 'https://dev.to/b/broken-2', 'https://evil.example/x'],
+    );
+    await runNewsIngest(d, []);
+    expect([...imaged]).toEqual([['https://dev.to/a/old-post-1', 'https://media2.dev.to/a.png']]);
+    expect(logs.at(-1)).toMatchObject({ source: 'news:images', fetched: 3, updated: 1, skipped: 2, error: null });
+  });
 
   it('imports each feed, logs it, and a failing feed does not stop the rest', async () => {
     const { d, inserted, logs, pruned } = deps({

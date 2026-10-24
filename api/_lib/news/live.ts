@@ -12,7 +12,8 @@ export function liveNewsDeps(): NewsDeps {
       const res = await fetch(url, {
         headers: {
           'User-Agent': 'LuzHire job portal (college project) - luzhire.vercel.app',
-          Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml',
+          // Feeds, and article pages for their preview images.
+          Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8',
         },
         signal: AbortSignal.timeout(15_000),
       });
@@ -52,6 +53,32 @@ export function liveNewsDeps(): NewsDeps {
         .select('id');
       fail('news prune', error);
       return data?.length ?? 0;
+    },
+    async withoutImage(limit) {
+      const { data, error } = await db
+        .from('news_articles')
+        .select('url')
+        .eq('kind', 'headline')
+        .is('image_url', null)
+        .order('published_at', { ascending: false })
+        .limit(limit);
+      fail('news without image', error);
+      return (data ?? []).map((r) => r.url as string).filter(Boolean);
+    },
+    async setImages(images) {
+      let updated = 0;
+      for (const [url, image] of images) {
+        // Only rows still without an image: an admin's choice is kept.
+        const { data, error } = await db
+          .from('news_articles')
+          .update({ image_url: image })
+          .eq('url', url)
+          .is('image_url', null)
+          .select('id');
+        fail('news image', error);
+        updated += data?.length ?? 0;
+      }
+      return updated;
     },
     async log(run) {
       const { error } = await db.from('ingest_runs').insert({ ...run, finished_at: new Date().toISOString() });
