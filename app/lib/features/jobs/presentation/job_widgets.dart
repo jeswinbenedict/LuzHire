@@ -17,12 +17,26 @@ import 'package:url_launcher/url_launcher.dart';
 /// Job card from the Stitch search/home designs: logo socket, title, company,
 /// place, salary (mono) and a save bookmark. [selected] adds the orange
 /// indicator used in the two-pane list.
+///
+/// Every card has the same rows in the same order (title, company, place,
+/// chips, then salary, date and source), so cards side by side line up.
 class JobCard extends StatelessWidget {
-  const JobCard({super.key, required this.job, this.selected, this.onTap});
+  const JobCard({
+    super.key,
+    required this.job,
+    this.selected,
+    this.onTap,
+    this.uniform = false,
+  });
 
   final Job job;
   final bool? selected;
   final VoidCallback? onTap;
+
+  /// For grids with equal-height rows (LuzGrid.equalHeights): the title
+  /// always takes two lines and the salary rows sit at the bottom, so every
+  /// row of a card lines up with its neighbours.
+  final bool uniform;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +45,25 @@ class JobCard extends StatelessWidget {
     final salary = formatSalary(job);
     final place = formatPlace(job);
     final isSelected = selected ?? false;
+    // Height of a two-line title plus the company line at the user's text
+    // size: the heading block always takes this much, with the company
+    // right under the title and any spare room below it.
+    var headingHeight = 0.0;
+    if (uniform) {
+      final scaler = MediaQuery.textScalerOf(context);
+      double heightOf(String text, TextStyle style) {
+        final painter = TextPainter(
+          text: TextSpan(text: text, style: style),
+          textScaler: scaler,
+          textDirection: TextDirection.ltr,
+        )..layout();
+        final h = painter.height;
+        painter.dispose();
+        return h;
+      }
+
+      headingHeight = heightOf('A\nA', t.h4) + 2 + heightOf('A', t.body);
+    }
 
     return LuzPressable(
       radius: LuzRadius.lg,
@@ -75,23 +108,26 @@ class JobCard extends StatelessWidget {
                       ),
                       const SizedBox(width: LuzSpace.sm),
                       Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              job.title,
-                              style: t.h4,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              job.companyName,
-                              style: t.body.copyWith(color: p.inkMuted),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ],
+                        child: ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: headingHeight),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                job.title,
+                                style: t.h4,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                job.companyName,
+                                style: t.body.copyWith(color: p.inkMuted),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       const SizedBox(width: LuzSpace.xs),
@@ -99,13 +135,18 @@ class JobCard extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: LuzSpace.sm),
+                  // Place on its own line (one line, never pushing the chips
+                  // around), then the chips: the same rows on every card.
+                  _Meta(
+                    icon: Icons.place_outlined,
+                    label: place.isEmpty ? 'Location not given' : place,
+                  ),
+                  const SizedBox(height: LuzSpace.xs),
                   Wrap(
                     spacing: LuzSpace.xs,
                     runSpacing: LuzSpace.xs,
                     crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      if (place.isNotEmpty)
-                        _Meta(icon: Icons.place_outlined, label: place),
                       LuzStatusChip(
                         label: job.employmentType.label,
                         tone: LuzChipTone.neutral,
@@ -117,35 +158,6 @@ class JobCard extends StatelessWidget {
                         ),
                     ],
                   ),
-                  const SizedBox(height: LuzSpace.sm),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          salary ?? 'Salary not disclosed',
-                          style: salary == null
-                              ? t.bodySm.copyWith(color: p.muted)
-                              : t.mono.copyWith(
-                                  color: p.ink,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                        ),
-                      ),
-                      if (job.publishedAt != null)
-                        Text(
-                          formatRelative(job.publishedAt!),
-                          style: t.caption.copyWith(color: p.muted),
-                        ),
-                    ],
-                  ),
-                  if (job.isExternal &&
-                      jobSource(job.externalSource) != null) ...[
-                    const SizedBox(height: LuzSpace.xxs),
-                    SourceAttribution(
-                      source: job.externalSource,
-                      compact: true,
-                    ),
-                  ],
                   if (job.matchReasons.isNotEmpty ||
                       job.distanceKm != null) ...[
                     const SizedBox(height: LuzSpace.xs),
@@ -168,6 +180,56 @@ class JobCard extends StatelessWidget {
                             icon: Icons.auto_awesome_outlined,
                           ),
                       ],
+                    ),
+                  ],
+                  // Salary, date and source close every card; in a grid they
+                  // sit at the bottom so neighbouring cards line up.
+                  if (uniform) const Spacer(),
+                  const SizedBox(height: LuzSpace.sm),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          salary ?? 'Salary not disclosed',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: salary == null
+                              ? t.bodySm.copyWith(color: p.muted)
+                              : t.mono.copyWith(
+                                  color: p.ink,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                        ),
+                      ),
+                      if (job.publishedAt != null)
+                        Text(
+                          formatRelative(job.publishedAt!),
+                          style: t.caption.copyWith(color: p.muted),
+                        ),
+                    ],
+                  ),
+                  if (job.isExternal &&
+                      jobSource(job.externalSource) != null) ...[
+                    const SizedBox(height: LuzSpace.xxs),
+                    SourceAttribution(
+                      source: job.externalSource,
+                      compact: true,
+                    ),
+                  ] else if (uniform) ...[
+                    // Keeps the source line's space, so the salary row sits
+                    // level with neighbouring cards that name a source.
+                    const SizedBox(height: LuzSpace.xxs),
+                    const ExcludeSemantics(
+                      child: Visibility(
+                        visible: false,
+                        maintainSize: true,
+                        maintainAnimation: true,
+                        maintainState: true,
+                        child: SourceAttribution(
+                          source: 'remotive',
+                          compact: true,
+                        ),
+                      ),
                     ),
                   ],
                 ],
@@ -197,6 +259,7 @@ class _Meta extends StatelessWidget {
           child: Text(
             label,
             style: context.luzText.bodySm.copyWith(color: p.inkMuted),
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
         ),

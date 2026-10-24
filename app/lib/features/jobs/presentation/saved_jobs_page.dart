@@ -47,7 +47,10 @@ class SavedJobsPage extends ConsumerWidget {
                   )
                 : LuzGrid(
                     maxColumns: 2,
-                    children: [for (final j in jobs) JobCard(job: j)],
+                    equalHeights: true,
+                    children: [
+                      for (final j in jobs) JobCard(job: j, uniform: true),
+                    ],
                   ),
           ),
         ],

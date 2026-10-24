@@ -206,7 +206,10 @@ class _PickedForYou extends ConsumerWidget {
               ),
             )
           else
-            LuzGrid(children: [for (final j in jobs) JobCard(job: j)]),
+            LuzGrid(
+              equalHeights: true,
+              children: [for (final j in jobs) JobCard(job: j, uniform: true)],
+            ),
         ],
       ),
     );
@@ -294,7 +297,10 @@ class _LatestJobs extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: LuzSpace.lg),
-          LuzGrid(children: [for (final j in jobs) JobCard(job: j)]),
+          LuzGrid(
+            equalHeights: true,
+            children: [for (final j in jobs) JobCard(job: j, uniform: true)],
+          ),
         ],
       ),
     );
