@@ -104,6 +104,60 @@ export function parseFeed(xml: string): FeedItem[] {
   return items;
 }
 
+// ---------------------------------------------------------------- images
+
+/**
+ * The preview image an article page declares for link cards (og:image, or
+ * twitter:image). DEV's feed carries no images, but every post page has one.
+ */
+export function pageImageOf(html: string): string | null {
+  const head = html.slice(0, 200_000);
+  for (const name of ['og:image', 'og:image:secure_url', 'twitter:image']) {
+    const meta = head.match(new RegExp(`<meta\\s[^>]*(?:property|name)=["']${name}["'][^>]*>`, 'i'))?.[0];
+    const content = meta?.match(/\scontent=["']([^"']+)["']/i)?.[1];
+    const url = httpsUrl(content ? decodeEntities(content) : null);
+    if (url) return url;
+  }
+  return null;
+}
+
+/** Article pages are only read on the sites LuzHire imports from. */
+const FEED_SITES = FEEDS.map((f) => new URL(f.url).hostname.replace(/^www\./, ''));
+
+function onFeedSite(link: string): boolean {
+  try {
+    const host = new URL(link).hostname.replace(/^www\./, '');
+    return FEED_SITES.some((site) => host === site || host.endsWith(`.${site}`));
+  } catch {
+    return false;
+  }
+}
+
+/** Most pages read per run: about 20 new items per feed plus a backlog. */
+const MAX_PAGES = 60;
+const PAGE_CONCURRENCY = 6;
+
+/**
+ * Preview images for article links, read from their pages a few at a time.
+ * A page that fails or has none is simply left out.
+ */
+export async function pageImages(links: string[], getText: (url: string) => Promise<string>): Promise<Map<string, string>> {
+  const found = new Map<string, string>();
+  const queue = [...new Set(links.filter(onFeedSite))].slice(0, MAX_PAGES);
+  const worker = async () => {
+    for (let link = queue.shift(); link; link = queue.shift()) {
+      try {
+        const image = pageImageOf(await getText(link));
+        if (image) found.set(link, image);
+      } catch {
+        // No image for this one; the app shows its topic artwork instead.
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: PAGE_CONCURRENCY }, worker));
+  return found;
+}
+
 // ---------------------------------------------------------------- relevance
 
 const CAREER_WORDS = [
@@ -211,6 +265,10 @@ export interface NewsDeps {
   insert(items: NewsItem[]): Promise<number>;
   /** Deletes headlines older than [days] that are not featured; returns how many. */
   prune(days: number): Promise<number>;
+  /** Links of stored headlines that have no image yet (newest first). */
+  withoutImage(limit: number): Promise<string[]>;
+  /** Sets the image of stored headlines that still have none; returns how many. */
+  setImages(images: Map<string, string>): Promise<number>;
   log(run: NewsRunLog): Promise<void>;
 }
 
@@ -224,7 +282,10 @@ export async function runNewsIngest(deps: NewsDeps, feeds: NewsFeed[] = FEEDS): 
       log.fetched = items.length;
       const keep = toNews(items, feed, now);
       log.skipped = items.length - keep.length;
-      log.inserted = keep.length > 0 ? await deps.insert(keep) : 0;
+      // Feeds without images (DEV): use each article page's preview image.
+      const images = await pageImages(keep.filter((n) => !n.imageUrl).map((n) => n.url), deps.getText);
+      const withImages = keep.map((n) => (n.imageUrl ? n : { ...n, imageUrl: images.get(n.url) ?? null }));
+      log.inserted = withImages.length > 0 ? await deps.insert(withImages) : 0;
     } catch (e) {
       log.error = clamp(e instanceof Error ? e.message : String(e), 300);
     }
@@ -232,5 +293,21 @@ export async function runNewsIngest(deps: NewsDeps, feeds: NewsFeed[] = FEEDS): 
     await deps.log(log);
   }
   await deps.prune(60);
+
+  // Headlines stored before they could get an image (or whose page failed).
+  const backfill: NewsRunLog = { source: 'news:images', fetched: 0, inserted: 0, updated: 0, skipped: 0, closed: 0, error: null };
+  try {
+    const links = await deps.withoutImage(MAX_PAGES);
+    backfill.fetched = links.length;
+    const images = await pageImages(links, deps.getText);
+    backfill.updated = images.size > 0 ? await deps.setImages(images) : 0;
+    backfill.skipped = links.length - images.size;
+  } catch (e) {
+    backfill.error = clamp(e instanceof Error ? e.message : String(e), 300);
+  }
+  if (backfill.fetched > 0 || backfill.error) {
+    logs.push(backfill);
+    await deps.log(backfill);
+  }
   return logs;
 }
