@@ -402,7 +402,10 @@ class _CompanyBody extends ConsumerWidget {
             else ...[
               LuzGrid(
                 maxColumns: 2,
-                children: [for (final j in jobs.jobs) JobCard(job: j)],
+                equalHeights: true,
+                children: [
+                  for (final j in jobs.jobs) JobCard(job: j, uniform: true),
+                ],
               ),
               LoadMoreFooter(
                 loading: jobs.loading,

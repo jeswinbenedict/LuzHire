@@ -354,6 +354,57 @@ void main() {
     expect(find.text('Flutter Developer 7'), findsNothing);
   });
 
+  testWidgets('job cards in a grid row share height and line up', (
+    tester,
+  ) async {
+    final short = fakeJob(1, title: 'Writer');
+    final long = Job(
+      id: 'long',
+      slug: 'long',
+      title: 'Tier III Service Desk Engineer for Enterprise Customers',
+      companyName: 'Unio Digital',
+      employmentType: EmploymentType.contract,
+      workplace: WorkplaceType.remote,
+      status: JobStatus.published,
+      location: 'Remote (USA, Canada, UK, Australia, Ireland, Germany)',
+      publishedAt: DateTime.utc(2026, 10, 19, 9),
+      isExternal: true,
+      externalSource: 'remotive',
+      externalUrl: 'https://remotive.com/remote-jobs/x-long',
+    );
+    await _pump(
+      tester,
+      location: '/',
+      width: 1280,
+      jobs: FakeJobsRepository([short, long, fakeJob(3)]),
+    );
+    Rect card(String title) => tester.getRect(
+      find
+          .ancestor(of: find.text(title), matching: find.byType(LuzSurface))
+          .last,
+    );
+    final a = card('Writer');
+    final b = card(long.title);
+    expect(a.top, b.top);
+    expect(a.height, b.height);
+    // The bottom rows sit at the same height on both cards.
+    final salaryA = tester.getRect(find.textContaining('/ year').first);
+    final salaryB = tester.getRect(find.text('Salary not disclosed').first);
+    expect(salaryA.top, closeTo(salaryB.top, 1));
+    // A one-line title keeps its company right below it.
+    final title = tester.getRect(find.text('Writer'));
+    final company = tester.getRect(
+      find.descendant(
+        of: find
+            .ancestor(of: find.text('Writer'), matching: find.byType(Column))
+            .first,
+        matching: find.text('Nimbus Labs'),
+      ),
+    );
+    expect(company.top - title.bottom, closeTo(2, 1));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('external listings name and link their source', (tester) async {
     final jobs = FakeJobsRepository([
       Job(

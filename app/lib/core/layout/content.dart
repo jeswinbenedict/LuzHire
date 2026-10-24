@@ -40,11 +40,17 @@ class LuzGrid extends StatelessWidget {
     required this.children,
     this.spacing = LuzSpace.lg,
     this.maxColumns = 3,
+    this.equalHeights = false,
   });
 
   final List<Widget> children;
   final double spacing;
   final int maxColumns;
+
+  /// Every item in a row takes the row's tallest height, so cards line up.
+  /// Items must not contain a LayoutBuilder (rows are measured with
+  /// IntrinsicHeight).
+  final bool equalHeights;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +59,25 @@ class LuzGrid extends StatelessWidget {
         final cols = LuzBreakpoint.fromWidth(c.maxWidth).gridColumns
             .clamp(1, maxColumns);
         final w = (c.maxWidth - spacing * (cols - 1)) / cols;
+        if (equalHeights) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            spacing: spacing,
+            children: [
+              for (var i = 0; i < children.length; i += cols)
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    spacing: spacing,
+                    children: [
+                      for (final child in children.skip(i).take(cols))
+                        SizedBox(width: w, child: child),
+                    ],
+                  ),
+                ),
+            ],
+          );
+        }
         return Wrap(
           spacing: spacing,
           runSpacing: spacing,
