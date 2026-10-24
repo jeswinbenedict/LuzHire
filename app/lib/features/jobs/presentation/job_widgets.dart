@@ -403,6 +403,12 @@ class JobFilters extends ConsumerWidget {
   }
 }
 
+/// Padding of each scrolling pane on the wide job search page: room for the
+/// cards' relief shadows (LuzDepth.raisedMd: 8 px offset + 16 px blur), so a
+/// scrolling pane never cuts one off, and card edges meet the header's 24 px
+/// margins.
+const jobPanePadding = EdgeInsets.all(LuzSpace.lg);
+
 /// End of a paginated list: loads the next page as soon as it is shown,
 /// with a button as the keyboard / slow-network fallback.
 class LoadMoreFooter extends StatefulWidget {
@@ -413,7 +419,7 @@ class LoadMoreFooter extends StatefulWidget {
     required this.error,
     required this.onLoadMore,
     required this.isEmpty,
-    this.endLabel = "You've reached the end.",
+    this.endLabel = "You've seen all the matching jobs.",
   });
 
   final bool loading;
