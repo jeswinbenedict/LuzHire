@@ -80,13 +80,13 @@ void main() {
       final jobs = FakeJobsRepository();
       await _pump(tester, location: '/jobs', width: 375, jobs: jobs);
       await tester.scrollUntilVisible(
-        find.text("You've reached the end."),
+        find.text("You've seen all the matching jobs."),
         600,
         scrollable: _vertical.first,
       );
       await tester.pumpAndSettle();
       expect(jobs.queries.length, greaterThanOrEqualTo(2));
-      expect(find.text("You've reached the end."), findsOneWidget);
+      expect(find.text("You've seen all the matching jobs."), findsOneWidget);
     });
 
     testWidgets('phones open filters in a sheet', (tester) async {

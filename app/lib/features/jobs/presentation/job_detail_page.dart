@@ -84,7 +84,7 @@ class _JobBody extends ConsumerWidget {
 
     if (embedded) {
       return ListView(
-        padding: const EdgeInsets.symmetric(vertical: LuzSpace.md),
+        padding: jobPanePadding,
         children: [
           LuzCard(child: _Header(job: job, compact: true)),
           const SizedBox(height: LuzSpace.md),
@@ -271,6 +271,19 @@ class _Header extends ConsumerWidget {
   }
 }
 
+/// The summary leads the page only when it adds something: imported jobs
+/// take it from the description's first lines, which follow right below.
+bool _showSummary(Job job) {
+  final summary = (job.summary ?? '').replaceAll('…', '').trim();
+  if (summary.isEmpty) return false;
+  String flat(String s) => s
+      .replaceAll(RegExp(r'[*#_`>]|^\s*-\s', multiLine: true), ' ')
+      .replaceAll(RegExp(r'\s+'), ' ')
+      .trim()
+      .toLowerCase();
+  return !flat(job.descriptionMd).contains(flat(summary));
+}
+
 class _MainColumn extends ConsumerWidget {
   const _MainColumn({required this.job, required this.embedded});
   final Job job;
@@ -297,7 +310,7 @@ class _MainColumn extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if ((job.summary ?? '').isNotEmpty)
+        if (_showSummary(job))
           Padding(
             padding: const EdgeInsets.only(bottom: LuzSpace.lg),
             child: Text(

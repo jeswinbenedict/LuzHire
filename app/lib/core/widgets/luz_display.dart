@@ -270,25 +270,38 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
   }) {
     final p = context.luz;
     final t = context.luzText;
+    // 48 dp tall so the whole row is the touch / semantics target, with the
+    // text centred in it (level with the icon and the Search button). A
+    // field's decorator puts extra height below the text, so the padding is
+    // split evenly from the line's real height at the user's text size.
+    final line = TextPainter(
+      text: TextSpan(text: hint, style: t.body),
+      textScaler: MediaQuery.textScalerOf(context),
+      textDirection: TextDirection.ltr,
+      maxLines: 1,
+    )..layout();
+    final padding = ((LuzMinTarget.touch - line.height) / 2).clamp(0.0, 24.0);
+    line.dispose();
     return Row(
       children: [
         Icon(icon, size: 20, color: p.muted),
         const SizedBox(width: LuzSpace.sm),
         Expanded(
-          // 48 dp tall so the whole row is the touch / semantics target.
-          child: ConstrainedBox(
-            constraints: const BoxConstraints(minHeight: LuzMinTarget.touch),
-            child: TextField(
-              controller: c,
-              focusNode: focus,
-              onSubmitted: _submit,
-              textInputAction: TextInputAction.search,
-              textAlignVertical: TextAlignVertical.center,
-              style: t.body.copyWith(color: p.ink),
-              decoration: InputDecoration.collapsed(
-                hintText: hint,
-                hintStyle: t.body.copyWith(color: p.muted),
-              ),
+          child: TextField(
+            controller: c,
+            focusNode: focus,
+            onSubmitted: _submit,
+            textInputAction: TextInputAction.search,
+            style: t.body.copyWith(color: p.ink),
+            decoration: InputDecoration(
+              isDense: true,
+              filled: false,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.symmetric(vertical: padding),
+              hintText: hint,
+              hintStyle: t.body.copyWith(color: p.muted),
             ),
           ),
         ),

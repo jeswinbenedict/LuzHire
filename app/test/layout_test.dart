@@ -269,6 +269,63 @@ void main() {
     });
   });
 
+  for (final width in [400.0, 1000.0]) {
+    testWidgets('search bar text is centred with its icons at '
+        '${width.toInt()} px', (tester) async {
+      setWindow(tester, width);
+      final searches = <String>[];
+      await tester.pumpWidget(
+        wrap(
+          SizedBox(
+            width: width - 40,
+            child: LuzSearchBar(onSearch: (k, l) => searches.add('$k|$l')),
+          ),
+        ),
+      );
+      for (final (hint, icon) in [
+        ('Job title, skill or company', Icons.search),
+        ('City or "Remote"', Icons.place_outlined),
+      ]) {
+        final hintBox = tester.getRect(find.text(hint));
+        final iconBox = tester.getRect(find.byIcon(icon).first);
+        final field = find.ancestor(
+          of: find.text(hint),
+          matching: find.byType(TextField),
+        );
+        final fieldBox = tester.getRect(field);
+        expect(fieldBox.height, greaterThanOrEqualTo(48), reason: hint);
+        expect(
+          (hintBox.center.dy - iconBox.center.dy).abs(),
+          lessThan(1.5),
+          reason: hint,
+        );
+        expect(
+          (hintBox.center.dy - fieldBox.center.dy).abs(),
+          lessThan(1.5),
+          reason: hint,
+        );
+      }
+
+      // The fields stay single-line: the keyboard's search key searches.
+      final fields = find.byType(TextField);
+      expect(tester.widgetList<TextField>(fields).map((f) => f.maxLines), [
+        1,
+        1,
+      ]);
+      await tester.enterText(fields.first, 'flutter');
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pump();
+      await tester.enterText(fields.last, 'Pune');
+      await tester.testTextInput.receiveAction(TextInputAction.search);
+      await tester.pump();
+      expect(searches, ['flutter|', 'flutter|Pune']);
+      final texts = tester
+          .widgetList<TextField>(fields)
+          .map((f) => f.controller!.text);
+      expect(texts, ['flutter', 'Pune']);
+    });
+  }
+
   testWidgets('range slider thumbs move with arrow keys', (tester) async {
     var values = const RangeValues(10, 20);
     await tester.pumpWidget(

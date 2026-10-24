@@ -107,6 +107,9 @@ class _JobSearchPageState extends ConsumerState<JobSearchPage> {
           onLoadMore: notifier.loadMore,
           onClearFilters: () => _go(query.clearFilters()),
           leading: withFilters ? const [] : [header],
+          padding: withFilters
+              ? jobPanePadding
+              : const EdgeInsets.all(LuzSpace.md),
         );
 
         if (!withFilters) return results;
@@ -123,40 +126,35 @@ class _JobSearchPageState extends ConsumerState<JobSearchPage> {
               ),
               child: header,
             ),
+            // Each pane pads its own cards (jobPanePadding), so the three columns
+            // start on one line and their outer edges meet the header's.
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: LuzSpace.lg),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    SizedBox(
-                      width: 280,
-                      child: SingleChildScrollView(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: LuzSpace.md,
-                        ),
-                        child: LuzCard(
-                          child: JobFilters(query: query, onChanged: _go),
-                        ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(
+                    width: 280 + 2 * LuzSpace.lg,
+                    child: SingleChildScrollView(
+                      padding: jobPanePadding,
+                      child: LuzCard(
+                        child: JobFilters(query: query, onChanged: _go),
                       ),
                     ),
-                    const SizedBox(width: LuzSpace.lg),
-                    if (threePane) ...[
-                      SizedBox(width: 440, child: results),
-                      const SizedBox(width: LuzSpace.lg),
-                      Expanded(
-                        child: selected == null
-                            ? const SizedBox.shrink()
-                            : JobDetailView(
-                                key: ValueKey(selected),
-                                slug: selected,
-                                embedded: true,
-                              ),
-                      ),
-                    ] else
-                      Expanded(child: results),
-                  ],
-                ),
+                  ),
+                  if (threePane) ...[
+                    SizedBox(width: 408 + 2 * LuzSpace.lg, child: results),
+                    Expanded(
+                      child: selected == null
+                          ? const SizedBox.shrink()
+                          : JobDetailView(
+                              key: ValueKey(selected),
+                              slug: selected,
+                              embedded: true,
+                            ),
+                    ),
+                  ] else
+                    Expanded(child: results),
+                ],
               ),
             ),
           ],
@@ -227,7 +225,7 @@ class _Header extends StatelessWidget {
           children: [
             Expanded(
               child: Text(
-                'Newest first',
+                'Sorted by newest',
                 style: t.bodySm.copyWith(color: p.inkMuted),
               ),
             ),
@@ -267,6 +265,7 @@ class _Results extends StatelessWidget {
     required this.onLoadMore,
     required this.onClearFilters,
     required this.leading,
+    required this.padding,
   });
 
   final JobSearchState state;
@@ -276,6 +275,7 @@ class _Results extends StatelessWidget {
   final VoidCallback onLoadMore;
   final VoidCallback onClearFilters;
   final List<Widget> leading;
+  final EdgeInsets padding;
 
   @override
   Widget build(BuildContext context) {
@@ -313,10 +313,7 @@ class _Results extends StatelessWidget {
     ];
 
     return ListView.separated(
-      padding: const EdgeInsets.symmetric(
-        horizontal: LuzSpace.md,
-        vertical: LuzSpace.md,
-      ),
+      padding: padding,
       itemCount: items.length,
       separatorBuilder: (_, _) => const SizedBox(height: LuzSpace.md),
       itemBuilder: (_, i) => items[i],
