@@ -423,6 +423,25 @@ void main() {
     expect(await height(LuzInputMode.touch), 48);
   });
 
+  testWidgets('compact pages shrink controls only with a pointer', (
+    tester,
+  ) async {
+    Future<double> height(LuzInputMode mode) async {
+      await tester.pumpWidget(
+        wrap(
+          LuzDense(
+            child: LuzButton(label: 'Map', onPressed: () {}),
+          ),
+          mode: mode,
+        ),
+      );
+      return tester.getSize(find.byType(LuzSurface)).height;
+    }
+
+    expect(await height(LuzInputMode.pointer), 40);
+    expect(await height(LuzInputMode.touch), 48); // touch targets stay 48 dp
+  });
+
   testWidgets('dark theme toast keeps its action readable', (tester) async {
     await tester.pumpWidget(
       MaterialApp(

@@ -6,6 +6,7 @@ import '../../../core/data/enums.dart';
 import '../../../core/data/failures.dart';
 import '../../../core/data/format.dart';
 import '../../../core/data/models.dart';
+import '../../../core/layout/input_mode.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
@@ -45,6 +46,13 @@ class JobCard extends StatelessWidget {
     final salary = formatSalary(job);
     final place = formatPlace(job);
     final isSelected = selected ?? false;
+    // Compact pages (job search with a pointer): smaller logo, title and gaps.
+    final dense = LuzDense.on(context, pointer: context.isPointer);
+    final titleStyle = dense ? t.wsSection : t.h4;
+    final companyStyle = (dense ? t.bodySm : t.body).copyWith(
+      color: p.inkMuted,
+    );
+    final gap = dense ? LuzSpace.xs : LuzSpace.sm;
     // Height of a two-line title plus the company line at the user's text
     // size: the heading block always takes this much, with the company
     // right under the title and any spare room below it.
@@ -62,7 +70,8 @@ class JobCard extends StatelessWidget {
         return h;
       }
 
-      headingHeight = heightOf('A\nA', t.h4) + 2 + heightOf('A', t.body);
+      headingHeight =
+          heightOf('A\nA', titleStyle) + 2 + heightOf('A', companyStyle);
     }
 
     return LuzPressable(
@@ -79,14 +88,16 @@ class JobCard extends StatelessWidget {
         radius: LuzRadius.lg,
         outline: isSelected ? p.accent : null,
         outlineWidth: 2,
-        padding: const EdgeInsets.all(LuzSpace.md),
+        padding: dense
+            ? const EdgeInsets.fromLTRB(LuzSpace.md, 14, LuzSpace.md, 14)
+            : const EdgeInsets.all(LuzSpace.md),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (isSelected) ...[
               Container(
                 width: 4,
-                height: 56,
+                height: dense ? 44 : 56,
                 decoration: BoxDecoration(
                   color: p.accent,
                   borderRadius: BorderRadius.circular(LuzRadius.pill),
@@ -104,7 +115,7 @@ class JobCard extends StatelessWidget {
                       LuzLogoSocket(
                         name: job.companyName,
                         logoUrl: job.logoUrl,
-                        size: 44,
+                        size: dense ? 38 : 44,
                       ),
                       const SizedBox(width: LuzSpace.sm),
                       Expanded(
@@ -115,14 +126,14 @@ class JobCard extends StatelessWidget {
                             children: [
                               Text(
                                 job.title,
-                                style: t.h4,
+                                style: titleStyle,
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 job.companyName,
-                                style: t.body.copyWith(color: p.inkMuted),
+                                style: companyStyle,
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -134,30 +145,43 @@ class JobCard extends StatelessWidget {
                       SaveJobButton(job: job),
                     ],
                   ),
-                  const SizedBox(height: LuzSpace.sm),
+                  SizedBox(height: gap),
                   // Place on its own line (one line, never pushing the chips
                   // around), then the chips: the same rows on every card.
-                  _Meta(
-                    icon: Icons.place_outlined,
-                    label: place.isEmpty ? 'Location not given' : place,
-                  ),
-                  const SizedBox(height: LuzSpace.xs),
-                  Wrap(
-                    spacing: LuzSpace.xs,
-                    runSpacing: LuzSpace.xs,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      LuzStatusChip(
-                        label: job.employmentType.label,
-                        tone: LuzChipTone.neutral,
-                      ),
-                      if (job.experienceLevel != null)
+                  // Compact: place and type share one quiet line instead.
+                  if (dense)
+                    _Meta(
+                      icon: Icons.place_outlined,
+                      label: [
+                        place.isEmpty ? 'Location not given' : place,
+                        job.employmentType.label,
+                        if (job.experienceLevel != null)
+                          job.experienceLevel!.label,
+                      ].join(' · '),
+                    )
+                  else ...[
+                    _Meta(
+                      icon: Icons.place_outlined,
+                      label: place.isEmpty ? 'Location not given' : place,
+                    ),
+                    const SizedBox(height: LuzSpace.xs),
+                    Wrap(
+                      spacing: LuzSpace.xs,
+                      runSpacing: LuzSpace.xs,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
                         LuzStatusChip(
-                          label: job.experienceLevel!.label,
+                          label: job.employmentType.label,
                           tone: LuzChipTone.neutral,
                         ),
-                    ],
-                  ),
+                        if (job.experienceLevel != null)
+                          LuzStatusChip(
+                            label: job.experienceLevel!.label,
+                            tone: LuzChipTone.neutral,
+                          ),
+                      ],
+                    ),
+                  ],
                   if (job.matchReasons.isNotEmpty ||
                       job.distanceKm != null) ...[
                     const SizedBox(height: LuzSpace.xs),
@@ -185,7 +209,7 @@ class JobCard extends StatelessWidget {
                   // Salary, date and source close every card; in a grid they
                   // sit at the bottom so neighbouring cards line up.
                   if (uniform) const Spacer(),
-                  const SizedBox(height: LuzSpace.sm),
+                  SizedBox(height: gap),
                   Row(
                     children: [
                       Expanded(
@@ -346,9 +370,13 @@ class JobFilters extends ConsumerWidget {
     final p = context.luz;
     final t = context.luzText;
     final skills = ref.watch(skillsProvider).value ?? const [];
+    final dense = LuzDense.on(context, pointer: context.isPointer);
 
     Widget heading(String text) => Padding(
-      padding: const EdgeInsets.only(top: LuzSpace.lg, bottom: LuzSpace.xs),
+      padding: EdgeInsets.only(
+        top: dense ? LuzSpace.md : LuzSpace.lg,
+        bottom: LuzSpace.xs,
+      ),
       child: Text(
         text.toUpperCase(),
         style: t.eyebrow.copyWith(color: p.inkMuted),
@@ -372,7 +400,7 @@ class JobFilters extends ConsumerWidget {
             Expanded(
               child: Semantics(
                 header: true,
-                child: Text('Filters', style: t.h4),
+                child: Text('Filters', style: dense ? t.wsSection : t.h4),
               ),
             ),
             if (query.activeFilterCount > 0)
@@ -389,7 +417,7 @@ class JobFilters extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Remote only', style: t.label),
+                  Text('Remote only', style: dense ? t.bodySm : t.label),
                   Text(
                     'Work from anywhere',
                     style: t.bodySm.copyWith(color: p.inkMuted),

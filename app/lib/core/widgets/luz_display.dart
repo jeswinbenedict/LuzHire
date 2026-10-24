@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_button.dart';
@@ -275,6 +276,10 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
   }) {
     final p = context.luz;
     final t = context.luzText;
+    // Compact pages with a pointer use 40 px fields; touch keeps 48 dp.
+    final target = LuzDense.on(context, pointer: context.isPointer)
+        ? 40.0
+        : LuzMinTarget.touch;
     // 48 dp tall so the whole row is the touch / semantics target, with the
     // text centred in it (level with the icon and the Search button). A
     // field's decorator puts extra height below the text, so the padding is
@@ -285,11 +290,11 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
       textDirection: TextDirection.ltr,
       maxLines: 1,
     )..layout();
-    final padding = ((LuzMinTarget.touch - line.height) / 2).clamp(0.0, 24.0);
+    final padding = ((target - line.height) / 2).clamp(0.0, 24.0);
     line.dispose();
     return Row(
       children: [
-        Icon(icon, size: 20, color: p.muted),
+        Icon(icon, size: target < LuzMinTarget.touch ? 18 : 20, color: p.muted),
         const SizedBox(width: LuzSpace.sm),
         Expanded(
           child: TextField(
@@ -363,13 +368,16 @@ class _LuzSearchBarState extends State<LuzSearchBar> {
             ),
           );
         }
+        final dense = LuzDense.on(context, pointer: context.isPointer);
         return LuzSurface(
-          depth: LuzDepth.insetMd,
+          depth: dense ? LuzDepth.insetSm : LuzDepth.insetMd,
           radius: LuzRadius.pill,
           outline: p.outline,
-          padding: const EdgeInsets.fromLTRB(LuzSpace.lg, 6, 6, 6),
+          padding: dense
+              ? const EdgeInsets.fromLTRB(LuzSpace.md, 4, 4, 4)
+              : const EdgeInsets.fromLTRB(LuzSpace.lg, 6, 6, 6),
           child: SizedBox(
-            height: 56,
+            height: dense ? 40 : 56,
             child: Row(
               children: [
                 Expanded(flex: 3, child: keyword),

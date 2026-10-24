@@ -15,14 +15,14 @@ import '../../../core/router/links.dart';
 /// Job search (Stitch: docs/design/stitch/jobs-search-*.png). Filters live in
 /// the URL, so every search is a shareable link.
 ///
-/// ≥ 1360 px: filters | results | job preview. ≥ 1024 px: filters | results.
+/// ≥ 1280 px: filters | results | job preview. ≥ 1024 px: filters | results.
 /// Below: results, with filters in a bottom sheet.
 class JobSearchPage extends ConsumerStatefulWidget {
   const JobSearchPage({super.key, required this.query});
 
   final JobSearchQuery query;
 
-  static const threePaneWidth = 1360.0;
+  static const threePaneWidth = 1280.0;
   static const filterPanelWidth = 1024.0;
 
   @override
@@ -112,52 +112,66 @@ class _JobSearchPageState extends ConsumerState<JobSearchPage> {
               : const EdgeInsets.all(LuzSpace.md),
         );
 
-        if (!withFilters) return results;
+        if (!withFilters) return LuzDense(child: results);
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                LuzSpace.lg,
-                LuzSpace.lg,
-                LuzSpace.lg,
-                0,
-              ),
-              child: header,
-            ),
-            // Each pane pads its own cards (jobPanePadding), so the three columns
-            // start on one line and their outer edges meet the header's.
-            Expanded(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+        // Compact and centred: at most 1440 px wide, so the three panes keep
+        // readable widths on large screens (DESIGN.md §7).
+        return LuzDense(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 1440),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  SizedBox(
-                    width: 280 + 2 * LuzSpace.lg,
-                    child: SingleChildScrollView(
-                      padding: jobPanePadding,
-                      child: LuzCard(
-                        child: JobFilters(query: query, onChanged: _go),
-                      ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(
+                      LuzSpace.lg,
+                      LuzSpace.lg,
+                      LuzSpace.lg,
+                      0,
+                    ),
+                    child: header,
+                  ),
+                  // Each pane pads its own cards (jobPanePadding), so the three columns
+                  // start on one line and their outer edges meet the header's.
+                  Expanded(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        SizedBox(
+                          width: 256 + 2 * LuzSpace.lg,
+                          child: SingleChildScrollView(
+                            padding: jobPanePadding,
+                            child: LuzCard(
+                              padding: const EdgeInsets.all(LuzSpace.md + 4),
+                              child: JobFilters(query: query, onChanged: _go),
+                            ),
+                          ),
+                        ),
+                        if (threePane) ...[
+                          SizedBox(
+                            width: 400 + 2 * LuzSpace.lg,
+                            child: results,
+                          ),
+                          Expanded(
+                            child: selected == null
+                                ? const SizedBox.shrink()
+                                : JobDetailView(
+                                    key: ValueKey(selected),
+                                    slug: selected,
+                                    embedded: true,
+                                  ),
+                          ),
+                        ] else
+                          Expanded(child: results),
+                      ],
                     ),
                   ),
-                  if (threePane) ...[
-                    SizedBox(width: 408 + 2 * LuzSpace.lg, child: results),
-                    Expanded(
-                      child: selected == null
-                          ? const SizedBox.shrink()
-                          : JobDetailView(
-                              key: ValueKey(selected),
-                              slug: selected,
-                              embedded: true,
-                            ),
-                    ),
-                  ] else
-                    Expanded(child: results),
                 ],
               ),
             ),
-          ],
+          ),
         );
       },
     );

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import '../layout/input_mode.dart';
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
 import 'luz_pressable.dart';
@@ -160,6 +161,7 @@ class _LuzCheckRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final p = context.luz;
     final enabled = onTap != null;
+    final dense = LuzDense.on(context, pointer: context.isPointer);
     return LuzPressable(
       onPressed: onTap,
       radius: LuzRadius.xs,
@@ -167,7 +169,7 @@ class _LuzCheckRow extends StatelessWidget {
       toggled: round ? null : checked,
       selected: round ? checked : null,
       builder: (context, pressed, _) => Padding(
-        padding: const EdgeInsets.symmetric(vertical: 6),
+        padding: EdgeInsets.symmetric(vertical: dense ? 4 : 6),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -178,7 +180,7 @@ class _LuzCheckRow extends StatelessWidget {
               outline: checked ? null : p.outline,
               duration: LuzMotion.toggle,
               child: SizedBox.square(
-                dimension: 22,
+                dimension: dense ? 18 : 22,
                 child: checked
                     ? (round
                           ? Center(
@@ -191,9 +193,9 @@ class _LuzCheckRow extends StatelessWidget {
                                 ),
                               ),
                             )
-                          : const Icon(
+                          : Icon(
                               Icons.check,
-                              size: 16,
+                              size: dense ? 13 : 16,
                               color: LuzBrand.onPrimary,
                             ))
                     : null,
@@ -203,9 +205,8 @@ class _LuzCheckRow extends StatelessWidget {
             Flexible(
               child: Text(
                 label,
-                style: context.luzText.body.copyWith(
-                  color: enabled ? p.ink : p.disabled,
-                ),
+                style: (dense ? context.luzText.bodySm : context.luzText.body)
+                    .copyWith(color: enabled ? p.ink : p.disabled),
               ),
             ),
           ],

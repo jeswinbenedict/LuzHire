@@ -52,9 +52,9 @@ class LuzButton extends StatelessWidget {
     final enabled = onPressed != null;
     final isAccent = variant == LuzButtonVariant.accent;
     final radius = zone.buttonRadius;
-    final textStyle = zone.isWorkspace
-        ? context.luzText.buttonSm
-        : context.luzText.button;
+    final dense = LuzDense.on(context, pointer: context.isPointer);
+    final small = zone.isWorkspace || dense;
+    final textStyle = small ? context.luzText.buttonSm : context.luzText.button;
 
     return LuzPressable(
       onPressed: onPressed,
@@ -82,7 +82,7 @@ class LuzButton extends StatelessWidget {
               Opacity(opacity: enabled ? 1 : 0.5, child: leading),
               const SizedBox(width: LuzSpace.sm),
             ] else if (icon != null) ...[
-              Icon(icon, size: zone.isWorkspace ? 16 : 18, color: fg),
+              Icon(icon, size: small ? 16 : 18, color: fg),
               const SizedBox(width: LuzSpace.xs),
             ],
             Flexible(
@@ -103,9 +103,13 @@ class LuzButton extends StatelessWidget {
               : zone.buttonDepth,
           radius: radius,
           color: fill,
-          padding: EdgeInsets.symmetric(horizontal: zone.isWorkspace ? 14 : 24),
+          padding: EdgeInsets.symmetric(
+            horizontal: zone.isWorkspace ? 14 : (dense ? 18 : 24),
+          ),
           child: SizedBox(
-            height: zone.controlHeight(pointer: context.isPointer),
+            height: dense && !zone.isWorkspace
+                ? 40
+                : zone.controlHeight(pointer: context.isPointer),
             child: Center(widthFactor: 1, child: content),
           ),
         );

@@ -18,7 +18,7 @@ final _vertical = find.byWidgetPredicate(
 Future<GoRouter> _pump(
   WidgetTester tester, {
   required String location,
-  double width = 1280,
+  double width = 1200, // filters | results; the preview pane starts at 1280
   FakeJobsRepository? jobs,
   FakeSavedJobsRepository? saved,
   FakeCompaniesRepository? companies,
