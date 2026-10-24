@@ -1,4 +1,4 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:flutter/material.dart';
 
 import '../theme/app_theme.dart';
@@ -8,22 +8,26 @@ import 'luz_pressable.dart' show LuzMinTarget;
 import 'luz_surface.dart';
 import 'luz_zone.dart';
 
-/// Job-provider hosts whose images carry no CORS headers. Flutter web draws
-/// images on a canvas, which needs CORS, so these load through /api/img (a
-/// cached same-origin copy). Keep in sync with IMAGE_HOSTS in
-/// api/_lib/image-proxy.ts.
-const _proxiedImageHosts = {
+/// Third-party image hosts (job logos, news covers). Flutter web downloads
+/// images with fetch(): that needs CORS, which some hosts don't send, and the
+/// site's CSP (connect-src) only allows LuzHire's own hosts. So these load
+/// through /api/img, a cached same-origin copy. Must match IMAGE_HOSTS in
+/// api/_lib/image-proxy.ts (a test checks).
+@visibleForTesting
+const proxiedImageHosts = {
   'remotive.com',
   'www.remotive.com',
   'cdn.hashnode.com',
   'cdn-images.himalayas.app',
+  'media2.dev.to',
+  'jobicy.com',
 };
 
 /// The URL to load [url] from on this platform.
 String networkImageUrl(String url) {
   if (!kIsWeb) return url;
   final uri = Uri.tryParse(url);
-  if (uri == null || !_proxiedImageHosts.contains(uri.host)) return url;
+  if (uri == null || !proxiedImageHosts.contains(uri.host)) return url;
   return Uri.base
       .resolveUri(Uri(path: '/api/img', queryParameters: {'u': url}))
       .toString();

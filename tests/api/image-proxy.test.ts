@@ -7,6 +7,8 @@ const png = (size = 10, type = 'image/png') =>
 describe('image proxy', () => {
   it('only accepts https URLs on listed hosts', () => {
     expect(allowedImageUrl('https://remotive.com/job/7/logo')?.hostname).toBe('remotive.com');
+    expect(allowedImageUrl('https://media2.dev.to/dynamic/image/width=1200/cover.png')?.hostname).toBe('media2.dev.to');
+    expect(allowedImageUrl('https://jobicy.com/data/logo.png')?.hostname).toBe('jobicy.com');
     for (const bad of [
       null,
       'http://remotive.com/job/7/logo',

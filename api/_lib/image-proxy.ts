@@ -8,6 +8,10 @@ export const IMAGE_HOSTS = new Set([
   'www.remotive.com',
   'cdn.hashnode.com',
   'cdn-images.himalayas.app',
+  // News covers and Jobicy logos send CORS headers, but the site's CSP keeps
+  // fetch() (which Flutter web uses for images) to LuzHire's own hosts.
+  'media2.dev.to',
+  'jobicy.com',
 ]);
 
 const TYPES = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
