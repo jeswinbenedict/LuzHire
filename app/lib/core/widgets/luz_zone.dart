@@ -38,3 +38,17 @@ extension LuzZoneDefaults on LuzZoneKind {
   double controlHeight({required bool pointer}) =>
       isWorkspace && pointer ? 38 : 48;
 }
+
+/// Compact sizing for information-dense pages (job search): with a mouse or
+/// trackpad, buttons are 40 px and text one step smaller. Touch keeps its
+/// 48 dp targets (DESIGN.md §10), so read it through [LuzDense.on].
+class LuzDense extends InheritedWidget {
+  const LuzDense({super.key, required super.child});
+
+  /// Whether compact sizing applies here: inside [LuzDense] with a pointer.
+  static bool on(BuildContext context, {required bool pointer}) =>
+      pointer && context.dependOnInheritedWidgetOfExactType<LuzDense>() != null;
+
+  @override
+  bool updateShouldNotify(LuzDense old) => false;
+}

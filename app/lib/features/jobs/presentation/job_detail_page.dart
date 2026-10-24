@@ -83,14 +83,26 @@ class _JobBody extends ConsumerWidget {
     final panel = _ApplyPanel(job: job);
 
     if (embedded) {
+      // One card, read top to bottom: who and what, how to apply, the role.
+      final p = context.luz;
       return ListView(
         padding: jobPanePadding,
         children: [
-          LuzCard(child: _Header(job: job, compact: true)),
-          const SizedBox(height: LuzSpace.md),
-          panel,
-          const SizedBox(height: LuzSpace.md),
-          LuzCard(child: main),
+          LuzCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _Header(job: job, compact: true),
+                const SizedBox(height: LuzSpace.md),
+                _ApplyPanel(job: job, embedded: true),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: LuzSpace.lg),
+                  child: Divider(height: 1, color: p.hairline),
+                ),
+                main,
+              ],
+            ),
+          ),
         ],
       );
     }
@@ -189,7 +201,7 @@ class _Header extends ConsumerWidget {
             LuzLogoSocket(
               name: job.companyName,
               logoUrl: job.logoUrl,
-              size: compact ? 48 : 64,
+              size: compact ? 44 : 64,
             ),
             const SizedBox(width: LuzSpace.md),
             Expanded(
@@ -198,7 +210,7 @@ class _Header extends ConsumerWidget {
                 children: [
                   Semantics(
                     header: true,
-                    child: Text(job.title, style: compact ? t.h3 : t.h2),
+                    child: Text(job.title, style: compact ? t.h4 : t.h2),
                   ),
                   const SizedBox(height: LuzSpace.xxs),
                   Wrap(
@@ -214,7 +226,9 @@ class _Header extends ConsumerWidget {
                       else
                         Text(
                           job.companyName,
-                          style: t.bodyLg.copyWith(color: p.inkMuted),
+                          style: (compact ? t.body : t.bodyLg).copyWith(
+                            color: p.inkMuted,
+                          ),
                         ),
                       if (company?.isVerified ?? false)
                         const LuzStatusChip(
@@ -411,14 +425,54 @@ class _PendingDetails extends ConsumerWidget {
 
 /// Salary, apply, save and share, plus the key facts (Stitch: sticky panel).
 class _ApplyPanel extends StatelessWidget {
-  const _ApplyPanel({required this.job});
+  const _ApplyPanel({required this.job, this.embedded = false});
   final Job job;
+
+  /// Inside the search preview's single card: no card of its own, and the
+  /// apply and save buttons side by side.
+  final bool embedded;
 
   @override
   Widget build(BuildContext context) {
     final p = context.luz;
     final t = context.luzText;
     final salary = formatSalary(job);
+    if (embedded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Text('SALARY', style: t.eyebrow.copyWith(color: p.inkMuted)),
+              const SizedBox(width: LuzSpace.sm),
+              Expanded(
+                child: Text(
+                  salary ?? 'Not disclosed',
+                  style: salary == null
+                      ? t.bodySm.copyWith(color: p.muted)
+                      : t.mono.copyWith(
+                          color: p.ink,
+                          fontWeight: FontWeight.w600,
+                        ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: LuzSpace.sm),
+          Row(
+            children: [
+              Expanded(flex: 3, child: ApplyButton(job: job)),
+              const SizedBox(width: LuzSpace.sm),
+              Expanded(flex: 2, child: SaveJobButton(job: job, expanded: true)),
+              const SizedBox(width: LuzSpace.sm),
+              _ShareButton(job: job),
+            ],
+          ),
+          const SizedBox(height: LuzSpace.md),
+          _Facts(job: job),
+        ],
+      );
+    }
     return LuzCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
