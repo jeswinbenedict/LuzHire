@@ -16,6 +16,7 @@ const _proxiedImageHosts = {
   'remotive.com',
   'www.remotive.com',
   'cdn.hashnode.com',
+  'cdn-images.himalayas.app',
 };
 
 /// The URL to load [url] from on this platform.

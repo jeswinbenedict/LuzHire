@@ -83,6 +83,10 @@
       "schedule": "30 1 * * *"
     },
     {
+      "path": "/api/ingest/companies",
+      "schedule": "15 1 * * *"
+    },
+    {
       "path": "/api/ingest/news",
       "schedule": "45 1 * * *"
     }

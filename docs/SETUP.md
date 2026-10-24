@@ -56,8 +56,8 @@ In the Vercel project → **Settings → Environment Variables** (Production + P
 | 🔴 `FIREBASE_SERVICE_ACCOUNT` | the service-account JSON from step 1.6: open the file in Notepad, copy everything and paste it (base64 also works) |
 | 🔴 `SUPABASE_SERVICE_ROLE_KEY` | Supabase service_role / secret key |
 | 🟢 `SUPABASE_URL` | Supabase Project URL |
-| 🔴 `CRON_SECRET` | random string (32+ characters) that authorises the daily job import (`/api/ingest/jobs`, run by Vercel Cron). Production only |
-| 🔴 `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` | optional: free keys from developer.adzuna.com to import Indian jobs. Without them only Remotive is imported |
+| 🔴 `CRON_SECRET` | random string (32+ characters) that authorises the daily imports (`/api/ingest/jobs`, `/api/ingest/companies` and `/api/ingest/news`, run by Vercel Cron). Production only |
+| 🔴 `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` | optional: free keys from developer.adzuna.com to import Indian jobs. Without them the other feeds (Remotive, Himalayas, Jobicy, Remote OK and the company career boards) still import |
 | 🟢 `ADMIN_EMAILS` | optional: comma-separated emails allowed to claim admin once (Account → Claim admin access). Remove them after use; later admins are promoted in the console |
 | 🟢 `ALLOWED_ORIGINS` | optional, e.g. a staging domain; localhost is allowed automatically outside production |
 | 🔴 `NOTIFY_SECRET` | random string (32+ characters) that authorises the Supabase webhook calling `/api/notify/dispatch` (§6). Production only |

@@ -8,7 +8,19 @@ import {
   parseSalary,
   type IngestJob,
 } from '../../api/_lib/ingest/normalize.js';
-import { adzuna, remotive, type Provider } from '../../api/_lib/ingest/providers.js';
+import { inIndia } from '../../api/_lib/ingest/boards.js';
+import { enabledProviders } from '../../api/_lib/ingest/live.js';
+import {
+  adzuna,
+  ashby,
+  greenhouse,
+  himalayas,
+  jobicy,
+  lever,
+  remoteOk,
+  remotive,
+  type Provider,
+} from '../../api/_lib/ingest/providers.js';
 import { runIngest, type ExistingJob, type IngestDeps, type RunLog } from '../../api/_lib/ingest/run.js';
 
 describe('htmlToMarkdown', () => {
@@ -142,6 +154,262 @@ describe('providers', () => {
   });
 });
 
+describe('company career boards', () => {
+  it('recognises Indian locations, not look-alikes', () => {
+    expect(inIndia('Bengaluru-VTP, India')).toBe(true);
+    expect(inIndia('Gurugram')).toBe(true);
+    expect(inIndia('Remote - India')).toBe(true);
+    expect(inIndia('Indianapolis, Indiana')).toBe(false);
+    expect(inIndia('Singapore')).toBe(false);
+  });
+
+  it('Greenhouse: imports India roles only, with the company name and its own dates', async () => {
+    const urls: string[] = [];
+    const result = await greenhouse([{ token: 'acme', name: 'Acme Corp' }]).fetch(async (url) => {
+      urls.push(url);
+      return {
+        jobs: [
+          {
+            id: 11,
+            title: 'Backend Engineer',
+            absolute_url: 'https://job-boards.greenhouse.io/acme/jobs/11',
+            location: { name: 'Bengaluru, India' },
+            first_published: '2026-05-01T09:00:00-04:00',
+            content: '&lt;p&gt;Build &lt;strong&gt;payments&lt;/strong&gt; for millions of users across India.&lt;/p&gt;',
+          },
+          {
+            id: 12,
+            title: 'Software Engineering Intern',
+            absolute_url: 'https://job-boards.greenhouse.io/acme/jobs/12',
+            location: { name: 'Multiple locations' },
+            offices: [{ name: 'Pune' }, { name: 'Berlin' }],
+            updated_at: '2026-10-01T00:00:00Z',
+            content: '',
+          },
+          { id: 13, title: 'Account Executive', absolute_url: 'https://job-boards.greenhouse.io/acme/jobs/13', location: { name: 'Austin, TX' } },
+          { id: 14, title: 'Unsafe link', absolute_url: 'javascript:alert(1)', location: { name: 'Mumbai' } },
+        ],
+      };
+    });
+    expect(urls).toEqual(['https://boards-api.greenhouse.io/v1/boards/acme/jobs?content=true']);
+    expect(result.jobs.map((j) => j.externalId)).toEqual(['acme:11', 'acme:12']);
+    expect(result.jobs[0]).toMatchObject({
+      source: 'greenhouse',
+      companyName: 'Acme Corp',
+      location: 'Bengaluru, India',
+      workplace: 'onsite',
+      publishedAt: '2026-05-01T13:00:00.000Z',
+      descriptionMd: 'Build **payments** for millions of users across India.',
+    });
+    expect(result.jobs[1]).toMatchObject({ location: 'Pune', employmentType: 'internship' });
+    expect(result.complete).toBe(true);
+  });
+
+  it('Lever: pages through the board and keeps salary only when complete', async () => {
+    const posting = (id: string, over: Record<string, unknown> = {}) => ({
+      id,
+      text: `Role ${id}`,
+      hostedUrl: `https://jobs.lever.co/acme/${id}`,
+      categories: { location: 'hyderabad', commitment: 'Full time', allLocations: ['hyderabad'] },
+      country: 'IN',
+      workplaceType: 'onsite',
+      createdAt: Date.parse('2026-09-01T00:00:00Z'),
+      description: '<p>We are hiring engineers to build the future of lending in India.</p>',
+      lists: [{ text: 'What you will do', content: '<li>Ship features</li>' }],
+      ...over,
+    });
+    const urls: string[] = [];
+    const result = await lever([{ token: 'acme', name: 'Acme' }]).fetch(async (url) => {
+      urls.push(url);
+      const skip = Number(new URL(url).searchParams.get('skip'));
+      if (skip === 0) {
+        return [
+          posting('a', {
+            workplaceType: 'hybrid',
+            salaryRange: { min: 1200000, max: 1800000, currency: 'inr', interval: 'per-year-salary' },
+          }),
+          ...Array.from({ length: 99 }, (_, i) => posting(`f${i}`)),
+        ];
+      }
+      if (skip === 100) {
+        return [
+          posting('remote', { country: 'US', workplaceType: 'remote', categories: { location: 'Remote', allLocations: ['Remote', 'Chennai'] } }),
+          posting('us', { country: 'US', categories: { location: 'New York', allLocations: ['New York'] } }),
+        ];
+      }
+      return [];
+    });
+    // Three pages requested at once; the second was short, so no more.
+    expect(urls).toHaveLength(3);
+    expect(result.jobs).toHaveLength(101);
+    expect(result.jobs[0]).toMatchObject({
+      externalId: 'acme:a',
+      location: 'Hyderabad',
+      workplace: 'hybrid',
+      salaryMin: 1200000,
+      salaryMax: 1800000,
+      salaryCurrency: 'INR',
+      salaryPeriod: 'year',
+    });
+    expect(result.jobs[0]!.descriptionMd).toContain('## What you will do\n\n- Ship features');
+    expect(result.jobs.at(-1)).toMatchObject({ externalId: 'acme:remote', location: 'Chennai', workplace: 'remote' });
+  });
+
+  it('Ashby: skips unlisted jobs and hidden pay', async () => {
+    const result = await ashby([{ token: 'acme', name: 'Acme' }]).fetch(async () => ({
+      jobs: [
+        {
+          id: 'x1',
+          title: 'ML Engineer',
+          jobUrl: 'https://jobs.ashbyhq.com/acme/x1',
+          location: 'Remote',
+          address: { postalAddress: { addressCountry: 'India' } },
+          isRemote: true,
+          workplaceType: 'Remote',
+          employmentType: 'FullTime',
+          isListed: true,
+          shouldDisplayCompensationOnJobPostings: true,
+          compensation: { compensationTierSummary: '₹30L – ₹45L per year' },
+          publishedAt: '2026-10-01T10:00:00.000+00:00',
+          descriptionHtml: '<p>Train speech models for every Indian language at scale.</p>',
+        },
+        {
+          id: 'x2',
+          title: 'Designer',
+          jobUrl: 'https://jobs.ashbyhq.com/acme/x2',
+          location: 'Delhi',
+          employmentType: 'Intern',
+          isListed: true,
+          shouldDisplayCompensationOnJobPostings: false,
+          compensation: { compensationTierSummary: '₹50K per month' },
+          publishedAt: '2026-10-01T10:00:00.000+00:00',
+        },
+        { id: 'x3', title: 'Hidden', jobUrl: 'https://jobs.ashbyhq.com/acme/x3', location: 'Delhi', isListed: false },
+        { id: 'x4', title: 'London role', jobUrl: 'https://jobs.ashbyhq.com/acme/x4', location: 'London', isListed: true },
+      ],
+    }));
+    expect(result.jobs.map((j) => j.externalId)).toEqual(['acme:x1', 'acme:x2']);
+    expect(result.jobs[0]).toMatchObject({ location: 'India', workplace: 'remote', salaryMin: 3000000, salaryCurrency: 'INR' });
+    expect(result.jobs[1]).toMatchObject({ location: 'Delhi', employmentType: 'internship', salaryMin: null });
+  });
+
+  it('a failing board is reported, and only answered boards can close jobs', async () => {
+    const result = await greenhouse([
+      { token: 'up', name: 'Up' },
+      { token: 'down', name: 'Down' },
+    ]).fetch(async (url) => {
+      if (url.includes('/down/')) throw new Error('boards-api.greenhouse.io answered 500');
+      return { jobs: [] };
+    });
+    expect(result.warnings).toEqual(['down: boards-api.greenhouse.io answered 500']);
+    expect(result.covers?.('up:1')).toBe(true);
+    expect(result.covers?.('down:1')).toBe(false);
+    await expect(greenhouse([{ token: 'down', name: 'Down' }]).fetch(async () => { throw new Error('offline'); })).rejects.toThrow(
+      'No board answered',
+    );
+  });
+});
+
+describe('remote job feeds', () => {
+  it('Himalayas: keeps the application link unchanged and reads pay', async () => {
+    const urls: string[] = [];
+    const result = await himalayas(3).fetch(async (url) => {
+      urls.push(url);
+      return {
+        jobs: [
+          {
+            guid: 'https://himalayas.app/companies/orbit/jobs/data-engineer',
+            applicationLink: 'https://himalayas.app/companies/orbit/jobs/data-engineer?utm_source=api',
+            title: 'Data Engineer',
+            companyName: 'Orbit',
+            companyLogo: 'https://cdn-images.himalayas.app/abc',
+            employmentType: 'Contractor',
+            minSalary: 40,
+            maxSalary: 60,
+            currency: 'USD',
+            salaryPeriod: 'hourly',
+            locationRestrictions: ['India', 'Philippines'],
+            pubDate: 1792771982,
+            description: '<p>Build data pipelines for a fully remote analytics team.</p>',
+          },
+          { applicationLink: 'https://evil.example/x', title: 'Bad', companyName: 'X' },
+        ],
+      };
+    });
+    expect(urls).toEqual(['https://himalayas.app/jobs/api/search?country=India&page=1']); // short page: stop
+    expect(result.jobs).toHaveLength(1);
+    expect(result.jobs[0]).toMatchObject({
+      source: 'himalayas',
+      externalUrl: 'https://himalayas.app/companies/orbit/jobs/data-engineer?utm_source=api',
+      location: 'Remote (India, Philippines)',
+      employmentType: 'contract',
+      salaryMin: 40,
+      salaryMax: 60,
+      salaryPeriod: 'hour',
+      publishedAt: new Date(1792771982 * 1000).toISOString(),
+    });
+    expect(result.complete).toBe(false);
+  });
+
+  it('Jobicy: reads the APAC and worldwide feeds', async () => {
+    const urls: string[] = [];
+    const result = await jobicy.fetch(async (url) => {
+      urls.push(url);
+      return {
+        jobs: [
+          {
+            id: url.includes('apac') ? 1 : 2,
+            url: `https://jobicy.com/jobs/${url.includes('apac') ? 1 : 2}-role`,
+            jobTitle: 'Support Lead',
+            companyName: url.includes('apac') ? 'Kite' : 'Canonical',
+            jobGeo: url.includes('apac') ? 'APAC' : 'Anywhere',
+            jobType: ['Part-Time'],
+            pubDate: '2026-10-23T13:48:16+00:00',
+            jobDescription: '<p>Help customers across time zones get the most from our product.</p>',
+          },
+        ],
+      };
+    });
+    expect(urls.map((u) => new URL(u).searchParams.get('geo'))).toEqual(['apac', 'anywhere']);
+    expect(result.jobs.map((j) => j.location)).toEqual(['Remote (APAC)', 'Remote (Anywhere)']);
+    expect(result.jobs[0]).toMatchObject({ employmentType: 'part_time', externalUrl: 'https://jobicy.com/jobs/1-role' });
+  });
+
+  it('Remote OK: skips the legal notice and jobs closed to India', async () => {
+    const result = await remoteOk.fetch(async () => [
+      { legal: 'API Terms of Service' },
+      {
+        id: '1',
+        url: 'https://remoteOK.com/remote-jobs/1',
+        position: 'Senior Go Developer',
+        company: 'Lemon',
+        location: 'Worldwide',
+        salary_min: 50000,
+        salary_max: 0,
+        date: '2026-10-22T12:58:28+00:00',
+        tags: ['golang'],
+        description: '<p>Build backend services for clients around the world.</p>',
+      },
+      { id: '2', url: 'https://remoteok.com/remote-jobs/2', position: 'Nurse', company: 'Care', location: 'United States' },
+    ]);
+    expect(result.jobs).toHaveLength(1);
+    expect(result.jobs[0]).toMatchObject({
+      source: 'remoteok',
+      location: 'Remote (Worldwide)',
+      salaryMin: 50000,
+      salaryMax: 50000,
+      salaryCurrency: 'USD',
+      tags: ['golang'],
+    });
+  });
+
+  it('groups the daily imports so each fits the time limit', () => {
+    expect(enabledProviders('jobs', {}).map((p) => p.id)).toEqual(['remotive', 'himalayas', 'jobicy', 'remoteok']);
+    expect(enabledProviders('jobs', { ADZUNA_APP_ID: 'i', ADZUNA_APP_KEY: 'k' }).map((p) => p.id)).toContain('adzuna');
+    expect(enabledProviders('companies', {}).map((p) => p.id)).toEqual(['greenhouse', 'lever', 'ashby']);
+  });
+});
+
 function job(id: string, over: Partial<IngestJob> = {}): IngestJob {
   return {
     source: 'remotive',
@@ -244,6 +512,29 @@ describe('runIngest', () => {
     expect(logs[0]).toMatchObject({ source: 'adzuna', error: 'api.adzuna.com answered 401' });
     expect(logs[1]).toMatchObject({ source: 'remotive', inserted: 1 });
     expect(f.logs).toHaveLength(2);
+  });
+
+  it('career boards keep old open roles and close only for boards that answered', async () => {
+    const existing: ExistingJob[] = [
+      { id: 'db-up', source: 'greenhouse', externalId: 'up:1', title: 'A', companyName: 'Up', status: 'published', publishedAt: '2026-01-01T00:00:00Z' },
+      { id: 'db-down', source: 'greenhouse', externalId: 'down:1', title: 'B', companyName: 'Down', status: 'published', publishedAt: '2026-10-01T00:00:00Z' },
+    ];
+    const f = fakeDeps(existing);
+    const boards: Provider = {
+      id: 'greenhouse',
+      label: 'Greenhouse',
+      maxAgeDays: null,
+      fetch: async () => ({
+        jobs: [job('up:2', { source: 'greenhouse', publishedAt: '2025-12-01T00:00:00Z' })],
+        complete: true,
+        covers: (id) => id.startsWith('up:'),
+        warnings: ['down: timeout'],
+      }),
+    };
+    const [log] = await runIngest(f.deps, [boards]);
+    expect(f.upserted.map((j) => j.externalId)).toEqual(['up:2']); // old, still listed
+    expect(f.closed).toEqual(['db-up']); // gone from its board; db-down untouched
+    expect(log).toMatchObject({ inserted: 1, closed: 1, error: 'down: timeout' });
   });
 });
 

@@ -1,12 +1,20 @@
 // Production wiring for the ingest run (service role; bypasses RLS).
 import { supabaseAdmin } from '../services.js';
 import type { IngestJob } from './normalize.js';
-import { adzuna, remotive, type Provider } from './providers.js';
+import { adzuna, ashby, greenhouse, himalayas, jobicy, lever, remoteOk, remotive, type Provider } from './providers.js';
 import type { ExistingJob, IngestDeps } from './run.js';
 
-/** Providers enabled by the environment (Adzuna needs its keys). */
-export function enabledProviders(env: NodeJS.ProcessEnv = process.env): Provider[] {
-  const list: Provider[] = [remotive];
+/**
+ * The two daily imports, each sized to finish within the function's time
+ * limit: job boards and feeds, and companies' own career boards (several MB
+ * each).
+ */
+export type IngestGroup = 'jobs' | 'companies';
+
+/** Providers of a group enabled by the environment (Adzuna needs its keys). */
+export function enabledProviders(group: IngestGroup = 'jobs', env: NodeJS.ProcessEnv = process.env): Provider[] {
+  if (group === 'companies') return [greenhouse(), lever(), ashby()];
+  const list: Provider[] = [remotive, himalayas(), jobicy, remoteOk];
   if (env.ADZUNA_APP_ID && env.ADZUNA_APP_KEY) {
     list.push(adzuna(env.ADZUNA_APP_ID, env.ADZUNA_APP_KEY));
   }
@@ -16,7 +24,7 @@ export function enabledProviders(env: NodeJS.ProcessEnv = process.env): Provider
 async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'LuzHire job portal (college project) - luzhire.vercel.app' },
-    signal: AbortSignal.timeout(25_000),
+    signal: AbortSignal.timeout(40_000), // some Lever boards take ~20 s
   });
   if (!res.ok) throw new Error(`${new URL(url).host} answered ${res.status}`);
   return res.json();
@@ -35,12 +43,20 @@ export function liveIngestDeps(): IngestDeps {
     get: getJson,
     now: () => new Date(),
     async existing() {
-      const { data, error } = await db
-        .from('jobs')
-        .select('id, external_source, external_id, title, company_name, status, published_at')
-        .eq('source', 'external');
-      fail('existing', error);
-      return (data ?? []).map(
+      // PostgREST returns at most 1000 rows per request, so read in pages.
+      const data: Record<string, unknown>[] = [];
+      for (let from = 0; ; from += 1000) {
+        const { data: page, error } = await db
+          .from('jobs')
+          .select('id, external_source, external_id, title, company_name, status, published_at')
+          .eq('source', 'external')
+          .order('id')
+          .range(from, from + 999);
+        fail('existing', error);
+        data.push(...(page ?? []));
+        if ((page ?? []).length < 1000) break;
+      }
+      return data.map(
         (r): ExistingJob => ({
           id: r.id as string,
           source: r.external_source as string,

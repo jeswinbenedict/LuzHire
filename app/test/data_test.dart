@@ -186,6 +186,25 @@ void main() {
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
   });
 
+  test('every job feed is credited with a link; career boards are not', () {
+    for (final id in [
+      'remotive',
+      'adzuna',
+      'himalayas',
+      'jobicy',
+      'remoteok',
+    ]) {
+      final source = jobSource(id)!;
+      expect(source.url, startsWith('https://'), reason: id);
+      expect(source.label, contains(source.name), reason: id);
+    }
+    for (final id in ['greenhouse', 'lever', 'ashby']) {
+      expect(jobSource(id)!.label, 'From the company careers page');
+      expect(jobSource(id)!.url, isEmpty);
+    }
+    expect(jobSource(null), isNull);
+  });
+
   group('JobSearchQuery', () {
     const query = JobSearchQuery(
       keyword: ' flutter ',

@@ -32,7 +32,7 @@ npx supabase db reset     # apply migrations + seed
 npx supabase test db      # pgTAP RLS tests
 npm run db:check          # same migrations + pgTAP tests in PGlite, no Docker needed
 ```
-On this laptop the Flutter SDK is at `C:\Users\SUMA\dev\flutter\bin` (user PATH).
+The Flutter SDK (3.47.7 or newer) is on the user PATH: `C:\Users\SUMA\dev\flutter\bin` on the old laptop, `C:\Users\jeswi\OneDrive\Desktop\flutter_windows_3.38.4-stable\flutter\bin` on the new one.
 
 ## Conventions
 - **Flutter:** feature-first (`lib/features/<feature>/{data,domain,presentation}`), shared code in `lib/core/`. Use the Riverpod providers for state. Models use freezed. Never hardcode colours, radii, shadows or text styles. Use `LuzTokens` / `context.luz` and the `Luz*` widgets in `lib/core/widgets/`.
@@ -56,8 +56,8 @@ The phase plan, status, definition of done and owner inputs are in **`docs/ROADM
 - [~] Phase 5: Candidate portal. Dashboard, profile, resumes, apply, live tracker, interviews, offers and notifications are live on main. Still to do: a live check with real accounts
 - [~] Phase 6: Employer workspace. Company, team invites, job editor, realtime pipeline, interviews, offers and analytics are live on main. Still to do: a live end-to-end hire
 - [~] Phase 7: Admin console. Verification, moderation and reports, users (role, suspend), announcements, audit log and stats are live on main. Still to do: the first admin account
-- [~] Phase 8: Ingestion and SEO. Remotive/Adzuna imports (daily cron), SEO job pages, sitemap and robots are live on main (daily import running). Still to do: career news sources, optional Adzuna keys
+- [~] Phase 8: Ingestion and SEO. Remotive/Adzuna imports (daily cron), SEO job pages, sitemap and robots are live on main (daily import running). Live job feeds (Greenhouse/Lever/Ashby career boards of 39 India employers, Himalayas, Jobicy, Remote OK) on branch `phase-11-live-job-feeds`. Still to do: optional Adzuna keys
 - [~] Phase 9: Notifications. Preferences, push tokens, `/api/notify/dispatch` (FCM + SMTP email), settings page, workspace bell and web service worker are live on main; web push and email verified live. Still to do: Android push (Android app in Firebase + a phone), Outlook rendering check
-- [~] Phase 10: Hardening. Security invariants, rate limits, enforced CSP (Firebase SDK loads from `web/firebase-sdk.js`), secret scan, font/preload/logo performance work, WCAG checks and fixes, deep health, uptime check and error log are live on main (`docs/HARDENING.md`). Load test done (see HARDENING.md). Still to do: manual screen-reader pass, apply the lean `search_jobs` migration (`20261020170000`) to the cloud
+- [~] Phase 10: Hardening. Security invariants, rate limits, enforced CSP (Firebase SDK loads from `web/firebase-sdk.js`), secret scan, font/preload/logo performance work, WCAG checks and fixes, deep health, uptime check and error log are live on main (`docs/HARDENING.md`). Load test done (see HARDENING.md). Still to do: manual screen-reader pass
 - [~] Discovery features (PRs #8–#11, branches `phase-11-*`): company directory with logos, career news, hiring map with jobs near you and recommendations, and Unstop-style events. Live on main; their 5 migrations are applied to the cloud database (2026-10-21)
 - [ ] Phase 11: see ROADMAP
