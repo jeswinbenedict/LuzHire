@@ -9,6 +9,11 @@ export interface NewsFeed {
   url: string;
   /** Starting relevance: feeds about careers start higher than general ones. */
   base: number;
+  /**
+   * DEV's public articles API (same posts as the feed), which lists each
+   * post's cover image: the feed itself carries no images.
+   */
+  imageApi?: string;
 }
 
 export const FEEDS: NewsFeed[] = [
@@ -16,7 +21,13 @@ export const FEEDS: NewsFeed[] = [
   { id: 'remotive', label: 'Remotive', url: 'https://remotive.com/blog/feed', base: 0.5 },
   // Community posts tagged #career: anyone can tag, so a post still needs a
   // career keyword.
-  { id: 'devto', label: 'DEV Community', url: 'https://dev.to/feed/tag/career', base: 0.35 },
+  {
+    id: 'devto',
+    label: 'DEV Community',
+    url: 'https://dev.to/feed/tag/career',
+    base: 0.35,
+    imageApi: 'https://dev.to/api/articles?tag=career&per_page=500',
+  },
   // Mostly tutorials: only career and learning-path posts get through.
   { id: 'freecodecamp', label: 'freeCodeCamp', url: 'https://www.freecodecamp.org/news/rss/', base: 0.1 },
 ];
@@ -133,19 +144,29 @@ function onFeedSite(link: string): boolean {
   }
 }
 
-/** Most pages read per run: about 20 new items per feed plus a backlog. */
+/** Most headlines given an image per run (newest first). */
 const MAX_PAGES = 60;
 const PAGE_CONCURRENCY = 6;
+/**
+ * Time for reading article pages, so a slow site can never push the run past
+ * the function's 60 s limit (a page already loading may add its own timeout).
+ */
+export const PAGE_BUDGET_MS = 20_000;
 
 /**
- * Preview images for article links, read from their pages a few at a time.
- * A page that fails or has none is simply left out.
+ * Preview images for article links, read from their pages a few at a time
+ * until [budgetMs] is used up. A page that fails or has none is left out.
  */
-export async function pageImages(links: string[], getText: (url: string) => Promise<string>): Promise<Map<string, string>> {
+export async function pageImages(
+  links: string[],
+  getText: (url: string) => Promise<string>,
+  budgetMs = PAGE_BUDGET_MS,
+): Promise<Map<string, string>> {
   const found = new Map<string, string>();
   const queue = [...new Set(links.filter(onFeedSite))].slice(0, MAX_PAGES);
+  const stopAt = Date.now() + budgetMs;
   const worker = async () => {
-    for (let link = queue.shift(); link; link = queue.shift()) {
+    for (let link = queue.shift(); link && Date.now() < stopAt; link = queue.shift()) {
       try {
         const image = pageImageOf(await getText(link));
         if (image) found.set(link, image);
@@ -155,6 +176,27 @@ export async function pageImages(links: string[], getText: (url: string) => Prom
     }
   };
   await Promise.all(Array.from({ length: PAGE_CONCURRENCY }, worker));
+  return found;
+}
+
+/** Post URL → cover (or generated social) image, from DEV's articles API. */
+export function apiImages(json: string): Map<string, string> {
+  const found = new Map<string, string>();
+  let rows: unknown;
+  try {
+    rows = JSON.parse(json);
+  } catch {
+    return found;
+  }
+  if (!Array.isArray(rows)) return found;
+  for (const row of rows) {
+    const r = row as Record<string, unknown>;
+    const link = httpsUrl(typeof r.url === 'string' ? r.url : null);
+    const image = httpsUrl(
+      typeof r.cover_image === 'string' ? r.cover_image : typeof r.social_image === 'string' ? r.social_image : null,
+    );
+    if (link && image) found.set(link, image);
+  }
   return found;
 }
 
@@ -282,10 +324,9 @@ export async function runNewsIngest(deps: NewsDeps, feeds: NewsFeed[] = FEEDS): 
       log.fetched = items.length;
       const keep = toNews(items, feed, now);
       log.skipped = items.length - keep.length;
-      // Feeds without images (DEV): use each article page's preview image.
-      const images = await pageImages(keep.filter((n) => !n.imageUrl).map((n) => n.url), deps.getText);
-      const withImages = keep.map((n) => (n.imageUrl ? n : { ...n, imageUrl: images.get(n.url) ?? null }));
-      log.inserted = withImages.length > 0 ? await deps.insert(withImages) : 0;
+      // Saved straight away; missing images are added below, so a slow
+      // image lookup can never cost the headlines themselves.
+      log.inserted = keep.length > 0 ? await deps.insert(keep) : 0;
     } catch (e) {
       log.error = clamp(e instanceof Error ? e.message : String(e), 300);
     }
@@ -294,12 +335,26 @@ export async function runNewsIngest(deps: NewsDeps, feeds: NewsFeed[] = FEEDS): 
   }
   await deps.prune(60);
 
-  // Headlines stored before they could get an image (or whose page failed).
+  // Every stored headline still without an image (new ones included): first
+  // the feeds' image APIs (one request each), then the article pages.
   const backfill: NewsRunLog = { source: 'news:images', fetched: 0, inserted: 0, updated: 0, skipped: 0, closed: 0, error: null };
   try {
     const links = await deps.withoutImage(MAX_PAGES);
     backfill.fetched = links.length;
-    const images = await pageImages(links, deps.getText);
+    const images = new Map<string, string>();
+    for (const feed of feeds) {
+      if (!feed.imageApi || links.length === 0) continue;
+      try {
+        for (const [link, image] of apiImages(await deps.getText(feed.imageApi))) {
+          if (links.includes(link)) images.set(link, image);
+        }
+      } catch {
+        // The article pages below still cover these.
+      }
+    }
+    for (const [link, image] of await pageImages(links.filter((l) => !images.has(l)), deps.getText)) {
+      images.set(link, image);
+    }
     backfill.updated = images.size > 0 ? await deps.setImages(images) : 0;
     backfill.skipped = links.length - images.size;
   } catch (e) {

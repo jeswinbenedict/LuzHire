@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   FEEDS,
+  apiImages,
   isEnglish,
   pageImageOf,
   pageImages,
@@ -139,6 +140,36 @@ describe('page images', () => {
     expect(pageImageOf('<html><head><title>No image</title></head></html>')).toBeNull();
   });
 
+  it('reads cover images from the DEV articles API, falling back to the social image', () => {
+    const found = apiImages(
+      JSON.stringify([
+        { url: 'https://dev.to/a/one', cover_image: 'https://media2.dev.to/c.png', social_image: 'https://media2.dev.to/s.png' },
+        { url: 'https://dev.to/b/two', cover_image: null, social_image: 'https://media2.dev.to/s2.png' },
+        { url: 'https://dev.to/c/three', cover_image: 'http://insecure.example/x.png' },
+      ]),
+    );
+    expect([...found]).toEqual([
+      ['https://dev.to/a/one', 'https://media2.dev.to/c.png'],
+      ['https://dev.to/b/two', 'https://media2.dev.to/s2.png'],
+    ]);
+    expect(apiImages('not json').size).toBe(0);
+  });
+
+  it('stops reading pages when its time budget is used up', async () => {
+    const asked: string[] = [];
+    const links = Array.from({ length: 20 }, (_, i) => `https://dev.to/u/post-${i}`);
+    await pageImages(
+      links,
+      async (url) => {
+        asked.push(url);
+        await new Promise((r) => setTimeout(r, 30));
+        return '<meta property="og:image" content="https://cdn.example/i.png">';
+      },
+      50,
+    );
+    expect(asked.length).toBeLessThan(20);
+  });
+
   it('only reads pages on the sites LuzHire imports from', async () => {
     const asked: string[] = [];
     const found = await pageImages(
@@ -194,14 +225,38 @@ describe('runNewsIngest', () => {
     <link>https://dev.to/asha/job-interview-tips-1a2b</link><pubDate>Tue, 20 Oct 2026 10:00:00 GMT</pubDate>
     <description>Practical interview and resume advice for your first developer job search.</description></item></channel></rss>`;
 
-  it('gives image-less feed items the preview image of their article page', async () => {
-    const { d, inserted } = deps({
-      [devto.url]: DEV_RSS,
-      'https://dev.to/asha/job-interview-tips-1a2b': page('https://media2.dev.to/dynamic/image/cover.png'),
-    });
+  it('saves headlines first, then gives them DEV API images, then page images', async () => {
+    const post = 'https://dev.to/asha/job-interview-tips-1a2b';
+    const older = 'https://dev.to/ravi/older-post-9z';
+    const order: string[] = [];
+    const { d, inserted, imaged } = deps(
+      {
+        [devto.url]: DEV_RSS,
+        [devto.imageApi!]: JSON.stringify([
+          { url: post, cover_image: null, social_image: 'https://media2.dev.to/social.png' },
+          { url: 'https://dev.to/x/unrelated', cover_image: 'https://media2.dev.to/u.png' },
+        ]),
+        [older]: page('https://media2.dev.to/older.png'),
+      },
+      [post, older],
+    );
+    const insert = d.insert;
+    d.insert = async (items) => {
+      order.push('insert');
+      return insert(items);
+    };
+    const setImages = d.setImages;
+    d.setImages = async (m) => {
+      order.push('images');
+      return setImages(m);
+    };
     await runNewsIngest(d, [devto]);
-    expect(inserted).toHaveLength(1);
-    expect(inserted[0]!.imageUrl).toBe('https://media2.dev.to/dynamic/image/cover.png');
+    expect(order).toEqual(['insert', 'images']);
+    expect(inserted[0]!.imageUrl).toBeNull(); // saved before any image lookup
+    expect([...imaged]).toEqual([
+      [post, 'https://media2.dev.to/social.png'], // from the API, no page read
+      [older, 'https://media2.dev.to/older.png'], // not in the API: its page
+    ]);
   });
 
   it('fills in stored headlines that still have no image', async () => {

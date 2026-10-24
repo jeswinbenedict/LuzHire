@@ -12,10 +12,10 @@ export function liveNewsDeps(): NewsDeps {
       const res = await fetch(url, {
         headers: {
           'User-Agent': 'LuzHire job portal (college project) - luzhire.vercel.app',
-          // Feeds, and article pages for their preview images.
-          Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, text/html;q=0.8',
+          // Feeds, image APIs and article pages (for their preview images).
+          Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, application/json, text/html;q=0.8',
         },
-        signal: AbortSignal.timeout(15_000),
+        signal: AbortSignal.timeout(10_000),
       });
       if (!res.ok) throw new Error(`${new URL(url).host} answered ${res.status}`);
       return res.text();
