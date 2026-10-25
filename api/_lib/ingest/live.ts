@@ -134,6 +134,19 @@ export function liveIngestDeps(): IngestDeps {
         fail('close', error);
       }
     },
+    async setLogos(logos) {
+      // One update per logo (a company's jobs share it).
+      const byLogo = new Map<string, string[]>();
+      for (const [id, logo] of logos) byLogo.set(logo, [...(byLogo.get(logo) ?? []), id]);
+      for (const [logo, ids] of byLogo) {
+        const { error } = await db
+          .from('jobs')
+          .update({ external_logo_url: logo })
+          .in('id', ids)
+          .is('external_logo_url', null);
+        fail('logos', error);
+      }
+    },
     logos: {
       async suggest(name) {
         const url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(name)}`;

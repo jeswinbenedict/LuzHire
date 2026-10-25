@@ -96,6 +96,9 @@ export function domainFromSuggestions(company: string, results: { name: string; 
   return exact.length === 1 ? exact[0]!.domain.toLowerCase() : null;
 }
 
+/** What fillLogos needs of a job: imported now, or stored earlier. */
+export type LogoTarget = Pick<IngestJob, 'companyName' | 'descriptionMd' | 'logoUrl'>;
+
 /**
  * Most companies looked up in one run (each is a lookup plus an icon check,
  * well under a second). High enough that companies with no findable site,
@@ -111,12 +114,12 @@ export const LOOKUP_BUDGET_MS = 15_000;
  * looked up once and keeps its logo on later runs.
  */
 export async function fillLogos(
-  jobs: IngestJob[],
+  jobs: LogoTarget[],
   known: Map<string, string>,
   deps: LogoDeps | undefined,
   budgetMs = LOOKUP_BUDGET_MS,
 ): Promise<void> {
-  const missing = new Map<string, IngestJob[]>();
+  const missing = new Map<string, LogoTarget[]>();
   for (const job of jobs) {
     const key = companyKey(job.companyName);
     if (job.logoUrl) {
