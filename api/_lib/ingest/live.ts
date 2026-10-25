@@ -136,10 +136,14 @@ export function liveIngestDeps(): IngestDeps {
     },
     logos: {
       async suggest(name) {
-        const res = await fetch(
-          `https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(name)}`,
-          { signal: AbortSignal.timeout(5000) },
-        );
+        const url = `https://autocomplete.clearbit.com/v1/companies/suggest?query=${encodeURIComponent(name)}`;
+        let res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+        // Turned away (too many requests): one more try after a short pause.
+        if (res.status === 429 || res.status >= 500) {
+          await res.arrayBuffer();
+          await new Promise((r) => setTimeout(r, 1500));
+          res = await fetch(url, { signal: AbortSignal.timeout(5000) });
+        }
         if (!res.ok) return [];
         const rows = (await res.json()) as unknown;
         return Array.isArray(rows)
