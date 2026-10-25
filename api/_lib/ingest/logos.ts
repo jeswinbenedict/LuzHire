@@ -103,7 +103,7 @@ export function domainFromSuggestions(company: string, results: { name: string; 
  */
 export const MAX_LOOKUPS = 150;
 /** Time for lookups, so the import stays inside the 60 s function limit. */
-export const LOOKUP_BUDGET_MS = 12_000;
+export const LOOKUP_BUDGET_MS = 15_000;
 
 /**
  * Gives jobs without a logo their company's logo. [known] maps company keys
@@ -129,7 +129,10 @@ export async function fillLogos(
   }
   if (!deps || missing.size === 0) return;
 
-  const queue = [...missing.values()].slice(0, MAX_LOOKUPS);
+  // A fresh order every run: if the lookup service turns some requests
+  // away, different companies get the early turns next time, and each run
+  // keeps what it found (stored logos are reused), so the rest shrinks.
+  const queue = shuffled([...missing.values()]).slice(0, MAX_LOOKUPS);
   const stopAt = Date.now() + budgetMs;
   const worker = async () => {
     for (let group = queue.shift(); group && Date.now() < stopAt; group = queue.shift()) {
@@ -148,5 +151,18 @@ export async function fillLogos(
       }
     }
   };
-  await Promise.all(Array.from({ length: 6 }, worker));
+  // Few at a time: the four feeds import side by side, and the lookup
+  // service turns bursts away.
+  await Promise.all(Array.from({ length: LOOKUP_CONCURRENCY }, worker));
+}
+
+/** Lookups in flight per feed (four feeds run at once). */
+export const LOOKUP_CONCURRENCY = 2;
+
+function shuffled<T>(items: T[]): T[] {
+  for (let i = items.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [items[i], items[j]] = [items[j]!, items[i]!];
+  }
+  return items;
 }
