@@ -1,10 +1,14 @@
 // GET /api/ingest/jobs — imports jobs from job boards and feeds.
 // GET /api/ingest/companies — imports India roles from company career boards.
 // GET /api/ingest/news — imports career headlines (api/_lib/news/feeds.ts).
-// One function for both: the Hobby plan allows 12 functions per deployment.
+// GET /api/ingest/events — imports coding contests and hackathons
+// (api/_lib/events/feeds.ts).
+// One function for all of them: the Hobby plan allows 12 functions per deployment.
 // Called once a day each by Vercel Cron (vercel.json), which sends
 // "Authorization: Bearer $CRON_SECRET". Anyone else is refused.
 import { authorizeCron } from '../_lib/cron.js';
+import { runEventsIngest } from '../_lib/events/feeds.js';
+import { liveEventDeps } from '../_lib/events/live.js';
 import { HttpError, handle, json } from '../_lib/http.js';
 import { enabledProviders, liveIngestDeps } from '../_lib/ingest/live.js';
 import { runIngest } from '../_lib/ingest/run.js';
@@ -21,6 +25,9 @@ export const GET = handle(async (request) => {
   }
   if (source === 'news') {
     return json(request, 200, { runs: await runNewsIngest(liveNewsDeps()) });
+  }
+  if (source === 'events') {
+    return json(request, 200, { runs: await runEventsIngest(liveEventDeps()) });
   }
   throw new HttpError(404, 'not_found', 'Unknown import.');
 });

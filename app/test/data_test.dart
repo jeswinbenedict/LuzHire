@@ -189,6 +189,28 @@ void main() {
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
   });
 
+  test('imported events credit their source', () {
+    Opportunity event(String organizer, String? source) =>
+        Opportunity.fromJson({
+          'id': 'e1',
+          'slug': 'e1',
+          'kind': 'hackathon',
+          'status': 'published',
+          'title': 'Build for Earth',
+          'organizer_name': organizer,
+          'mode': 'online',
+          'starts_at': '2026-11-08T10:00:00Z',
+          'registration_url': 'https://earth.example.org',
+          'external_source': source,
+        });
+    expect(
+      event('Build for Earth', 'hackclub').byline,
+      'by Build for Earth · via Hack Club',
+    );
+    expect(event('Codeforces', 'codeforces').byline, 'by Codeforces');
+    expect(event('Acme', null).byline, 'by Acme');
+  });
+
   test('companies without a logo get stable initials and tint', () {
     expect(monogramOf('Sanctuary Computer'), 'SC');
     expect(monogramOf('Plaid'), 'PL');

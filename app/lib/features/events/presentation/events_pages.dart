@@ -303,7 +303,7 @@ class EventCard extends ConsumerWidget {
                         overflow: TextOverflow.ellipsis,
                       ),
                       Text(
-                        'by ${e.organizerName}',
+                        e.byline,
                         style: t.bodySm.copyWith(color: p.inkMuted),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -476,14 +476,11 @@ class _EventBody extends ConsumerWidget {
         const SizedBox(height: LuzSpace.xs),
         if (company != null)
           LuzTextLink(
-            label: 'by ${e.organizerName}',
+            label: e.byline,
             onPressed: () => context.go('/companies/${company.slug}'),
           )
         else
-          Text(
-            'by ${e.organizerName}',
-            style: t.bodyLg.copyWith(color: p.inkMuted),
-          ),
+          Text(e.byline, style: t.bodyLg.copyWith(color: p.inkMuted)),
       ],
     );
 
