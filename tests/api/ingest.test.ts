@@ -10,6 +10,7 @@ import {
   type IngestJob,
 } from '../../api/_lib/ingest/normalize.js';
 import { inIndia } from '../../api/_lib/ingest/boards.js';
+import { faviconOf } from '../../api/_lib/ingest/logos.js';
 import { enabledProviders } from '../../api/_lib/ingest/live.js';
 import {
   adzuna,
@@ -531,6 +532,26 @@ describe('runIngest', () => {
     const f = fakeDeps(existing);
     await runIngest(f.deps, [provider([job('9', { companyName: 'Acme Inc.' })])]);
     expect(f.upserted[0]!.logoUrl).toBe('https://logo/acme.png');
+  });
+
+  it('fills in logos for stored jobs a feed no longer sends', async () => {
+    const existing: ExistingJob[] = [
+      // An older Himalayas job, not in today's feed, still without a logo.
+      { id: 'db-old', source: 'himalayas', externalId: 'h1', title: 'Writer', companyName: 'Wirex', status: 'published', publishedAt: '2026-10-19T00:00:00Z', logoUrl: null },
+      { id: 'db-closed', source: 'himalayas', externalId: 'h2', title: 'Old', companyName: 'Gone', status: 'closed', publishedAt: '2026-10-01T00:00:00Z', logoUrl: null },
+    ];
+    const f = fakeDeps(existing);
+    const set = new Map<string, string>();
+    f.deps.setLogos = async (m) => {
+      for (const [k, v] of m) set.set(k, v);
+    };
+    f.deps.logos = {
+      suggest: async (name) => (name === 'Wirex' ? [{ name: 'Wirex', domain: 'wirexapp.com' }] : []),
+      imageOk: async () => true,
+    };
+    const logs = await runIngest(f.deps, [provider([job('1')], false)]);
+    expect([...set]).toEqual([['db-old', faviconOf('wirexapp.com')]]);
+    expect(logs.at(-1)).toMatchObject({ source: 'logos', fetched: 1, updated: 1 });
   });
 
   it('career boards keep old open roles and close only for boards that answered', async () => {

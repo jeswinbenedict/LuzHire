@@ -37,6 +37,8 @@ export interface IngestDeps {
   /** Links tags to skills that already exist (never creates skills). */
   linkSkills(tagsByJobId: Map<string, string[]>): Promise<void>;
   close(ids: string[]): Promise<void>;
+  /** Sets the logo of stored jobs (job id → logo URL). */
+  setLogos?(logos: Map<string, string>): Promise<void>;
   log(run: RunLog): Promise<void>;
   /** Finds logos for companies whose feed sends none (see logos.ts). */
   logos?: LogoDeps;
@@ -44,6 +46,7 @@ export interface IngestDeps {
 
 /** Providers run side by side, so slow feeds share the function's time limit. */
 export async function runIngest(deps: IngestDeps, providers: Provider[]): Promise<RunLog[]> {
+  const started = Date.now();
   const existing = await deps.existing();
   const now = deps.now().getTime();
   // Logos already stored, by company: shared by all providers in the run.
@@ -52,7 +55,7 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
     if (e.logoUrl) knownLogos.set(companyKey(e.companyName), e.logoUrl);
   }
 
-  return Promise.all(providers.map(async (provider) => {
+  const logs = await Promise.all(providers.map(async (provider) => {
     const maxAge = provider.maxAgeDays === undefined ? MAX_AGE_DAYS : provider.maxAgeDays;
     const tooOld = (iso: string | null) =>
       maxAge != null && iso != null && now - Date.parse(iso) > maxAge * 86_400_000;
@@ -135,4 +138,43 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
     await deps.log(log);
     return log;
   }));
+
+  const backfill = await backfillLogos(deps, existing, knownLogos, started);
+  if (backfill) logs.push(backfill);
+  return logs;
+}
+
+/** Time left for the logo backfill: the run must end well inside 60 s. */
+const BACKFILL_DEADLINE_MS = 45_000;
+
+/**
+ * Stored, published jobs still without a logo. Feeds that list only their
+ * newest jobs (Himalayas) may never send an older job again, so the logos
+ * found while importing would never reach it: they are filled in here, from
+ * logos the run now knows or a lookup.
+ */
+async function backfillLogos(
+  deps: IngestDeps,
+  existing: ExistingJob[],
+  knownLogos: Map<string, string>,
+  started: number,
+): Promise<RunLog | null> {
+  if (!deps.setLogos) return null;
+  const targets = existing
+    .filter((e) => e.status === 'published' && !e.logoUrl)
+    .map((e) => ({ id: e.id, companyName: e.companyName, descriptionMd: '', logoUrl: null as string | null }));
+  if (targets.length === 0) return null;
+  const log: RunLog = { source: 'logos', fetched: targets.length, inserted: 0, updated: 0, skipped: 0, closed: 0, error: null };
+  try {
+    const budget = Math.max(0, BACKFILL_DEADLINE_MS - (Date.now() - started));
+    await fillLogos(targets, knownLogos, budget > 0 ? deps.logos : undefined, budget);
+    const found = new Map(targets.filter((t) => t.logoUrl).map((t) => [t.id, t.logoUrl!] as const));
+    if (found.size > 0) await deps.setLogos(found);
+    log.updated = found.size;
+    log.skipped = targets.length - found.size;
+  } catch (e) {
+    log.error = e instanceof Error ? e.message.slice(0, 500) : 'Unknown error';
+  }
+  await deps.log(log);
+  return log;
 }
