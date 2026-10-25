@@ -5,7 +5,9 @@ import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/failures.dart';
 import 'package:luzhire/core/data/format.dart';
 import 'package:luzhire/core/data/models.dart';
-import 'package:luzhire/core/widgets/luz_display.dart' show proxiedImageHosts;
+import 'package:luzhire/core/theme/tokens.dart' show LuzChipTone;
+import 'package:luzhire/core/widgets/luz_display.dart'
+    show monogramOf, monogramTone, proxiedImageHosts;
 import 'package:luzhire/features/jobs/data/jobs_repository.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -185,6 +187,17 @@ void main() {
       'Yesterday',
     );
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
+  });
+
+  test('companies without a logo get stable initials and tint', () {
+    expect(monogramOf('Sanctuary Computer'), 'SC');
+    expect(monogramOf('Plaid'), 'PL');
+    expect(monogramOf('GoSaaS, Inc.'), 'GO');
+    expect(monogramOf('8 West Consulting'), '8W');
+    expect(monogramOf('Akicita Federal, LLC'), 'AF');
+    expect(monogramOf(''), '?');
+    expect(monogramTone('Fuel50'), monogramTone('fuel50'));
+    expect(monogramTone('Fuel50'), isNot(LuzChipTone.neutral));
   });
 
   test('the app proxies exactly the image hosts /api/img accepts', () {

@@ -524,6 +524,15 @@ describe('runIngest', () => {
     expect(f.logs).toHaveLength(2);
   });
 
+  it('a company keeps its stored logo when its feed sends none', async () => {
+    const existing: ExistingJob[] = [
+      { id: 'db-1', source: 'greenhouse', externalId: 'acme:1', title: 'Old', companyName: 'Acme', status: 'published', publishedAt: '2026-10-19T00:00:00Z', logoUrl: 'https://logo/acme.png' },
+    ];
+    const f = fakeDeps(existing);
+    await runIngest(f.deps, [provider([job('9', { companyName: 'Acme Inc.' })])]);
+    expect(f.upserted[0]!.logoUrl).toBe('https://logo/acme.png');
+  });
+
   it('career boards keep old open roles and close only for boards that answered', async () => {
     const existing: ExistingJob[] = [
       { id: 'db-up', source: 'greenhouse', externalId: 'up:1', title: 'A', companyName: 'Up', status: 'published', publishedAt: '2026-01-01T00:00:00Z' },

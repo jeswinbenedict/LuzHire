@@ -116,7 +116,6 @@ class LuzLogoSocket extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final p = context.luz;
-    final letter = name.isEmpty ? '?' : name.trim()[0].toUpperCase();
     return Semantics(
       label: '$name logo',
       image: true,
@@ -134,21 +133,89 @@ class LuzLogoSocket extends StatelessWidget {
                     networkImageUrl(logoUrl!),
                     fit: BoxFit.contain,
                     cacheWidth: _decodeSize(context, size - 12),
-                    errorBuilder: (_, _, _) => _letter(context, p, letter),
+                    errorBuilder: (_, _, _) => _monogram(context, p),
                   ),
                 )
-              : _letter(context, p, letter),
+              : _monogram(context, p),
         ),
       ),
     );
   }
 
-  Widget _letter(BuildContext context, LuzPalette p, String letter) => Center(
-    child: Text(
-      letter,
-      style: context.luzText.h4.copyWith(color: p.accent, fontSize: size * 0.4),
-    ),
+  /// No logo (or it failed to load): the company's initials on a tinted tile.
+  /// The tint comes from the name, so a company looks the same everywhere.
+  Widget _monogram(BuildContext context, LuzPalette p) {
+    final colors = p.chips[monogramTone(name)]!;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: colors.background,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Center(
+        child: Text(
+          monogramOf(name),
+          maxLines: 1,
+          textScaler: TextScaler.noScaling, // sized to the tile, like a logo
+          style: context.luzText.h4.copyWith(
+            color: colors.foreground,
+            fontSize: size * 0.34,
+            height: 1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Up to two initials: "Sanctuary Computer" → "SC", "Plaid" → "PL",
+/// "8 West Consulting" → "8W". Legal suffixes are skipped.
+@visibleForTesting
+String monogramOf(String name) {
+  final words = name
+      .replaceAll(RegExp(r'[^A-Za-z0-9 ]'), ' ')
+      .split(RegExp(r'\s+'))
+      .where((w) => w.isNotEmpty)
+      .where(
+        (w) => !const {
+          'inc',
+          'llc',
+          'ltd',
+          'limited',
+          'pvt',
+          'private',
+          'corp',
+          'corporation',
+          'co',
+          'company',
+          'gmbh',
+          'plc',
+          'srl',
+          'the',
+        }.contains(w.toLowerCase()),
+      )
+      .toList();
+  if (words.isEmpty) return '?';
+  if (words.length == 1) {
+    final w = words.first;
+    return (w.length >= 2 ? w.substring(0, 2) : w).toUpperCase();
+  }
+  return (words[0][0] + words[1][0]).toUpperCase();
+}
+
+/// The tile's tint, picked by the name so it never changes between visits.
+@visibleForTesting
+LuzChipTone monogramTone(String name) {
+  const tones = [
+    LuzChipTone.blue,
+    LuzChipTone.violet,
+    LuzChipTone.orange,
+    LuzChipTone.green,
+  ];
+  final hash = name.toLowerCase().codeUnits.fold<int>(
+    0,
+    (h, c) => (h * 31 + c) & 0x3fffffff,
   );
+  return tones[hash % tones.length];
 }
 
 /// Segmented progress groove (e.g. profile completeness) filling with orange.

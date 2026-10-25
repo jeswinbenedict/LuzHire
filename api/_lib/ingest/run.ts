@@ -1,5 +1,6 @@
 // One ingestion run: fetch each provider, de-duplicate, upsert, expire, log.
 import { dedupeKey, type IngestJob } from './normalize.js';
+import { companyKey, fillLogos, type LogoDeps } from './logos.js';
 import type { Fetcher, Provider } from './providers.js';
 
 /** Jobs older than this are not imported and are closed when found. */
@@ -13,6 +14,7 @@ export interface ExistingJob {
   companyName: string;
   status: string;
   publishedAt: string | null;
+  logoUrl?: string | null;
 }
 
 export interface RunLog {
@@ -36,12 +38,19 @@ export interface IngestDeps {
   linkSkills(tagsByJobId: Map<string, string[]>): Promise<void>;
   close(ids: string[]): Promise<void>;
   log(run: RunLog): Promise<void>;
+  /** Finds logos for companies whose feed sends none (see logos.ts). */
+  logos?: LogoDeps;
 }
 
 /** Providers run side by side, so slow feeds share the function's time limit. */
 export async function runIngest(deps: IngestDeps, providers: Provider[]): Promise<RunLog[]> {
   const existing = await deps.existing();
   const now = deps.now().getTime();
+  // Logos already stored, by company: shared by all providers in the run.
+  const knownLogos = new Map<string, string>();
+  for (const e of existing) {
+    if (e.logoUrl) knownLogos.set(companyKey(e.companyName), e.logoUrl);
+  }
 
   return Promise.all(providers.map(async (provider) => {
     const maxAge = provider.maxAgeDays === undefined ? MAX_AGE_DAYS : provider.maxAgeDays;
@@ -93,6 +102,7 @@ export async function runIngest(deps: IngestDeps, providers: Provider[]): Promis
       }
 
       if (keep.length > 0) {
+        await fillLogos(keep, knownLogos, deps.logos);
         const saved = await deps.upsert(keep);
         for (const job of keep) {
           if (mine.has(job.externalId)) log.updated++;

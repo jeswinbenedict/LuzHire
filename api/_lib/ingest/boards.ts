@@ -5,6 +5,8 @@
 // 2026-10-23); huge boards with only a handful of India roles are left out to
 // keep the daily run fast.
 
+import { faviconOf } from './logos.js';
+
 export interface Board {
   /** The board token in the ATS URL, e.g. boards.greenhouse.io/<token>. */
   token: string;
@@ -19,10 +21,7 @@ export interface Board {
  * service, shown through /api/img (t1.gstatic.com is on its allowlist).
  */
 export function logoOf(board: Board): string {
-  return (
-    'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON' +
-    `&fallback_opts=TYPE,SIZE,URL&url=https://${board.domain}&size=128`
-  );
+  return faviconOf(board.domain);
 }
 
 export const GREENHOUSE_BOARDS: Board[] = [
