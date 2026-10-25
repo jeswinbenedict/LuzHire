@@ -216,7 +216,9 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - **Remote feeds** in the existing `/api/ingest/jobs` run: **Himalayas** (remote jobs open to people in India, about 200 a day; credited with a link, the application link kept unchanged, never passed to Google Jobs), **Jobicy** (APAC and worldwide remote; credited and linked) and **Remote OK** (worldwide or Asia only; credited with a followed link, their logo never used).
 - Providers in a run now download side by side, and the stored-job lookup reads in pages (PostgREST returns 1,000 rows at most). Himalayas logos load through `/api/img` (no CORS on their CDN).
 - No database migration: everything fits the Phase 8 columns. Tests: 10 new ingestion tests (87 API) and a source-credit test (Flutter).
-To add a company, check that its board lists India roles and add `{ token, name }` to the right list in `boards.ts`.
+To add a company, check that its board lists India roles and add `{ token, name, domain }` to the right list in `boards.ts`.
+
+**Company logos (2026-10-25).** Career boards send no logos, so each board has its company's `domain` and jobs carry its site icon (Google's favicon service, through `/api/img`). Feeds that send no logo (Remote OK, some Himalayas companies) go through `api/_lib/ingest/logos.ts` on every import: a logo already stored for the company is reused; otherwise the company's site is taken from links in the description or a Clearbit name lookup (a `.com` named exactly like the company, or the single exact match; never a guess between same-named companies), and its icon is checked before use. Companies with no findable site show a tinted initials tile in the app and are tried again each run. On 2026-10-25 this found logos for 29 of the 64 companies that had none.
 
 **Original scope:**
 - `/api/ingest/jobs`: provider adapters, normalisation (salary period!), HTML → Markdown sanitising, cross-provider dedupe, expiry; scheduled by Supabase `pg_cron` + `pg_net`.
