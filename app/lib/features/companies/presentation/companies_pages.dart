@@ -150,8 +150,6 @@ class CompanyCard extends ConsumerWidget {
             : LuzDepth.raisedMd,
         radius: LuzRadius.lg,
         padding: const EdgeInsets.all(LuzSpace.md + 4),
-        // Centred, so cards of one (equal-height) row look alike whether the
-        // name takes one line or two.
         child: Row(
           children: [
             LuzLogoSocket(name: company.name, logoUrl: logo, size: 48),
@@ -160,10 +158,12 @@ class CompanyCard extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // One line, so every card in the directory is the same
+                  // height; the full name is on the company page.
                   Text(
                     company.name,
                     style: t.wsSection,
-                    maxLines: 2,
+                    maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
                   if (company.isVerified) ...[
