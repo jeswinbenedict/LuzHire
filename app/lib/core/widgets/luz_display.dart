@@ -22,6 +22,7 @@ const proxiedImageHosts = {
   'cdn-images.himalayas.app',
   'media2.dev.to',
   'jobicy.com',
+  't1.gstatic.com',
 };
 
 /// The URL to load [url] from on this platform.

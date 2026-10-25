@@ -1,6 +1,6 @@
 // Provider adapters. Each returns normalised jobs and whether the result is
 // the provider's complete current list (then missing jobs can be closed).
-import { ASHBY_BOARDS, GREENHOUSE_BOARDS, LEVER_BOARDS, inIndia, type Board } from './boards.js';
+import { ASHBY_BOARDS, GREENHOUSE_BOARDS, LEVER_BOARDS, inIndia, logoOf, type Board } from './boards.js';
 import {
   clamp,
   employmentTypeOf,
@@ -277,6 +277,7 @@ export function greenhouse(boards: Board[] = GREENHOUSE_BOARDS): Provider {
                 externalUrl: url,
                 title,
                 companyName: board.name,
+                logoUrl: logoOf(board),
                 location: inIndia(where) ? where : firstIndian(offices),
                 workplace: workplaceOf(`${where} ${title}`),
                 employmentType: typeFromTitle(title),
@@ -339,6 +340,7 @@ export function lever(boards: Board[] = LEVER_BOARDS): Provider {
                 externalUrl: url,
                 title,
                 companyName: board.name,
+                logoUrl: logoOf(board),
                 location: capitalise(firstIndian(places)),
                 workplace: workplace === 'remote' || workplace === 'hybrid' ? workplace : workplaceOf(places.join(' ')),
                 employmentType: str(c.commitment) ? employmentTypeOf(str(c.commitment)) : typeFromTitle(title),
@@ -391,6 +393,7 @@ export function ashby(boards: Board[] = ASHBY_BOARDS): Provider {
                   externalUrl: url,
                   title,
                   companyName: board.name,
+                  logoUrl: logoOf(board),
                   location: places.some(inIndia) ? firstIndian(places) : 'India',
                   workplace: kind === 'remote' || j.isRemote === true ? 'remote' : kind === 'hybrid' ? 'hybrid' : 'onsite',
                   employmentType: employmentTypeOf(str(j.employmentType)),

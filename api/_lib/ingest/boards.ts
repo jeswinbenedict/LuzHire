@@ -10,54 +10,67 @@ export interface Board {
   token: string;
   /** Company name shown on cards (the APIs don't all return one). */
   name: string;
+  /** The company's website, for its logo (the APIs return none). */
+  domain: string;
+}
+
+/**
+ * The company's logo: its site icon at up to 128 px from Google's favicon
+ * service, shown through /api/img (t1.gstatic.com is on its allowlist).
+ */
+export function logoOf(board: Board): string {
+  return (
+    'https://t1.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON' +
+    `&fallback_opts=TYPE,SIZE,URL&url=https://${board.domain}&size=128`
+  );
 }
 
 export const GREENHOUSE_BOARDS: Board[] = [
-  { token: 'databricks', name: 'Databricks' },
-  { token: 'mongodb', name: 'MongoDB' },
-  { token: 'okta', name: 'Okta' },
-  { token: 'zscaler', name: 'Zscaler' },
-  { token: 'purestorage', name: 'Pure Storage' },
-  { token: 'highradius', name: 'HighRadius' },
-  { token: 'stripe', name: 'Stripe' },
-  { token: 'inmobi', name: 'InMobi' },
-  { token: 'sigmoid', name: 'Sigmoid' },
-  { token: 'rubrik', name: 'Rubrik' },
-  { token: 'celonis', name: 'Celonis' },
-  { token: 'gitlab', name: 'GitLab' },
-  { token: 'razorpaysoftwareprivatelimited', name: 'Razorpay' },
-  { token: 'netskope', name: 'Netskope' },
-  { token: 'toast', name: 'Toast' },
-  { token: 'hackerrank', name: 'HackerRank' },
-  { token: 'elastic', name: 'Elastic' },
-  { token: 'druva', name: 'Druva' },
-  { token: 'agoda', name: 'Agoda' },
-  { token: 'groww', name: 'Groww' },
-  { token: 'twilio', name: 'Twilio' },
-  { token: 'commvault', name: 'Commvault' },
-  { token: 'datadog', name: 'Datadog' },
-  { token: 'newrelic', name: 'New Relic' },
-  { token: 'sumologic', name: 'Sumo Logic' },
+  { token: 'databricks', name: 'Databricks', domain: 'databricks.com' },
+  { token: 'mongodb', name: 'MongoDB', domain: 'mongodb.com' },
+  { token: 'okta', name: 'Okta', domain: 'okta.com' },
+  { token: 'zscaler', name: 'Zscaler', domain: 'zscaler.com' },
+  { token: 'purestorage', name: 'Pure Storage', domain: 'purestorage.com' },
+  { token: 'highradius', name: 'HighRadius', domain: 'highradius.com' },
+  { token: 'stripe', name: 'Stripe', domain: 'stripe.com' },
+  { token: 'inmobi', name: 'InMobi', domain: 'inmobi.com' },
+  { token: 'sigmoid', name: 'Sigmoid', domain: 'sigmoid.com' },
+  { token: 'rubrik', name: 'Rubrik', domain: 'rubrik.com' },
+  { token: 'celonis', name: 'Celonis', domain: 'celonis.com' },
+  { token: 'gitlab', name: 'GitLab', domain: 'gitlab.com' },
+  { token: 'razorpaysoftwareprivatelimited', name: 'Razorpay', domain: 'razorpay.com' },
+  { token: 'netskope', name: 'Netskope', domain: 'netskope.com' },
+  { token: 'toast', name: 'Toast', domain: 'toasttab.com' },
+  { token: 'hackerrank', name: 'HackerRank', domain: 'hackerrank.com' },
+  { token: 'elastic', name: 'Elastic', domain: 'elastic.co' },
+  { token: 'druva', name: 'Druva', domain: 'druva.com' },
+  { token: 'agoda', name: 'Agoda', domain: 'agoda.com' },
+  { token: 'groww', name: 'Groww', domain: 'groww.in' },
+  { token: 'twilio', name: 'Twilio', domain: 'twilio.com' },
+  { token: 'commvault', name: 'Commvault', domain: 'commvault.com' },
+  { token: 'datadog', name: 'Datadog', domain: 'datadoghq.com' },
+  { token: 'newrelic', name: 'New Relic', domain: 'newrelic.com' },
+  { token: 'sumologic', name: 'Sumo Logic', domain: 'sumologic.com' },
 ];
 
 export const LEVER_BOARDS: Board[] = [
-  { token: 'paytm', name: 'Paytm' },
-  { token: 'meesho', name: 'Meesho' },
-  { token: 'zeta', name: 'Zeta' },
-  { token: 'fampay', name: 'FamPay' },
-  { token: 'acceldata', name: 'Acceldata' },
-  { token: 'nium', name: 'Nium' },
-  { token: 'cred', name: 'CRED' },
-  { token: 'outreach', name: 'Outreach' },
+  { token: 'paytm', name: 'Paytm', domain: 'paytm.com' },
+  { token: 'meesho', name: 'Meesho', domain: 'meesho.com' },
+  { token: 'zeta', name: 'Zeta', domain: 'zeta.tech' },
+  { token: 'fampay', name: 'FamPay', domain: 'fampay.in' },
+  { token: 'acceldata', name: 'Acceldata', domain: 'acceldata.io' },
+  { token: 'nium', name: 'Nium', domain: 'nium.com' },
+  { token: 'cred', name: 'CRED', domain: 'cred.club' },
+  { token: 'outreach', name: 'Outreach', domain: 'outreach.io' },
 ];
 
 export const ASHBY_BOARDS: Board[] = [
-  { token: 'sarvam', name: 'Sarvam AI' },
-  { token: 'plane', name: 'Plane' },
-  { token: 'supabase', name: 'Supabase' },
-  { token: 'atlan', name: 'Atlan' },
-  { token: 'composio', name: 'Composio' },
-  { token: 'smallest', name: 'Smallest.ai' },
+  { token: 'sarvam', name: 'Sarvam AI', domain: 'sarvam.ai' },
+  { token: 'plane', name: 'Plane', domain: 'plane.so' },
+  { token: 'supabase', name: 'Supabase', domain: 'supabase.com' },
+  { token: 'atlan', name: 'Atlan', domain: 'atlan.com' },
+  { token: 'composio', name: 'Composio', domain: 'composio.dev' },
+  { token: 'smallest', name: 'Smallest.ai', domain: 'smallest.ai' },
 ];
 
 const INDIA =

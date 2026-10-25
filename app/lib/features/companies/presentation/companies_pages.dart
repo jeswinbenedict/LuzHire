@@ -102,6 +102,7 @@ class _CompaniesPageState extends ConsumerState<CompaniesPage> {
               )
             else ...[
               LuzGrid(
+                equalHeights: true,
                 children: [
                   for (final c in state.companies) CompanyCard(company: c),
                 ],
@@ -148,11 +149,12 @@ class CompanyCard extends ConsumerWidget {
             ? LuzDepth.raisedLg
             : LuzDepth.raisedMd,
         radius: LuzRadius.lg,
-        padding: const EdgeInsets.all(LuzSpace.lg),
+        padding: const EdgeInsets.all(LuzSpace.md + 4),
+        // Centred, so cards of one (equal-height) row look alike whether the
+        // name takes one line or two.
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            LuzLogoSocket(name: company.name, logoUrl: logo, size: 52),
+            LuzLogoSocket(name: company.name, logoUrl: logo, size: 48),
             const SizedBox(width: LuzSpace.md),
             Expanded(
               child: Column(
@@ -160,7 +162,7 @@ class CompanyCard extends ConsumerWidget {
                 children: [
                   Text(
                     company.name,
-                    style: t.h4,
+                    style: t.wsSection,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
