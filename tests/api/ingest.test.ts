@@ -4,6 +4,7 @@ import { HttpError } from '../../api/_lib/http.js';
 import {
   dedupeKey,
   employmentTypeOf,
+  fixMojibake,
   htmlToMarkdown,
   parseSalary,
   type IngestJob,
@@ -67,6 +68,13 @@ describe('helpers', () => {
     expect(employmentTypeOf('freelance')).toBe('contract');
     expect(employmentTypeOf('internship')).toBe('internship');
     expect(employmentTypeOf('')).toBe('full_time');
+  });
+
+  it('repairs UTF-8 text a feed decoded as Latin-1, and nothing else', () => {
+    expect(fixMojibake('Sotheby\u00e2\u0080\u0099s')).toBe('Sotheby\u2019s');
+    expect(fixMojibake('M\u00c3\u00bcnchen')).toBe('M\u00fcnchen');
+    expect(fixMojibake('Caf\u00e9 Coffee Day')).toBe('Caf\u00e9 Coffee Day');
+    expect(fixMojibake('Sotheby\u2019s')).toBe('Sotheby\u2019s');
   });
 
   it('matches the same job across providers', () => {

@@ -75,7 +75,23 @@ function stripTags(s: string): string {
 
 /** Untrusted HTML/entities → plain one-line text (titles, names). */
 export function plainText(s: string, max = 160): string {
-  return clamp(decodeEntities(stripTags(decodeEntities(s))).replace(/\s+/g, ' '), max);
+  return clamp(fixMojibake(decodeEntities(stripTags(decodeEntities(s)))).replace(/\s+/g, ' '), max);
+}
+
+/**
+ * Repairs UTF-8 text that a feed decoded as Latin-1 ("Sothebyâ\u0080\u0099s" →
+ * "Sotheby’s"; Remote OK sends some names like this). Only text made of
+ * Latin-1 characters with UTF-8 byte pairs in it is touched, and only when it
+ * decodes cleanly, so real accents ("Café") are left alone.
+ */
+export function fixMojibake(s: string): string {
+  if (!/[Â-ô][\u0080-¿]/.test(s) || /[^\u0000-ÿ]/.test(s)) return s;
+  const bytes = Uint8Array.from(s, (c) => c.charCodeAt(0));
+  try {
+    return new TextDecoder('utf-8', { fatal: true }).decode(bytes);
+  } catch {
+    return s;
+  }
 }
 
 function inline(s: string): string {
