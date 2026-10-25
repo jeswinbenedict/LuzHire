@@ -986,6 +986,7 @@ class Opportunity {
     this.teamMax = 1,
     this.capacity,
     this.registrationCount = 0,
+    this.externalSource,
   });
 
   final String id;
@@ -1012,6 +1013,22 @@ class Opportunity {
   final int teamMax;
   final int? capacity;
   final int registrationCount;
+
+  /// Set for imported events: "codeforces", "hackclub".
+  final String? externalSource;
+
+  /// "by Build for Earth · via Hack Club"; sources are credited by name.
+  String get byline {
+    final via = switch (externalSource) {
+      'codeforces' => 'Codeforces',
+      'hackclub' => 'Hack Club',
+      null || '' => null,
+      final other => other,
+    };
+    return via == null || via == organizerName
+        ? 'by $organizerName'
+        : 'by $organizerName · via $via';
+  }
 
   bool get isTeamEvent => teamMax > 1;
   bool get registersInApp => registrationUrl == null;
@@ -1043,6 +1060,7 @@ class Opportunity {
     teamMax: (j['team_max'] as num?)?.toInt() ?? 1,
     capacity: (j['capacity'] as num?)?.toInt(),
     registrationCount: (j['registration_count'] as num?)?.toInt() ?? 0,
+    externalSource: j['external_source'] as String?,
   );
 
   @override

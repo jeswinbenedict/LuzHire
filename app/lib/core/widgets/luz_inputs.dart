@@ -84,6 +84,20 @@ class _LuzTextFieldState extends State<LuzTextField> {
     final focused = _focus.hasFocus;
     final multiline = widget.maxLines > 1;
     final fieldHeight = zone.isWorkspace && context.isPointer ? 38.0 : 50.0;
+    // Single-line fields: the decorator puts spare height below the text, so
+    // the padding is split evenly from the line's real height (at the user's
+    // text size) to keep the text and hint centred in the field.
+    var linePad = 0.0;
+    if (!multiline) {
+      final line = TextPainter(
+        text: TextSpan(text: widget.hint ?? 'Ag', style: t.body),
+        textScaler: MediaQuery.textScalerOf(context),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout();
+      linePad = ((fieldHeight - line.height) / 2).clamp(0.0, 24.0);
+      line.dispose();
+    }
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,10 +159,25 @@ class _LuzTextFieldState extends State<LuzTextField> {
                               ),
                             ],
                       style: t.body.copyWith(color: p.ink),
-                      decoration: InputDecoration.collapsed(
-                        hintText: widget.hint,
-                        hintStyle: t.body.copyWith(color: p.muted),
-                      ).copyWith(semanticCounterText: ''),
+                      decoration: multiline
+                          ? InputDecoration.collapsed(
+                              hintText: widget.hint,
+                              hintStyle: t.body.copyWith(color: p.muted),
+                            ).copyWith(semanticCounterText: '')
+                          : InputDecoration(
+                              isDense: true,
+                              filled: false,
+                              border: InputBorder.none,
+                              enabledBorder: InputBorder.none,
+                              focusedBorder: InputBorder.none,
+                              disabledBorder: InputBorder.none,
+                              contentPadding: EdgeInsets.symmetric(
+                                vertical: linePad,
+                              ),
+                              hintText: widget.hint,
+                              hintStyle: t.body.copyWith(color: p.muted),
+                              semanticCounterText: '',
+                            ),
                     ),
                   ),
                 ),

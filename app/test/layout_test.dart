@@ -326,6 +326,26 @@ void main() {
     });
   }
 
+  testWidgets('text field hint is centred with its icon', (tester) async {
+    await tester.pumpWidget(
+      wrap(
+        const SizedBox(
+          width: 400,
+          child: LuzTextField(
+            label: 'Search companies',
+            hint: 'Company name',
+            prefixIcon: Icons.search,
+          ),
+        ),
+      ),
+    );
+    final hint = tester.getRect(find.text('Company name'));
+    final icon = tester.getRect(find.byIcon(Icons.search));
+    final field = tester.getRect(find.byType(TextField));
+    expect((hint.center.dy - icon.center.dy).abs(), lessThan(1.5));
+    expect(field.height, greaterThanOrEqualTo(48));
+  });
+
   testWidgets('range slider thumbs move with arrow keys', (tester) async {
     var values = const RangeValues(10, 20);
     await tester.pumpWidget(

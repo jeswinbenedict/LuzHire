@@ -21,7 +21,7 @@ export function enabledProviders(group: IngestGroup = 'jobs', env: NodeJS.Proces
   return list;
 }
 
-async function getJson(url: string): Promise<unknown> {
+export async function getJson(url: string): Promise<unknown> {
   const res = await fetch(url, {
     headers: { 'User-Agent': 'LuzHire job portal (college project) - luzhire.vercel.app' },
     signal: AbortSignal.timeout(40_000), // some Lever boards take ~20 s
