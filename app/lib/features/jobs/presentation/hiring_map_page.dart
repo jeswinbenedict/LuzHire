@@ -457,13 +457,16 @@ class _Panel extends ConsumerWidget {
                         : 'No open roles here right now.',
                     style: t.body.copyWith(color: p.inkMuted),
                   )
-                : Column(
-                    children: [
-                      for (final j in list) ...[
-                        JobCard(job: j),
-                        const SizedBox(height: LuzSpace.sm),
+                // Compact cards, as in job search: same rows on every card.
+                : LuzDense(
+                    child: Column(
+                      children: [
+                        for (final j in list) ...[
+                          JobCard(job: j),
+                          const SizedBox(height: LuzSpace.sm),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
           ),
         ],

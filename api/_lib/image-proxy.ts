@@ -12,6 +12,8 @@ export const IMAGE_HOSTS = new Set([
   // fetch() (which Flutter web uses for images) to LuzHire's own hosts.
   'media2.dev.to',
   'jobicy.com',
+  // Company logos for career-board jobs (Google's favicon service).
+  't1.gstatic.com',
 ]);
 
 const TYPES = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);

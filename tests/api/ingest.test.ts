@@ -165,7 +165,7 @@ describe('company career boards', () => {
 
   it('Greenhouse: imports India roles only, with the company name and its own dates', async () => {
     const urls: string[] = [];
-    const result = await greenhouse([{ token: 'acme', name: 'Acme Corp' }]).fetch(async (url) => {
+    const result = await greenhouse([{ token: 'acme', name: 'Acme Corp', domain: 'acme.example' }]).fetch(async (url) => {
       urls.push(url);
       return {
         jobs: [
@@ -202,6 +202,8 @@ describe('company career boards', () => {
       descriptionMd: 'Build **payments** for millions of users across India.',
     });
     expect(result.jobs[1]).toMatchObject({ location: 'Pune', employmentType: 'internship' });
+    // The APIs have no logos: the company's site icon, shown via /api/img.
+    expect(result.jobs[0]!.logoUrl).toMatch(/^https:\/\/t1\.gstatic\.com\/faviconV2\?.*url=https:\/\/acme\.example&size=128$/);
     expect(result.complete).toBe(true);
   });
 
@@ -219,7 +221,7 @@ describe('company career boards', () => {
       ...over,
     });
     const urls: string[] = [];
-    const result = await lever([{ token: 'acme', name: 'Acme' }]).fetch(async (url) => {
+    const result = await lever([{ token: 'acme', name: 'Acme', domain: 'acme.example' }]).fetch(async (url) => {
       urls.push(url);
       const skip = Number(new URL(url).searchParams.get('skip'));
       if (skip === 0) {
@@ -256,7 +258,7 @@ describe('company career boards', () => {
   });
 
   it('Ashby: skips unlisted jobs and hidden pay', async () => {
-    const result = await ashby([{ token: 'acme', name: 'Acme' }]).fetch(async () => ({
+    const result = await ashby([{ token: 'acme', name: 'Acme', domain: 'acme.example' }]).fetch(async () => ({
       jobs: [
         {
           id: 'x1',
@@ -295,8 +297,8 @@ describe('company career boards', () => {
 
   it('a failing board is reported, and only answered boards can close jobs', async () => {
     const result = await greenhouse([
-      { token: 'up', name: 'Up' },
-      { token: 'down', name: 'Down' },
+      { token: 'up', name: 'Up', domain: 'up.example' },
+      { token: 'down', name: 'Down', domain: 'down.example' },
     ]).fetch(async (url) => {
       if (url.includes('/down/')) throw new Error('boards-api.greenhouse.io answered 500');
       return { jobs: [] };
@@ -304,7 +306,7 @@ describe('company career boards', () => {
     expect(result.warnings).toEqual(['down: boards-api.greenhouse.io answered 500']);
     expect(result.covers?.('up:1')).toBe(true);
     expect(result.covers?.('down:1')).toBe(false);
-    await expect(greenhouse([{ token: 'down', name: 'Down' }]).fetch(async () => { throw new Error('offline'); })).rejects.toThrow(
+    await expect(greenhouse([{ token: 'down', name: 'Down', domain: 'down.example' }]).fetch(async () => { throw new Error('offline'); })).rejects.toThrow(
       'No board answered',
     );
   });
