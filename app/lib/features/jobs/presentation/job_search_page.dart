@@ -252,7 +252,8 @@ class _Header extends StatelessWidget {
                     'Sorted by newest',
                     style: t.bodySm.copyWith(color: p.inkMuted),
                   ),
-                  NewJobsBanner(onShow: onShowNew),
+                  if (!showFilterButton)
+                    NewJobsBanner(key: ValueKey(query), onShow: onShowNew),
                 ],
               ),
             ),
@@ -278,6 +279,14 @@ class _Header extends StatelessWidget {
               ),
           ],
         ),
+        // Narrow layouts: a row of its own, so the label is never cut short
+        // beside the Map and Filters buttons.
+        if (showFilterButton)
+          NewJobsBanner(
+            key: ValueKey(query),
+            onShow: onShowNew,
+            padding: const EdgeInsets.only(top: LuzSpace.sm),
+          ),
       ],
     );
   }

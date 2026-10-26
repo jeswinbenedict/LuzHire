@@ -206,7 +206,8 @@ class JobsRepository {
       });
 
   /// Published jobs that arrived on LuzHire after [since]: imported rows
-  /// (created) or employers' jobs (published). A count only, no rows.
+  /// (created) or employers' jobs (published). The count comes from the
+  /// response header; at most one row is sent, however many arrived.
   Future<int> countNewSince(DateTime since) => guardDb(() async {
     final at = since.toUtc().toIso8601String();
     final res = await _db
@@ -214,6 +215,7 @@ class JobsRepository {
         .select('id')
         .eq('status', 'published')
         .or('created_at.gt.$at,published_at.gt.$at')
+        .limit(1)
         .count(CountOption.exact);
     return res.count;
   });
