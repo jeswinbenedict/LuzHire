@@ -17,15 +17,15 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
-| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ✅ Live on main with about 1,800 real jobs from daily imports. The live "new jobs" banner is in PR #35 |
-| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19). Still needed: a live check with real candidate and employer accounts |
-| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts. The workspace company switcher is in PR #36 |
+| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ✅ Live on main with about 1,800 real jobs from daily imports and the live "new jobs" banner (PRs #35, #39) |
+| 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19), with the redesigned dashboard (#40), calendar files and drag-and-drop resumes (#41). Still needed: a live check with real candidate and employer accounts |
+| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Company switcher live (#36). Still needed: an end-to-end hire with real accounts |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | 🟡 Live on main (migration `20261020120000` applied to the cloud 2026-10-20). Still needed: create the first admin account |
 | 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | 🟡 Live on main (migration applied, `CRON_SECRET` set, first Remotive import of 10 jobs on 2026-10-20). Live job feeds (39 company career boards, Himalayas, Jobicy, Remote OK) live since PR #19 (2026-10-24), with logos for 88 % of companies. Still needed: optional Adzuna keys |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | 🟡 Live on main (web push and email verified 2026-10-20). Still needed: Android push (Firebase Android app + a phone), Outlook rendering check |
-| 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | 🟡 Live on main (load test done 2026-10-20; see `docs/HARDENING.md`). Still needed: manual screen-reader and keyboard pass; Sentry optional |
+| 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | 🟡 Live on main (load test done 2026-10-20; see `docs/HARDENING.md`). Keyboard access checked automatically on 32 screens (#42). Still needed: a manual screen-reader pass; Sentry optional |
 | 10½ | Discovery features | Company directory with logos, career news, hiring map + recommendations, events | Optional Adzuna keys | ✅ Live on main: news with images, imported contests and hackathons, redesigned events (PRs #21–#34; all migrations applied by 2026-10-26). Optional: Adzuna keys |
-| 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Supabase plan, domain (optional), first admin, launch sign-off | 🟡 Production is live with monitoring. Release checklist, rollback plan and handover guide are in PR #37. Still needed: the owner items in the sign-off (docs/RELEASE.md §6) |
+| 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Supabase plan, domain (optional), first admin, launch sign-off | 🟡 Production is live with monitoring, release checklist, rollback plan and handover guide (#37). Screen polish (#43) and the report screenshots (#44) are in review. Still needed: the owner items in the sign-off (docs/RELEASE.md §6) |
 
 Deployment is **continuous**, not left to the end. From Phase 1 onward every push to `main` deploys to Vercel; Phase 11 is the production cut-over and launch checklist.
 
@@ -128,7 +128,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Home: "Latest jobs" (real postings only; hidden when there are none).
 - 19 widget tests against in-memory repositories (94 app tests in total).
 
-**Done since:** real jobs fill the cloud database from the daily imports (about 1,800 published on 2026-10-26; Phase 8). The live **"new jobs" banner** is in PR #35: an open Find jobs or Home page checks once a minute how many jobs arrived since it opened and shows "↑ N new jobs · Show", which reloads the list. A once-a-minute count replaced the planned Realtime broadcast, because imports add about 1,800 rows a day in bursts and Realtime would push every one to every browser.
+**Done since:** real jobs fill the cloud database from the daily imports (about 1,800 published on 2026-10-26; Phase 8). The live **"new jobs" banner** (PR #35; on phones a row of its own and a fresh count per page, PR #39): an open Find jobs or Home page checks once a minute how many jobs arrived since it opened and shows "↑ N new jobs · Show", which reloads the list. A once-a-minute count replaced the planned Realtime broadcast, because imports add about 1,800 rows a day in bursts and Realtime would push every one to every browser.
 **Polish (PRs #20, #22, #25–#28):** centred search text, a compact three-pane job search, uniform job and company cards in grids, company logos (or a tinted initials tile), and repaired mis-encoded feed text.
 
 **Original scope:**
@@ -150,7 +150,11 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - The Ctrl/⌘ K command menu now lists only the pages the signed-in role may open.
 - 14 widget tests (Realtime stage change, apply, withdraw, accept offer, profile validation, menu roles) and 8 pgTAP assertions (111 app tests, 65 database assertions).
 
-**Deferred:** drag-and-drop resume tray on web (file picker only for now), resume parsing (`resumes.parsed`), and `.ics` downloads (Google Calendar link instead). The "< 1 s" stage-change check needs the employer pipeline (Phase 6).
+**Done since (2026-10-26/27):**
+- **Dashboard redesign (#40):** a welcome card with a one-line summary, even stat tiles, a "Finish your profile" checklist (each step +10 %), clear empty states and recommended jobs. /me pages now scroll full width.
+- **Calendar files and drag-and-drop (#41):** interviews offer a downloadable `.ics` file (Outlook, Apple; with a 30-minute reminder) beside Google Calendar, and on the web a PDF or Word resume can be dropped on the Resumes card.
+
+**Still deferred:** resume parsing (`resumes.parsed`). The "< 1 s" stage-change check needs the employer pipeline (Phase 6).
 
 **Original scope:**
 - Dashboard (completeness groove, applications, upcoming interviews, saved, recommended).
@@ -172,7 +176,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Overview `/employer` and Analytics `/employer/analytics`: real counts only, from `company_hiring_stats` (runs under the caller's RLS). Funnel, applications per week, average time to hire, and job status counts.
 - Viewer role: read-only everywhere. 13 widget tests (onboarding, invites, review flow, live move, drag rules, interview and offer forms, viewer, analytics) and 12 pgTAP assertions (125 app tests, 77 database assertions).
 
-**Company switcher (PR #36):** people in more than one company see the current company in the workspace sidebar (top bar on tablets, drawer on phones) and can switch it from any page. It replaces the switcher that only the company page had.
+**Company switcher (PR #36, live):** people in more than one company see the current company in the workspace sidebar (top bar on tablets, drawer on phones) and can switch it from any page. It replaces the switcher that only the company page had.
 **Still to do:** a full hire with real accounts on the live site.
 
 **Original scope:**
@@ -239,7 +243,7 @@ To add a company, check that its board lists India roles and add `{ token, name,
 **Done when:** push arrives on web and Android; emails render in Gmail and Outlook.
 
 ## Phase 10 — Hardening
-**Status: live on main** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP and on the cloud database, API rate limits, enforced CSP with violation reports, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log; LCP ≤ 1.3 s). Load test done (database copes with 500 users searching every 2 s). Search results trimmed to job cards, about 9× smaller (migration `20261020170000`, applied to the cloud on 2026-10-21 with the discovery migrations). Still to do: a manual screen-reader and keyboard pass, Sentry (optional).
+**Status: live on main** (see `docs/HARDENING.md`: RLS and security-definer invariants in pgTAP and on the cloud database, API rate limits, enforced CSP with violation reports, gitleaks in CI, font subsetting and preloads, logo proxy, WCAG checks on 14 screens with fixes, deep health check, uptime workflow, error log; LCP ≤ 1.3 s). Load test done (database copes with 500 users searching every 2 s). Search results trimmed to job cards, about 9× smaller (migration `20261020170000`, applied to the cloud on 2026-10-21 with the discovery migrations). **Keyboard checks (#42):** on 32 screens across every role, every clickable control is reachable with Tab, Tab never gets stuck, and focus is always visible. They found and fixed mouse-only table rows, a Tab trap on pages with nothing to focus, an invisible Tab stop and the Find jobs Tab order. Still to do: a manual screen-reader pass (NVDA or Narrator, TalkBack), Sentry (optional).
 - Performance: deferred imports for employer/admin, image sizing, bundle check, Lighthouse on SEO pages, LCP ≤ 2.5 s on mid-range mobile.
 - Accessibility: full WCAG 2.1 AA pass (screen reader on web/Android, keyboard, contrast, 200 % text).
 - Security: RLS review, OWASP checklist, CSP headers, rate limits on API, dependency audit, secret scan.
@@ -261,8 +265,8 @@ To add a company, check that its board lists India roles and add `{ token, name,
 - Handover docs: README, setup guide, demo accounts, architecture + design docs, and a screenshot set for the project report.
 - Optional: Android APK/AAB and iOS TestFlight builds.
 
-**Status (2026-10-26):** production runs on Vercel with security headers and an enforced CSP, a smoke test after every deploy, and an uptime check every 30 minutes. In PR #37: `docs/RELEASE.md` (release checklist, rollback plan, launch sign-off) and `docs/HANDOVER.md` (handover guide and screenshot list). Tests on main: 291 Flutter, 109 API and 183 pgTAP assertions.
-**Still needed from the owner** (docs/RELEASE.md §6): choose the Supabase plan, optionally add a domain, create the first admin (`ADMIN_EMAILS`), do a live end-to-end hire with two accounts, check emails in Outlook, do a screen-reader pass, take the screenshot set, and optionally build Android. Then sign off.
+**Status (2026-10-27):** production runs on Vercel with security headers and an enforced CSP, a smoke test after every deploy, and an uptime check every 30 minutes. `docs/RELEASE.md` (release checklist, rollback plan, launch sign-off) and `docs/HANDOVER.md` (handover guide) are on main (#37). In review: a visual review of 30 more screens with fixes (#43) and the report screenshot set in `docs/screenshots/` (#44). Tests on main: 311 Flutter, 109 API and 183 pgTAP assertions; #42 adds 67 keyboard checks and #43 seven layout tests.
+**Still needed from the owner** (docs/RELEASE.md §6): choose the Supabase plan, optionally add a domain, create the first admin (`ADMIN_EMAILS`), do a live end-to-end hire with two accounts, check emails in Outlook, do a screen-reader pass, and optionally build Android. Then sign off.
 
 **Done when:** the production URL passes the smoke test and the release checklist is signed off.
 
