@@ -8,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/data/failures.dart';
 import '../../../core/data/models.dart';
 import '../../../core/layout/content.dart';
+import '../../../core/platform/file_drop.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
@@ -359,17 +360,35 @@ class _ResumesCard extends ConsumerStatefulWidget {
 class _ResumesCardState extends ConsumerState<_ResumesCard> {
   bool _uploading = false;
 
-  Future<void> _upload() async {
+  static const _types = ['pdf', 'docx'];
+
+  Future<void> _upload() =>
+      _send(() => pickFile(_types, maxBytes: ResumeRepository.maxBytes));
+
+  /// A file dropped on the card: the same checks as the picker.
+  Future<void> _dropped(String name, Uint8List bytes) => _send(() async {
+    final ext = name.contains('.') ? name.split('.').last.toLowerCase() : '';
+    if (!_types.contains(ext)) {
+      throw const AppFailure('Drop a PDF or Word (.docx) file.');
+    }
+    if (bytes.length > ResumeRepository.maxBytes) {
+      throw AppFailure(
+        'That file is larger than '
+        '${ResumeRepository.maxBytes ~/ (1024 * 1024)} MB.',
+      );
+    }
+    return (name: name, bytes: bytes);
+  });
+
+  Future<void> _send(
+    Future<({String name, Uint8List bytes})?> Function() file,
+  ) async {
+    if (_uploading) return;
     setState(() => _uploading = true);
     await runWithToast(context, () async {
-      final file = await pickFile(const [
-        'pdf',
-        'docx',
-      ], maxBytes: ResumeRepository.maxBytes);
-      if (file == null) return;
-      await ref
-          .read(candidateActionsProvider)
-          .uploadResume(file.name, file.bytes);
+      final f = await file();
+      if (f == null) return;
+      await ref.read(candidateActionsProvider).uploadResume(f.name, f.bytes);
     }, success: null);
     if (mounted) setState(() => _uploading = false);
   }
@@ -379,25 +398,152 @@ class _ResumesCardState extends ConsumerState<_ResumesCard> {
     final resumes = ref.watch(myResumesProvider);
     final p = context.luz;
     final t = context.luzText;
-    return SectionCard(
-      title: 'Resumes',
-      icon: Icons.description_outlined,
-      action: LuzButton(
-        label: _uploading ? 'Uploading…' : 'Upload',
-        icon: Icons.upload_file,
-        onPressed: _uploading ? null : _upload,
+    final droppable = fileDropListener != null;
+    return _FileDropZone(
+      label: 'Drop your resume here',
+      onFile: _dropped,
+      child: SectionCard(
+        title: 'Resumes',
+        icon: Icons.description_outlined,
+        action: LuzButton(
+          label: _uploading ? 'Uploading…' : 'Upload',
+          icon: Icons.upload_file,
+          onPressed: _uploading ? null : _upload,
+        ),
+        child: AsyncBlock<List<Resume>>(
+          value: resumes,
+          onRetry: () => ref.invalidate(myResumesProvider),
+          data: (list) => list.isEmpty
+              ? Text(
+                  'PDF or Word (.docx), up to 5 MB'
+                  '${droppable ? ': upload one or drag it onto this card' : ''}'
+                  '. Your primary resume is attached when you apply.',
+                  style: t.body.copyWith(color: p.inkMuted),
+                )
+              : Column(
+                  children: [
+                    for (final r in list) _ResumeRow(resume: r),
+                    if (droppable)
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          'Tip: drag a PDF or Word file onto this card to add '
+                          'another.',
+                          style: t.caption.copyWith(color: p.muted),
+                        ),
+                      ),
+                  ],
+                ),
+        ),
       ),
-      child: AsyncBlock<List<Resume>>(
-        value: resumes,
-        onRetry: () => ref.invalidate(myResumesProvider),
-        data: (list) => list.isEmpty
-            ? Text(
-                'PDF or Word (.docx), up to 5 MB. Your primary resume is '
-                'attached when you apply.',
-                style: t.body.copyWith(color: p.inkMuted),
-              )
-            : Column(children: [for (final r in list) _ResumeRow(resume: r)]),
-      ),
+    );
+  }
+}
+
+/// Takes files dragged from the desktop (web): while one is over the page
+/// the zone shows where to drop it, and a file dropped on the zone goes to
+/// [onFile]. A file dropped elsewhere on the page is ignored with a hint.
+class _FileDropZone extends StatefulWidget {
+  const _FileDropZone({
+    required this.child,
+    required this.onFile,
+    required this.label,
+  });
+
+  final Widget child;
+  final Future<void> Function(String name, Uint8List bytes) onFile;
+  final String label;
+
+  @override
+  State<_FileDropZone> createState() => _FileDropZoneState();
+}
+
+class _FileDropZoneState extends State<_FileDropZone> {
+  CancelFileDrops? _cancel;
+  bool _dragging = false;
+  bool _over = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _cancel = fileDropListener?.call(
+      onDragOver: (at) {
+        if (!mounted) return;
+        final over = at != null && _contains(at);
+        if (_dragging != (at != null) || _over != over) {
+          setState(() {
+            _dragging = at != null;
+            _over = over;
+          });
+        }
+      },
+      onDrop: (at, name, bytes) {
+        if (!mounted) return;
+        setState(() => _dragging = _over = false);
+        if (_contains(at)) {
+          widget.onFile(name, bytes);
+        } else {
+          showLuzToast(
+            context,
+            'Drop the file on the Resumes card to upload it.',
+            icon: Icons.info_outline,
+          );
+        }
+      },
+    );
+  }
+
+  bool _contains(Offset global) {
+    final box = context.findRenderObject();
+    if (box is! RenderBox || !box.attached) return false;
+    return (Offset.zero & box.size).contains(box.globalToLocal(global));
+  }
+
+  @override
+  void dispose() {
+    _cancel?.call();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final t = context.luzText;
+    return Stack(
+      children: [
+        widget.child,
+        if (_dragging)
+          Positioned.fill(
+            child: IgnorePointer(
+              child: Semantics(
+                liveRegion: true,
+                child: LuzSurface(
+                  depth: _over ? LuzDepth.insetMd : LuzDepth.insetSm,
+                  radius: LuzZone.of(context).cardRadius,
+                  outline: _over ? p.accent : p.outline,
+                  child: Center(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.file_download_outlined,
+                          size: 32,
+                          color: _over ? p.accent : p.muted,
+                        ),
+                        const SizedBox(height: LuzSpace.xs),
+                        Text(widget.label, style: t.wsCardTitle),
+                        Text(
+                          'PDF or Word (.docx), up to 5 MB',
+                          style: t.bodySm.copyWith(color: p.inkMuted),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+      ],
     );
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/data/enums.dart';
 import '../../../core/data/models.dart';
+import '../../../core/platform/file_save.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
@@ -18,9 +21,7 @@ Uri calendarLink(Interview i, {Job? job}) {
       '${DateFormat("yyyyMMdd'T'HHmmss").format(d.toUtc())}Z';
   return Uri.https('calendar.google.com', '/calendar/render', {
     'action': 'TEMPLATE',
-    'text':
-        'Interview: ${job?.title ?? 'LuzHire'}'
-        '${job == null ? '' : ' at ${job.companyName}'}',
+    'text': _interviewTitle(job),
     'dates': '${stamp(i.scheduledAt)}/${stamp(i.endsAt)}',
     'details': [
       '${i.mode.label} interview booked through LuzHire.',
@@ -28,6 +29,68 @@ Uri calendarLink(Interview i, {Job? job}) {
     ].join('\n'),
     if (i.location != null) 'location': i.location!,
   });
+}
+
+String _interviewTitle(Job? job) =>
+    'Interview: ${job?.title ?? 'LuzHire'}'
+    '${job == null ? '' : ' at ${job.companyName}'}';
+
+/// The interview as an iCalendar file (RFC 5545) for Outlook, Apple
+/// Calendar and others, with a reminder 30 minutes before.
+String interviewIcs(Interview i, {Job? job, DateTime? now}) {
+  String stamp(DateTime d) =>
+      '${DateFormat("yyyyMMdd'T'HHmmss").format(d.toUtc())}Z';
+  // Text values escape \ ; , and line breaks.
+  String text(String v) => v
+      .replaceAll(r'\', r'\\')
+      .replaceAll(';', r'\;')
+      .replaceAll(',', r'\,')
+      .replaceAll(RegExp(r'\r?\n'), r'\n');
+  // Lines longer than 75 octets continue on the next line after a space.
+  String fold(String line) {
+    final out = StringBuffer();
+    var octets = 0;
+    for (final rune in line.runes) {
+      final ch = String.fromCharCode(rune);
+      final n = utf8.encode(ch).length;
+      if (octets + n > 75) {
+        out.write('\r\n ');
+        octets = 1;
+      }
+      out.write(ch);
+      octets += n;
+    }
+    return out.toString();
+  }
+
+  final description = [
+    '${i.mode.label} interview booked through LuzHire.',
+    if (i.meetingUrl != null) 'Join: ${i.meetingUrl}',
+  ].join('\n');
+  final lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//LuzHire//Interviews//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:PUBLISH',
+    'BEGIN:VEVENT',
+    'UID:interview-${i.id}@luzhire.vercel.app',
+    'DTSTAMP:${stamp(now ?? DateTime.now())}',
+    'DTSTART:${stamp(i.scheduledAt)}',
+    'DTEND:${stamp(i.endsAt)}',
+    'SUMMARY:${text(_interviewTitle(job))}',
+    'DESCRIPTION:${text(description)}',
+    if ((i.location ?? '').isNotEmpty) 'LOCATION:${text(i.location!)}',
+    if (i.meetingUrl != null) 'URL:${i.meetingUrl}',
+    'BEGIN:VALARM',
+    'ACTION:DISPLAY',
+    'DESCRIPTION:${text(_interviewTitle(job))}',
+    'TRIGGER:-PT30M',
+    'END:VALARM',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ];
+  return '${lines.map(fold).join('\r\n')}\r\n';
 }
 
 /// /me/interviews: upcoming first, then past.
@@ -46,8 +109,8 @@ class InterviewsPage extends ConsumerWidget {
             icon: Icons.event_available_outlined,
             title: 'No interviews yet',
             message:
-                'When an employer books an interview it appears here, with a '
-                'link to add it to your calendar.',
+                'When an employer books an interview it appears here, ready '
+                'to add to your calendar.',
             actionLabel: 'See applications',
             onAction: () => context.go('/me/applications'),
           );
@@ -170,12 +233,26 @@ class InterviewCard extends StatelessWidget {
                           ),
                         ),
                       LuzTextLink(
-                        label: 'Add to calendar',
+                        label: fileSaver == null
+                            ? 'Add to calendar'
+                            : 'Add to Google Calendar',
                         onPressed: () => launchUrl(
                           calendarLink(i, job: job),
                           mode: LaunchMode.externalApplication,
                         ),
                       ),
+                      // Outlook, Apple Calendar and the rest open .ics files.
+                      if (fileSaver case final save?)
+                        LuzTextLink(
+                          label: 'Download .ics (Outlook, Apple)',
+                          onPressed: () => save(
+                            'luzhire-interview-'
+                                '${DateFormat('yyyy-MM-dd').format(i.scheduledAt.toLocal())}'
+                                '.ics',
+                            'text/calendar;charset=utf-8',
+                            utf8.encode(interviewIcs(i, job: job)),
+                          ),
+                        ),
                     ],
                   ),
                 ],
