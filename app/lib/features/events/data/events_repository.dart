@@ -126,6 +126,22 @@ class EventsRepository {
   EventsRepository(this._db);
   final SupabaseClient _db;
 
+  /// Events with their company's uploaded logo (for events a company posts).
+  static const _columns = '*, companies(logo_path)';
+
+  /// An event row: imported events carry their own logo; a company's event
+  /// shows the company's logo.
+  Opportunity _event(Map<String, dynamic> row) {
+    final path = (row['companies'] as Map?)?['logo_path'] as String?;
+    if (row['logo_url'] == null && path != null) {
+      row = {
+        ...row,
+        'logo_url': _db.storage.from('company-media').getPublicUrl(path),
+      };
+    }
+    return Opportunity.fromJson(row);
+  }
+
   /// Published events that have not ended, soonest first.
   Future<List<Opportunity>> upcoming(
     EventQuery q, {
@@ -134,7 +150,7 @@ class EventsRepository {
   }) => guardDb(() async {
     var f = _db
         .from('events')
-        .select()
+        .select(_columns)
         .eq('status', 'published')
         .or(
           'ends_at.gte.${DateTime.now().toUtc().toIso8601String()},'
@@ -150,21 +166,25 @@ class EventsRepository {
         .order('starts_at', ascending: true)
         .order('id', ascending: true)
         .range(offset, offset + limit - 1);
-    return [for (final r in rows) Opportunity.fromJson(r)];
+    return [for (final r in rows) _event(r)];
   });
 
   Future<Opportunity?> bySlug(String slug) => guardDb(() async {
     final row = await _db
         .from('events')
-        .select()
+        .select(_columns)
         .eq('slug', slug)
         .maybeSingle();
-    return row == null ? null : Opportunity.fromJson(row);
+    return row == null ? null : _event(row);
   });
 
   Future<Opportunity?> byId(String id) => guardDb(() async {
-    final row = await _db.from('events').select().eq('id', id).maybeSingle();
-    return row == null ? null : Opportunity.fromJson(row);
+    final row = await _db
+        .from('events')
+        .select(_columns)
+        .eq('id', id)
+        .maybeSingle();
+    return row == null ? null : _event(row);
   });
 
   /// Ids of the events [uid] registered for, with the team name.
@@ -201,20 +221,20 @@ class EventsRepository {
       guardDb(() async {
         final rows = await _db
             .from('events')
-            .select()
+            .select(_columns)
             .eq('company_id', companyId)
             .order('starts_at', ascending: false);
-        return [for (final r in rows) Opportunity.fromJson(r)];
+        return [for (final r in rows) _event(r)];
       });
 
   /// Every event (admins), newest first.
   Future<List<Opportunity>> all() => guardDb(() async {
     final rows = await _db
         .from('events')
-        .select()
+        .select(_columns)
         .order('created_at', ascending: false)
         .limit(200);
-    return [for (final r in rows) Opportunity.fromJson(r)];
+    return [for (final r in rows) _event(r)];
   });
 
   /// Saves [d] for [companyId] (null: an admin's own event) with [status].
@@ -228,15 +248,15 @@ class EventsRepository {
         ? await _db
               .from('events')
               .insert({...row, 'company_id': companyId})
-              .select()
+              .select(_columns)
               .single()
         : await _db
               .from('events')
               .update(row)
               .eq('id', d.id!)
-              .select()
+              .select(_columns)
               .single();
-    return Opportunity.fromJson(saved);
+    return _event(saved);
   });
 
   Future<void> setStatus(String id, EventStatus status) => guardDb(

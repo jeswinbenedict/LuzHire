@@ -59,6 +59,25 @@ String formatEventWhen(Opportunity e) {
   if (e.status != EventStatus.published) {
     return (label: e.status.label, urgent: false, open: false);
   }
+  // Registration on the organiser's site with no deadline given (imported
+  // hackathons): say when it runs instead of guessing a closing date.
+  if (!e.registersInApp && e.registrationDeadline == null) {
+    final end = e.endsAt ?? e.startsAt;
+    if (now.isAfter(end)) return (label: 'Ended', urgent: false, open: false);
+    if (!now.isBefore(e.startsAt)) {
+      return (label: 'Happening now', urgent: false, open: true);
+    }
+    final days = e.startsAt.difference(now).inHours ~/ 24;
+    return (
+      label: switch (days) {
+        0 => 'Starts today',
+        1 => 'Starts tomorrow',
+        _ => 'Starts in $days days',
+      },
+      urgent: days <= 3,
+      open: true,
+    );
+  }
   if (!e.closesAt.isAfter(now)) {
     return (label: 'Registration closed', urgent: false, open: false);
   }
@@ -120,19 +139,21 @@ class OpportunitiesPage extends ConsumerWidget {
               header: true,
               child: Text(
                 'Hiring drives, hackathons and competitions',
-                style: t.h2,
+                style: t.h3,
               ),
             ),
-            const SizedBox(height: LuzSpace.xs),
+            const SizedBox(height: LuzSpace.xxs),
             Text(
               'Walk in, compete or learn: register in a tap and we keep '
               'your place.',
               style: t.body.copyWith(color: p.inkMuted),
             ),
             const SizedBox(height: LuzSpace.lg),
+            // Types, then where: one row on wide screens, wrapping on phones.
             Wrap(
               spacing: LuzSpace.xs,
               runSpacing: LuzSpace.xs,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 LuzFilterChip(
                   label: 'All',
@@ -146,13 +167,12 @@ class OpportunitiesPage extends ConsumerWidget {
                     selected: selected == x,
                     onSelected: (_) => go(tab: x.slug, mode: mode),
                   ),
-              ],
-            ),
-            const SizedBox(height: LuzSpace.xs),
-            Wrap(
-              spacing: LuzSpace.xs,
-              runSpacing: LuzSpace.xs,
-              children: [
+                Container(
+                  width: 1,
+                  height: 28,
+                  margin: const EdgeInsets.symmetric(horizontal: LuzSpace.xs),
+                  color: p.hairline,
+                ),
                 for (final m in [null, EventMode.online, EventMode.inPerson])
                   LuzFilterChip(
                     label: m == null ? 'Anywhere' : m.label,
@@ -162,7 +182,19 @@ class OpportunitiesPage extends ConsumerWidget {
                   ),
               ],
             ),
-            const SizedBox(height: LuzSpace.lg),
+            const SizedBox(height: LuzSpace.md),
+            if (!list.isInitialLoad && list.items.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.only(bottom: LuzSpace.md),
+                child: Text(
+                  list.hasMore
+                      ? 'Upcoming, soonest first'
+                      : '${list.items.length} upcoming '
+                            '${list.items.length == 1 ? 'event' : 'events'}, '
+                            'soonest first',
+                  style: t.bodySm.copyWith(color: p.inkMuted),
+                ),
+              ),
             const _MyRegistrations(),
             if (list.isInitialLoad)
               LuzGrid(
@@ -182,7 +214,11 @@ class OpportunitiesPage extends ConsumerWidget {
               )
             else ...[
               LuzGrid(
-                children: [for (final e in list.items) EventCard(event: e)],
+                equalHeights: true,
+                children: [
+                  for (final e in list.items)
+                    EventCard(event: e, uniform: true),
+                ],
               ),
               LoadMoreFooter(
                 loading: list.loading,
@@ -233,11 +269,13 @@ class _MyRegistrations extends ConsumerWidget {
   }
 }
 
-/// Event card: kind and mode, title, organiser, when and where, and the
-/// registration deadline.
+/// Event card: banner and logo, type and mode, title and organiser, when
+/// and where, then the registration state. In a grid ([uniform]) the footer
+/// sits at the bottom so neighbouring cards line up.
 class EventCard extends ConsumerWidget {
-  const EventCard({super.key, required this.event});
+  const EventCard({super.key, required this.event, this.uniform = false});
   final Opportunity event;
+  final bool uniform;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -245,6 +283,7 @@ class EventCard extends ConsumerWidget {
     final t = context.luzText;
     final e = event;
     final reg = registrationState(e, DateTime.now());
+    final tone = p.chips[_toneFor(e.kind)]!;
     final mine = (ref.watch(myEventRegistrationsProvider).value ?? const {})
         .containsKey(e.id);
     return LuzPressable(
@@ -260,94 +299,190 @@ class EventCard extends ConsumerWidget {
             ? LuzDepth.raisedLg
             : LuzDepth.raisedMd,
         radius: LuzRadius.lg,
-        padding: const EdgeInsets.all(LuzSpace.md),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Wrap(
-              spacing: LuzSpace.xs,
-              runSpacing: LuzSpace.xxs,
-              children: [
-                LuzStatusChip(
-                  label: e.kind.label,
-                  tone: _toneFor(e.kind),
-                  icon: e.kind.icon,
+            EventBanner(event: e, aspectRatio: 2.6),
+            Expanded(
+              flex: uniform ? 1 : 0,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(
+                  LuzSpace.md,
+                  LuzSpace.lg + LuzSpace.xs, // room for the overlapping logo
+                  LuzSpace.md,
+                  LuzSpace.md,
                 ),
-                LuzStatusChip(
-                  label: e.mode.label,
-                  tone: LuzChipTone.neutral,
-                  icon: e.mode.icon,
-                ),
-                if (mine)
-                  const LuzStatusChip(
-                    label: 'Registered',
-                    tone: LuzChipTone.green,
-                    icon: Icons.check_circle_outline,
-                  ),
-              ],
-            ),
-            const SizedBox(height: LuzSpace.sm),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                LuzLogoSocket(name: e.organizerName, size: 44),
-                const SizedBox(width: LuzSpace.sm),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        e.title,
-                        style: t.h4,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      Text(
-                        e.byline,
-                        style: t.bodySm.copyWith(color: p.inkMuted),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: LuzSpace.sm),
-            _Fact(icon: Icons.event_outlined, text: formatEventWhen(e)),
-            _Fact(
-              icon: e.mode == EventMode.online
-                  ? Icons.wifi
-                  : Icons.place_outlined,
-              text: _where(e),
-            ),
-            if ((e.prize ?? '').isNotEmpty)
-              _Fact(icon: Icons.emoji_events_outlined, text: e.prize!),
-            const SizedBox(height: LuzSpace.sm),
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    reg.label,
-                    style: t.label.copyWith(
-                      color: !reg.open
-                          ? p.muted
-                          : reg.urgent
-                          ? p.accent
-                          : p.ink,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      '${e.kind.label} · ${e.mode.label}'.toUpperCase(),
+                      style: t.eyebrow.copyWith(color: tone.foreground),
                     ),
-                  ),
+                    const SizedBox(height: LuzSpace.xxs),
+                    Text(
+                      e.title,
+                      style: t.wsSection,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      e.byline,
+                      style: t.bodySm.copyWith(color: p.inkMuted),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: LuzSpace.sm),
+                    _Fact(icon: Icons.event_outlined, text: formatEventWhen(e)),
+                    _Fact(
+                      icon: e.mode == EventMode.online
+                          ? Icons.wifi
+                          : Icons.place_outlined,
+                      text: _where(e),
+                    ),
+                    if ((e.prize ?? '').isNotEmpty)
+                      _Fact(icon: Icons.emoji_events_outlined, text: e.prize!),
+                    if (uniform) const Spacer(),
+                    const SizedBox(height: LuzSpace.sm),
+                    Divider(height: 1, color: p.hairline),
+                    const SizedBox(height: LuzSpace.sm),
+                    Row(
+                      children: [
+                        Icon(
+                          reg.open ? Icons.schedule : Icons.event_busy_outlined,
+                          size: 16,
+                          color: reg.urgent ? p.accent : p.muted,
+                        ),
+                        const SizedBox(width: LuzSpace.xs),
+                        Expanded(
+                          child: Text(
+                            reg.label,
+                            style: t.label.copyWith(
+                              color: !reg.open
+                                  ? p.muted
+                                  : reg.urgent
+                                  ? p.accent
+                                  : p.ink,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        if (mine)
+                          const LuzStatusChip(
+                            label: 'Registered',
+                            tone: LuzChipTone.green,
+                            icon: Icons.check_circle_outline,
+                          )
+                        else if (e.registersInApp && e.registrationCount > 0)
+                          Text(
+                            '${e.registrationCount} registered',
+                            style: t.caption.copyWith(color: p.muted),
+                          )
+                        else
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'View',
+                                style: t.label.copyWith(color: p.accent),
+                              ),
+                              const SizedBox(width: 2),
+                              Icon(
+                                Icons.arrow_forward,
+                                size: 16,
+                                color: p.accent,
+                              ),
+                            ],
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-                if (e.registersInApp)
-                  Text(
-                    '${e.registrationCount} registered',
-                    style: t.caption.copyWith(color: p.muted),
-                  ),
-              ],
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+/// The event's banner image, or a designed one in its kind's colours, with
+/// the organiser's logo overlapping its bottom edge. [aspectRatio] is width
+/// over height.
+class EventBanner extends StatelessWidget {
+  const EventBanner({
+    super.key,
+    required this.event,
+    this.aspectRatio = 2.6,
+    this.logoSize = 52,
+    this.radius = LuzRadius.lg,
+  });
+  final Opportunity event;
+  final double aspectRatio;
+  final double logoSize;
+
+  /// Corner radius of the top of the banner (the card's or the page's).
+  final double radius;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final e = event;
+    final tone = p.chips[_toneFor(e.kind)]!;
+    final designed = DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            tone.background,
+            Color.lerp(tone.background, tone.foreground, 0.22)!,
+          ],
+        ),
+      ),
+      child: Align(
+        alignment: const Alignment(0.85, 0),
+        child: Icon(
+          e.kind.icon,
+          size: 72,
+          color: tone.foreground.withValues(alpha: 0.22),
+        ),
+      ),
+    );
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.vertical(top: Radius.circular(radius)),
+          child: AspectRatio(
+            aspectRatio: aspectRatio,
+            child: ExcludeSemantics(
+              child: e.bannerUrl == null
+                  ? designed
+                  : Image.network(
+                      networkImageUrl(e.bannerUrl!),
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, _, _) => designed,
+                      loadingBuilder: (_, child, progress) =>
+                          progress == null ? child : designed,
+                    ),
+            ),
+          ),
+        ),
+        Positioned(
+          left: LuzSpace.md,
+          bottom: -logoSize / 2,
+          child: LuzLogoSocket(
+            name: e.organizerName,
+            logoUrl: e.logoUrl,
+            size: logoSize,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -453,6 +588,13 @@ class _EventBody extends ConsumerWidget {
     final header = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        EventBanner(
+          event: e,
+          aspectRatio: 3.6,
+          logoSize: 72,
+          radius: LuzRadius.lg,
+        ),
+        const SizedBox(height: 36 + LuzSpace.sm), // the logo's lower half
         Wrap(
           spacing: LuzSpace.xs,
           runSpacing: LuzSpace.xxs,
@@ -886,7 +1028,12 @@ class HomeEventsSection extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: LuzSpace.lg),
-          LuzGrid(children: [for (final e in items) EventCard(event: e)]),
+          LuzGrid(
+            equalHeights: true,
+            children: [
+              for (final e in items) EventCard(event: e, uniform: true),
+            ],
+          ),
         ],
       ),
     );

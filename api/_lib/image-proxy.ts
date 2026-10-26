@@ -1,7 +1,8 @@
 // Same-origin copies of third-party job logos. Flutter web draws images on a
 // canvas, which needs CORS; providers such as Remotive and Himalayas send none (and no
 // caching), so the app loads their logos through /api/img instead.
-// Not an open proxy: only listed hosts, no redirects, raster images only.
+// Not an open proxy: only listed hosts, raster images only, and a redirect
+// is followed only from a host in REDIRECTS to its own storage host.
 
 export const IMAGE_HOSTS = new Set([
   'remotive.com',
@@ -14,10 +15,21 @@ export const IMAGE_HOSTS = new Set([
   'jobicy.com',
   // Company logos for career-board jobs (Google's favicon service).
   't1.gstatic.com',
+  // Hackathon logos and banners (Hack Club's directory).
+  'dash.hackathons.hackclub.com',
 ]);
 
+/**
+ * Hosts whose image links redirect (once) to short-lived storage URLs, and
+ * the only host each may redirect to.
+ */
+export const REDIRECTS: Record<string, string> = {
+  'dash.hackathons.hackclub.com': 'hackathons-hackclub.s3.amazonaws.com',
+};
+
 const TYPES = new Set(['image/png', 'image/jpeg', 'image/gif', 'image/webp']);
-export const MAX_IMAGE_BYTES = 1_000_000;
+/** Room for event banners (up to 1920 × 1080). */
+export const MAX_IMAGE_BYTES = 3_000_000;
 
 export type ImageFetcher = (url: string) => Promise<Response>;
 
@@ -56,6 +68,16 @@ export async function proxyImage(raw: string | null, get: ImageFetcher): Promise
   let res: Response;
   try {
     res = await get(url.toString());
+    // One hop, and only to the storage host this source is known to use.
+    if (res.status >= 300 && res.status < 400) {
+      const target = res.headers.get('location');
+      const next = target ? new URL(target, url) : null;
+      if (!next || next.protocol !== 'https:' || next.hostname !== REDIRECTS[url.hostname]) {
+        return deny(404, 'Image unavailable.');
+      }
+      res = await get(next.toString());
+      if (res.status >= 300 && res.status < 400) return deny(404, 'Image unavailable.');
+    }
   } catch {
     return deny(502, 'Image unavailable.');
   }
@@ -64,7 +86,13 @@ export async function proxyImage(raw: string | null, get: ImageFetcher): Promise
   if (!res.ok || !TYPES.has(type) || declared > MAX_IMAGE_BYTES) {
     return deny(404, 'Image unavailable.');
   }
-  const bytes = new Uint8Array(await res.arrayBuffer());
+  let bytes: Uint8Array;
+  try {
+    bytes = new Uint8Array(await res.arrayBuffer());
+  } catch {
+    // Timed out or cut off while downloading.
+    return deny(502, 'Image unavailable.');
+  }
   if (bytes.byteLength === 0 || bytes.byteLength > MAX_IMAGE_BYTES) return deny(404, 'Image unavailable.');
   return {
     status: 200,

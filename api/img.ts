@@ -6,8 +6,9 @@ export async function GET(request: Request): Promise<Response> {
   const raw = new URL(request.url).searchParams.get('u');
   const result = await proxyImage(raw, (url) =>
     fetch(url, {
-      redirect: 'error',
-      signal: AbortSignal.timeout(5000),
+      // Redirects come back to proxyImage, which follows only allowed ones.
+      redirect: 'manual',
+      signal: AbortSignal.timeout(10_000), // banners can be a few MB
       headers: { 'User-Agent': 'LuzHire job portal (college project)', Accept: 'image/*' },
     }),
   );

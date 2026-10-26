@@ -39,6 +39,8 @@ describe('event sources', () => {
       summary: 'Online programming contest on Codeforces, 2 h 30 min.',
     });
     expect(events[1]!.summary).toContain('14 days');
+    expect(events[0]!.logoUrl).toContain('url=https://codeforces.com');
+    expect(events[0]!.bannerUrl).toBeNull();
   });
 
   it('Codeforces: an API error is reported, not imported', async () => {
@@ -47,7 +49,7 @@ describe('event sources', () => {
 
   it('Hack Club: online and hybrid hackathons, in person only nearby', async () => {
     const { events } = await hackclub.fetch(async () => [
-      { id: 'a', name: 'Build for Earth', website: 'https://earth.example.org', start: '2026-11-08T10:00:00Z', end: '2026-11-09T10:00:00Z', virtual: true },
+      { id: 'a', name: 'Build for Earth', website: 'https://earth.example.org', start: '2026-11-08T10:00:00Z', end: '2026-11-09T10:00:00Z', virtual: true, logo: 'https://dash.hackathons.hackclub.com/rails/active_storage/representations/redirect/x/icon.png', banner: 'https://dash.hackathons.hackclub.com/rails/active_storage/representations/redirect/y/banner.png' },
       { id: 'b', name: 'Teens Hack Houston', website: 'https://tripleh.example', start: '2026-11-14T12:00:00Z', end: '2026-11-21T23:00:00Z', city: 'Houston', state: 'Texas', country: 'United States', hybrid: true },
       { id: 'c', name: 'Mango Hacks', website: 'https://mango.example', start: '2026-12-05T16:00:00Z', city: 'Pleasanton', country: 'United States' },
       { id: 'd', name: 'Hack Bengaluru', website: 'https://hackblr.example', start: '2026-12-01T04:00:00Z', city: 'Bengaluru', country: 'India', countryCode: 'IN' },
@@ -60,6 +62,9 @@ describe('event sources', () => {
     ]);
     expect(events[0]).toMatchObject({ kind: 'hackathon', registrationUrl: 'https://earth.example.org/', registrationDeadline: null });
     expect(events[1]!.summary).toContain('online and in Houston');
+    expect(events[0]!.logoUrl).toContain('/icon.png');
+    expect(events[0]!.bannerUrl).toContain('/banner.png');
+    expect(events[1]!.logoUrl).toBeNull();
   });
 });
 
@@ -78,6 +83,8 @@ describe('runEventsIngest', () => {
     registrationUrl: `https://codeforces.com/contests/${id}`,
     summary: null,
     descriptionMd: '',
+    logoUrl: null,
+    bannerUrl: null,
   });
 
   function deps(stored: StoredEvent[]) {

@@ -987,6 +987,8 @@ class Opportunity {
     this.capacity,
     this.registrationCount = 0,
     this.externalSource,
+    this.logoUrl,
+    this.bannerUrl,
   });
 
   final String id;
@@ -1016,6 +1018,12 @@ class Opportunity {
 
   /// Set for imported events: "codeforces", "hackclub".
   final String? externalSource;
+
+  /// The organiser's logo: imported, or the posting company's.
+  final String? logoUrl;
+
+  /// A wide image for the card and page; the app draws one when null.
+  final String? bannerUrl;
 
   /// "by Build for Earth · via Hack Club"; sources are credited by name.
   String get byline {
@@ -1061,6 +1069,8 @@ class Opportunity {
     capacity: (j['capacity'] as num?)?.toInt(),
     registrationCount: (j['registration_count'] as num?)?.toInt() ?? 0,
     externalSource: j['external_source'] as String?,
+    logoUrl: j['logo_url'] as String?,
+    bannerUrl: j['banner_url'] as String?,
   );
 
   @override

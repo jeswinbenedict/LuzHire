@@ -23,6 +23,7 @@ const proxiedImageHosts = {
   'media2.dev.to',
   'jobicy.com',
   't1.gstatic.com',
+  'dash.hackathons.hackclub.com',
 };
 
 /// The URL to load [url] from on this platform.
