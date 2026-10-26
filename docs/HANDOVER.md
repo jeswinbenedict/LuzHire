@@ -111,7 +111,7 @@ The status of each phase is in docs/ROADMAP.md. The items that need the owner ar
 
 ## 8. Screenshot set for the project report
 
-Capture each screen at 1280 px in light theme, plus the starred ones at 390 px (phone) and in dark theme. Save them in `docs/screenshots/`.
+**Done (2026-10-27):** the set is in [`docs/screenshots/`](screenshots/README.md), which also says how to take it again. Public screens come from the live site; signed-in screens are rendered with fictional demo data. Starred screens also come as phone and dark versions.
 
 | # | Screen | URL |
 |---|---|---|
