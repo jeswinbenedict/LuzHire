@@ -189,6 +189,15 @@ void main() {
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
   });
 
+  test('names typed in capitals read normally; others stay as typed', () {
+    expect(friendlyName('JESWIN BENEDICT'), 'Jeswin Benedict');
+    expect(friendlyName('  ASHA   VERMA '), 'Asha Verma');
+    expect(friendlyName('Asha McKenzie'), 'Asha McKenzie');
+    expect(friendlyName('maria de souza'), 'maria de souza');
+    expect(friendlyName('A K'), 'A K');
+    expect(friendlyName(''), '');
+  });
+
   // supabase_flutter sorts DESCENDING unless told otherwise, which once made
   // "soonest first" lists show the latest first. Every sort must say which.
   test('every database sort states its direction', () {

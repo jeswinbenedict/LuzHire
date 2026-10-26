@@ -4,7 +4,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/models.dart';
+import 'package:luzhire/core/theme/tokens.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
+import 'package:luzhire/features/candidate/presentation/dashboard_page.dart'
+    show dashboardSummary;
 
 import 'support/candidate_fakes.dart';
 import 'support/fakes.dart';
@@ -260,6 +263,117 @@ void main() {
     semantics.dispose();
     expect(find.text('Notifications (1 new)'), findsOneWidget);
     expect(tester.takeException(), isNull);
+  });
+
+  group('Dashboard', () {
+    CandidateFakes newCandidate() => CandidateFakes()
+      ..profile.profile = const Profile(
+        id: 'candidate-1',
+        role: AppRole.candidate,
+        email: 'candidate@example.com',
+        displayName: 'JESWIN BENEDICT',
+      );
+
+    testWidgets('a new candidate gets a greeting, steps and empty states', (
+      tester,
+    ) async {
+      final router = await _pump(
+        tester,
+        newCandidate(),
+        location: '/me',
+        width: 1440,
+      );
+      expect(find.textContaining(', Jeswin'), findsOneWidget);
+      expect(find.textContaining('JESWIN'), findsNothing);
+      expect(find.text('No applications yet'), findsOneWidget);
+      expect(find.text('No interviews scheduled'), findsOneWidget);
+      expect(find.text('Finish your profile'), findsOneWidget);
+      expect(find.text('0% complete'), findsOneWidget);
+      // Most useful first, four at a time, the rest counted.
+      expect(find.text('Upload a resume'), findsOneWidget);
+      expect(find.text('Add 3 more skills'), findsOneWidget);
+      expect(find.text('6 more on your profile page'), findsOneWidget);
+      expect(find.text('+10%'), findsNWidgets(4));
+      expect(find.text('Recommended for you'), findsOneWidget);
+
+      await _tapVisible(tester, find.text('Add a headline'));
+      expect(router.state.uri.path, '/me/profile');
+    });
+
+    testWidgets('steps disappear as the profile fills in', (tester) async {
+      final f = newCandidate();
+      await f.resumes.upload('candidate-1', 'cv.pdf', Uint8List(10));
+      for (final s in ['Dart', 'Flutter', 'SQL']) {
+        await f.profile.addSkill('candidate-1', s);
+      }
+      await _pump(tester, f, location: '/me', width: 1440);
+      expect(find.text('Upload a resume'), findsNothing);
+      expect(find.textContaining('more skill'), findsNothing);
+      expect(find.text('Add a headline'), findsOneWidget);
+      expect(find.text('20% complete'), findsOneWidget);
+    });
+
+    testWidgets('lines up with the title and tabs above it', (tester) async {
+      await _pump(tester, newCandidate(), location: '/me', width: 1440);
+      final welcome = find
+          .ancestor(
+            of: find.textContaining(', Jeswin'),
+            matching: find.byType(LuzCard),
+          )
+          .first;
+      expect(
+        tester.getTopLeft(welcome).dx,
+        tester.getTopLeft(find.text('My LuzHire')).dx,
+      );
+      // The page scrolls full width: its scrollbar sits at the window edge.
+      final scroll = find
+          .ancestor(of: welcome, matching: find.byType(Scrollable))
+          .first;
+      expect(tester.getTopRight(scroll).dx, 1440);
+    });
+
+    testWidgets('phone tiles give the label a line of its own', (tester) async {
+      await _pump(tester, newCandidate(), location: '/me', width: 375);
+      for (final label in [
+        'Active applications',
+        'Upcoming interviews',
+        'Saved jobs',
+        'Offers to answer',
+      ]) {
+        final tile = find.byWidgetPredicate(
+          (w) => w is LuzPressable && w.semanticLabel == '$label: 0',
+        );
+        final text = find.descendant(of: tile, matching: find.text(label));
+        // At the tile's inner edge (16 px padding), not beside the icon,
+        // and allowed two lines instead of being cut short.
+        expect(
+          tester.getTopLeft(text).dx - tester.getTopLeft(tile).dx,
+          LuzSpace.md,
+          reason: label,
+        );
+        expect(tester.widget<Text>(text).maxLines, 2, reason: label);
+      }
+      expect(tester.takeException(), isNull);
+    });
+
+    test('the summary line names the most urgent thing', () {
+      expect(
+        dashboardSummary(offers: 1, interviews: 2, active: 3),
+        'You have 1 offer waiting for your answer.',
+      );
+      expect(
+        dashboardSummary(offers: 0, interviews: 2, active: 3),
+        'You have 2 interviews coming up. Good luck!',
+      );
+      expect(
+        dashboardSummary(offers: 0, interviews: 0, active: 1),
+        startsWith('1 application in progress.'),
+      );
+      expect(
+        dashboardSummary(offers: 0, interviews: 0, active: 0),
+        startsWith('Apply to a few roles'),
+      );
+    });
   });
 
   group('Command menu', () {
