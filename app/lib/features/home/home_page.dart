@@ -289,7 +289,17 @@ class _LatestJobs extends ConsumerWidget {
             crossAxisAlignment: WrapCrossAlignment.center,
             spacing: LuzSpace.md,
             children: [
-              Text('Latest jobs', style: t.h3),
+              Wrap(
+                spacing: LuzSpace.sm,
+                runSpacing: LuzSpace.xs,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text('Latest jobs', style: t.h3),
+                  NewJobsBanner(
+                    onShow: () => ref.invalidate(jobSearchProvider(query)),
+                  ),
+                ],
+              ),
               LuzTextLink(
                 label: 'See all jobs →',
                 onPressed: () => context.go('/jobs'),

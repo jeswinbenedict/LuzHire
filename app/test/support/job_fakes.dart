@@ -145,6 +145,12 @@ class FakeJobsRepository implements JobsRepository {
   /// While true, [bySlug] fails like a dropped connection.
   bool failDetails = false;
 
+  /// What [countNewSince] answers (jobs that arrived since the page opened).
+  int newSince = 0;
+
+  @override
+  Future<int> countNewSince(DateTime since) async => newSince;
+
   /// Cities on the hiring map; [near] calls are recorded in [nearCalls].
   List<HiringLocation> locations = const [
     HiringLocation(

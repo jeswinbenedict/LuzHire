@@ -354,6 +354,44 @@ void main() {
     expect(find.text('Flutter Developer 7'), findsNothing);
   });
 
+  group('New jobs banner', () {
+    for (final location in ['/jobs', '/']) {
+      testWidgets('appears on $location when jobs arrive and reloads', (
+        tester,
+      ) async {
+        final jobs = FakeJobsRepository();
+        await _pump(tester, location: location, width: 1280, jobs: jobs);
+        expect(find.textContaining('new job'), findsNothing);
+
+        // Nothing new at the first check: still hidden.
+        await tester.pump(newJobsPollInterval);
+        await tester.pump();
+        expect(find.textContaining('new job'), findsNothing);
+
+        jobs.newSince = 3;
+        await tester.pump(newJobsPollInterval);
+        await tester.pump();
+        expect(find.text('3 new jobs · Show'), findsOneWidget);
+
+        final before = jobs.queries.length;
+        await tester.ensureVisible(find.text('3 new jobs · Show'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('3 new jobs · Show'));
+        await tester.pumpAndSettle();
+        expect(jobs.queries.length, greaterThan(before));
+        expect(find.textContaining('new job'), findsNothing);
+      });
+    }
+
+    testWidgets('names a single job in the singular', (tester) async {
+      final jobs = FakeJobsRepository()..newSince = 1;
+      await _pump(tester, location: '/jobs', jobs: jobs);
+      await tester.pump(newJobsPollInterval);
+      await tester.pump();
+      expect(find.text('1 new job · Show'), findsOneWidget);
+    });
+  });
+
   testWidgets('job cards in a grid row share height and line up', (
     tester,
   ) async {

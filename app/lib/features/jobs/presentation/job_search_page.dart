@@ -95,6 +95,7 @@ class _JobSearchPageState extends ConsumerState<JobSearchPage> {
           onSearch: (kw, loc) =>
               _go(query.copyWith(keyword: kw.trim(), location: loc.trim())),
           onOpenFilters: _openFilters,
+          onShowNew: () => ref.invalidate(jobSearchProvider(query)),
         );
 
         final results = _Results(
@@ -210,6 +211,7 @@ class _Header extends StatelessWidget {
     required this.showFilterButton,
     required this.onSearch,
     required this.onOpenFilters,
+    required this.onShowNew,
   });
 
   final TextEditingController keyword;
@@ -218,6 +220,9 @@ class _Header extends StatelessWidget {
   final bool showFilterButton;
   final void Function(String keyword, String location) onSearch;
   final VoidCallback onOpenFilters;
+
+  /// Reloads the results when new jobs are shown.
+  final VoidCallback onShowNew;
 
   @override
   Widget build(BuildContext context) {
@@ -238,9 +243,17 @@ class _Header extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text(
-                'Sorted by newest',
-                style: t.bodySm.copyWith(color: p.inkMuted),
+              child: Wrap(
+                spacing: LuzSpace.sm,
+                runSpacing: LuzSpace.xs,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Text(
+                    'Sorted by newest',
+                    style: t.bodySm.copyWith(color: p.inkMuted),
+                  ),
+                  NewJobsBanner(onShow: onShowNew),
+                ],
               ),
             ),
             // Phones: icon only, so the row fits beside "Filters (n)".

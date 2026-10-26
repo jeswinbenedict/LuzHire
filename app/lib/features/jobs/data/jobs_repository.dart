@@ -205,6 +205,19 @@ class JobsRepository {
         return [for (final r in rows) _job((r as Map).cast())];
       });
 
+  /// Published jobs that arrived on LuzHire after [since]: imported rows
+  /// (created) or employers' jobs (published). A count only, no rows.
+  Future<int> countNewSince(DateTime since) => guardDb(() async {
+    final at = since.toUtc().toIso8601String();
+    final res = await _db
+        .from('jobs')
+        .select('id')
+        .eq('status', 'published')
+        .or('created_at.gt.$at,published_at.gt.$at')
+        .count(CountOption.exact);
+    return res.count;
+  });
+
   Future<Job?> bySlug(String slug) => guardDb(() async {
     final row = await _db
         .from('jobs')
