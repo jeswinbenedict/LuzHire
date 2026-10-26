@@ -189,23 +189,11 @@ class EmployerCompanyPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) => MembershipGate(
+    // Switching company: the switcher in the workspace sidebar.
     builder: (context, m) {
-      final all = ref.watch(myCompaniesProvider).value ?? const [];
       return WorkspacePage(
         title: m.company.name,
         subtitle: companyFacts(m.company),
-        actions: [
-          if (all.length > 1)
-            LuzSegmented<String>(
-              segments: [
-                for (final c in all)
-                  (value: c.company.id, label: c.company.name, icon: null),
-              ],
-              selected: m.company.id,
-              onChanged: (id) =>
-                  ref.read(selectedCompanyProvider.notifier).select(id),
-            ),
-        ],
         children: [
           const MyInvitationsCard(),
           _VerificationCard(membership: m),
