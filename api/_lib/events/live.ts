@@ -43,6 +43,8 @@ export function liveEventDeps(): EventDeps {
         registration_url: e.registrationUrl,
         summary: e.summary,
         description_md: e.descriptionMd,
+        logo_url: e.logoUrl,
+        banner_url: e.bannerUrl,
       }));
       const { error } = await db.from('events').upsert(rows, { onConflict: 'external_source,external_id' });
       fail('events upsert', error);

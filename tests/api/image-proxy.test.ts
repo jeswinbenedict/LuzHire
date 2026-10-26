@@ -4,6 +4,27 @@ import { MAX_IMAGE_BYTES, allowedImageUrl, proxyImage } from '../../api/_lib/ima
 const png = (size = 10, type = 'image/png') =>
   new Response(new Uint8Array(size), { headers: { 'content-type': type, 'content-length': String(size) } });
 
+describe('image proxy redirects', () => {
+  const hop = (location: string) => new Response(null, { status: 302, headers: { location } });
+  it('a download that fails part-way is a clean 502', async () => {
+    const broken = new Response(new ReadableStream({ pull(c) { c.error(new Error('timeout')); } }), { headers: { 'content-type': 'image/png' } });
+    expect((await proxyImage('https://remotive.com/a', async () => broken)).status).toBe(502);
+  });
+
+  it('follows one redirect from Hack Club to its storage, and nothing else', async () => {
+    const asked: string[] = [];
+    const ok = await proxyImage('https://dash.hackathons.hackclub.com/rails/active_storage/x/icon.png', async (url) => {
+      asked.push(url);
+      return url.includes('s3.amazonaws.com') ? png(1200) : hop('https://hackathons-hackclub.s3.amazonaws.com/abc?X-Amz-Expires=300');
+    });
+    expect(ok.status).toBe(200);
+    expect(asked).toHaveLength(2);
+    // Elsewhere, or from a host with no known storage: refused.
+    expect((await proxyImage('https://dash.hackathons.hackclub.com/x.png', async () => hop('https://evil.example/x.png'))).status).toBe(404);
+    expect((await proxyImage('https://remotive.com/a', async () => hop('https://hackathons-hackclub.s3.amazonaws.com/a'))).status).toBe(404);
+  });
+});
+
 describe('image proxy', () => {
   it('only accepts https URLs on listed hosts', () => {
     expect(allowedImageUrl('https://remotive.com/job/7/logo')?.hostname).toBe('remotive.com');

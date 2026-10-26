@@ -1,7 +1,7 @@
 -- Imported events (coding contests, hackathons).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(6);
+select plan(7);
 
 insert into public.profiles (id, role, email, display_name) values
   ('t-ei-emp', 'employer', 't-ei-emp@example.com', 'Emp');
@@ -25,6 +25,10 @@ select throws_ok(
   $$insert into public.events (kind, status, title, organizer_name, mode, starts_at, external_source, external_id)
     values ('hackathon', 'published', 'Qzx No Link', 'Hack Club', 'online', now() + interval '3 days', 'hackclub', 'x1')$$,
   '23514', null, 'an imported event links to its page');
+
+select throws_ok(
+  $$update public.events set banner_url = 'http://insecure.example/b.png' where id = '81000000-0000-4000-b000-000000000001'$$,
+  '23514', null, 'event images are https links');
 
 -- ---- employers cannot pose as a source
 select set_config('request.jwt.claims', '{"sub":"t-ei-emp","app_role":"employer","email_verified":true}', true);

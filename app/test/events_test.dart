@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
+import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
 import 'package:luzhire/features/events/presentation/events_pages.dart';
 
@@ -47,6 +48,30 @@ Future<void> _tapVisible(WidgetTester tester, Finder f) async {
 }
 
 void main() {
+  test('imported events with no deadline say when they run', () {
+    Opportunity hackathon(String start, String end) => Opportunity.fromJson({
+      'id': 'h',
+      'slug': 'h',
+      'kind': 'hackathon',
+      'status': 'published',
+      'title': 'Founding-100',
+      'organizer_name': 'Founding-100',
+      'mode': 'online',
+      'starts_at': start,
+      'ends_at': end,
+      'registration_url': 'https://founding.example',
+      'external_source': 'hackclub',
+    });
+    final now = DateTime.utc(2026, 10, 26, 12);
+    final running = hackathon('2026-10-22T18:00:00Z', '2026-10-31T18:00:00Z');
+    expect(registrationState(running, now).label, 'Happening now');
+    expect(registrationState(running, now).open, isTrue);
+    final later = hackathon('2026-11-08T10:00:00Z', '2026-11-09T10:00:00Z');
+    expect(registrationState(later, now).label, 'Starts in 12 days');
+    final over = hackathon('2026-10-01T10:00:00Z', '2026-10-02T10:00:00Z');
+    expect(registrationState(over, now).label, 'Ended');
+  });
+
   group('/events', () {
     for (final width in [360.0, 1440.0]) {
       testWidgets('lists opportunities at ${width.toInt()} px', (tester) async {

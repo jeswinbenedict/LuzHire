@@ -4,6 +4,7 @@
 //  - Hack Club: the open-source hackathon directory's public API, keeping
 //    online and hybrid hackathons and in-person ones in Asia-Pacific.
 // Devpost and MLH were left out: their terms forbid republishing listings.
+import { faviconOf } from '../ingest/logos.js';
 import { clamp, plainText } from '../ingest/normalize.js';
 import type { Fetcher } from '../ingest/providers.js';
 
@@ -24,6 +25,10 @@ export interface ImportedEvent {
   registrationUrl: string;
   summary: string | null;
   descriptionMd: string;
+  /** Square logo (the organiser's), or null. */
+  logoUrl: string | null;
+  /** Wide banner image, or null (the app draws one). */
+  bannerUrl: string | null;
 }
 
 export interface EventProvider {
@@ -85,6 +90,8 @@ export const codeforces: EventProvider = {
         descriptionMd:
           `An online competitive programming contest on Codeforces${length ? ` lasting ${length}` : ''}. ` +
           'Register on Codeforces before it starts; problems are solved in the language of your choice.',
+        logoUrl: faviconOf('codeforces.com'),
+        bannerUrl: null,
       });
     }
     return { events, complete: true };
@@ -130,6 +137,10 @@ export const hackclub: EventProvider = {
         descriptionMd:
           `${title} is a hackathon ${where}. Teams build a project over the event and present it at the end. ` +
           "See the organiser's site for themes, prizes and how to take part.",
+        // Hack Club image links redirect to short-lived storage URLs; the
+        // stable link is stored and /api/img follows the redirect.
+        logoUrl: httpsUrl(str(e.logo)),
+        bannerUrl: httpsUrl(str(e.banner)),
       });
     }
     return { events, complete: true };
