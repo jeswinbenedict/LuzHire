@@ -157,7 +157,7 @@ class EmployerRepository {
             .from('company_members')
             .select('member_role, created_at, companies(*)')
             .eq('user_id', uid)
-            .order('created_at');
+            .order('created_at', ascending: true);
         return [
           for (final r in rows)
             if (r['companies'] is Map)
@@ -228,7 +228,7 @@ class EmployerRepository {
         .from('company_members')
         .select('user_id, member_role, profiles(display_name, email)')
         .eq('company_id', companyId)
-        .order('created_at');
+        .order('created_at', ascending: true);
     return [for (final r in rows) CompanyMember.fromJson(r)];
   });
 
@@ -252,7 +252,7 @@ class EmployerRepository {
     final rows = await _db
         .from('company_invites')
         .select('*, companies(name)')
-        .order('created_at');
+        .order('created_at', ascending: false);
     return [for (final r in rows) CompanyInvite.fromJson(r)];
   });
 
@@ -344,7 +344,7 @@ class EmployerRepository {
       .from('applications')
       .stream(primaryKey: ['id'])
       .eq('job_id', jobId)
-      .order('created_at')
+      .order('created_at', ascending: false)
       .map((rows) => [for (final r in rows) JobApplication.fromJson(r)]);
 
   /// Applications across [jobIds], newest first.
@@ -438,7 +438,7 @@ class EmployerRepository {
             .from('application_events')
             .select()
             .eq('application_id', applicationId)
-            .order('created_at');
+            .order('created_at', ascending: true);
         return [for (final r in rows) ApplicationEvent.fromJson(r)];
       });
 
@@ -452,7 +452,7 @@ class EmployerRepository {
             .from('interviews')
             .select('*, applications(job_id)')
             .inFilter('application_id', applicationIds.toSet().toList())
-            .order('scheduled_at');
+            .order('scheduled_at', ascending: true);
         return [for (final r in rows) Interview.fromJson(r)];
       });
 

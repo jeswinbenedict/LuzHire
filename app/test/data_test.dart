@@ -189,6 +189,22 @@ void main() {
     expect(formatRelative(DateTime(2026, 9, 1), now: now), '1 Sep 2026');
   });
 
+  // supabase_flutter sorts DESCENDING unless told otherwise, which once made
+  // "soonest first" lists show the latest first. Every sort must say which.
+  test('every database sort states its direction', () {
+    final missing = <String>[];
+    for (final f in Directory('lib').listSync(recursive: true)) {
+      if (f is! File || !f.path.endsWith('.dart')) continue;
+      final src = f.readAsStringSync();
+      for (final m in RegExp(
+        r"\.order\(\s*'[^']+'\s*,?\s*\)",
+      ).allMatches(src)) {
+        missing.add('${f.path}: ${m.group(0)}');
+      }
+    }
+    expect(missing, isEmpty);
+  });
+
   test('imported events credit their source', () {
     Opportunity event(String organizer, String? source) =>
         Opportunity.fromJson({

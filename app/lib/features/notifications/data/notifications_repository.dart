@@ -40,7 +40,7 @@ class NotificationsRepository {
       .from('notifications')
       .stream(primaryKey: ['id'])
       .eq('user_id', userId)
-      .order('created_at')
+      .order('created_at', ascending: false)
       .limit(50)
       .map(
         (rows) => [for (final r in rows.reversed) AppNotification.fromJson(r)],
