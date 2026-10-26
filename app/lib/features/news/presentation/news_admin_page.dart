@@ -46,7 +46,7 @@ class _NewsAdminPageState extends ConsumerState<NewsAdminPage> {
           selected: _articles,
           onChanged: (v) => setState(() => _articles = v),
         ),
-        const SizedBox(height: LuzSpace.lg),
+        // WorkspacePage spaces its children.
         AsyncBlock<List<NewsItem>>(
           value: list,
           onRetry: () => ref.invalidate(adminNewsProvider(_articles)),

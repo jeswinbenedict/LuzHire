@@ -505,7 +505,6 @@ class _Charts extends StatelessWidget {
               if (s.contains(e.key)) e.value,
           ].fold(0, (a, b) => a + b);
     final weeks = stats.applicationsByWeek;
-    final maxWeek = weeks.fold<int>(1, (m, w) => w.count > m ? w.count : m);
 
     final funnelCard = LuzCard(
       child: Column(
@@ -535,65 +534,26 @@ class _Charts extends StatelessWidget {
           if (weeks.isEmpty)
             Text('None in the last 12 weeks.', style: t.bodySm)
           else
-            SizedBox(
-              height: 160,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  for (final w in weeks)
-                    Expanded(
-                      child: Semantics(
-                        label:
-                            'Week of ${DateFormat('d MMM').format(w.week)}: '
-                            '${w.count} applications',
-                        excludeSemantics: true,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 3),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Text('${w.count}', style: t.caption),
-                              const SizedBox(height: 2),
-                              Container(
-                                height: 120 * w.count / maxWeek,
-                                decoration: BoxDecoration(
-                                  color: p.accent,
-                                  borderRadius: const BorderRadius.vertical(
-                                    top: Radius.circular(4),
-                                  ),
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                DateFormat('d/M').format(w.week),
-                                style: t.caption.copyWith(color: p.muted),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                ],
-              ),
-            ),
+            LuzWeekBars(weeks: weeks, unit: 'applications', barHeight: 120),
         ],
       ),
     );
 
     final factsCard = LuzCard(
-      child: Wrap(
-        spacing: LuzSpace.xl,
-        runSpacing: LuzSpace.md,
-        children: [
-          _Fact('Applications', '$total'),
-          _Fact(
-            'Average time to hire',
-            stats.avgDaysToHire == null
+      child: LuzStatStrip(
+        stats: [
+          (label: 'Applications', value: '$total'),
+          (
+            label: 'Average time to hire',
+            value: stats.avgDaysToHire == null
                 ? 'No hires yet'
                 : '${stats.avgDaysToHire!.toStringAsFixed(1)} days',
           ),
-          _Fact('Published jobs', '${stats.jobs['published'] ?? 0}'),
-          _Fact('Awaiting review', '${stats.jobs['pending_review'] ?? 0}'),
+          (label: 'Published jobs', value: '${stats.jobs['published'] ?? 0}'),
+          (
+            label: 'Awaiting review',
+            value: '${stats.jobs['pending_review'] ?? 0}',
+          ),
         ],
       ),
     );
@@ -670,27 +630,4 @@ class _Bar extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Fact extends StatelessWidget {
-  const _Fact(this.label, this.value);
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) => Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: context.luzText.caption.copyWith(color: context.luz.inkMuted),
-      ),
-      Text(
-        value,
-        style: context.luzText.wsTitle.copyWith(
-          fontFamily: context.luzText.mono.fontFamily,
-        ),
-      ),
-    ],
-  );
 }

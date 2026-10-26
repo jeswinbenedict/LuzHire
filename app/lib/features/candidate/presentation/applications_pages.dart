@@ -275,6 +275,7 @@ class _Detail extends ConsumerWidget {
                 const SizedBox(height: LuzSpace.xxs),
                 Wrap(
                   spacing: LuzSpace.sm,
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: [
                     Text(
                       job.companyName,
