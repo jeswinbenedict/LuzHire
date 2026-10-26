@@ -203,15 +203,7 @@ class OpportunitiesPage extends ConsumerWidget {
             else if (list.items.isEmpty && list.error != null)
               JobBoardError(error: list.error!, onRetry: notifier.loadMore)
             else if (list.items.isEmpty)
-              LuzEmptyState(
-                icon: Icons.event_busy_outlined,
-                title: 'No upcoming events here',
-                message: 'New drives and contests are added every week.',
-                actionLabel: selected == null && mode == null
-                    ? null
-                    : 'Show everything',
-                onAction: selected == null && mode == null ? null : () => go(),
-              )
+              _EmptyTab(tab: selected, mode: mode, go: go)
             else ...[
               LuzGrid(
                 equalHeights: true,
@@ -232,6 +224,174 @@ class OpportunitiesPage extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// A filter with no events: what the tab is for, a way to post one
+/// (employers and admins) and what is coming up instead, one tap away.
+class _EmptyTab extends ConsumerWidget {
+  const _EmptyTab({required this.tab, required this.mode, required this.go});
+  final EventTab? tab;
+  final EventMode? mode;
+  final void Function({String? tab, EventMode? mode}) go;
+
+  static const _names = {
+    'hiring': ('hiring drive', 'hiring drives'),
+    'hackathons': ('hackathon', 'hackathons'),
+    'competitions': ('competition', 'competitions'),
+    'webinars': ('webinar', 'webinars'),
+  };
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final p = context.luz;
+    final t = context.luzText;
+    final everything = ref.watch(
+      eventListProvider(const EventQuery(kinds: {})),
+    );
+    final auth = ref.watch(authControllerProvider);
+    final role = auth is SignedIn ? auth.role : null;
+    final slug = tab?.slug;
+    final name = _names[slug]?.$2 ?? 'events';
+
+    final (title, message) = switch (slug) {
+      'hiring' => (
+        'No hiring drives listed right now',
+        'Walk-in drives, campus drives and hiring challenges appear here as '
+            'soon as employers post them.',
+      ),
+      'webinars' => (
+        'No webinars listed right now',
+        'Career webinars and talks appear here as soon as employers and the '
+            'LuzHire team post them.',
+      ),
+      _ => (
+        'No upcoming $name here',
+        mode == null
+            ? 'New events are added every day.'
+            : 'Try another place, or see everything coming up.',
+      ),
+    };
+
+    // Employers and admins can post the kind of event this tab is missing.
+    final kind = slug == 'webinars'
+        ? EventKind.webinar
+        : slug == 'hiring'
+        ? EventKind.walkIn
+        : null;
+    final postLabel = kind == EventKind.webinar
+        ? 'Post a webinar'
+        : 'Post a hiring drive';
+    final Widget? post = switch (role) {
+      AppRole.employer || AppRole.admin when kind != null => LuzButton.accent(
+        label: postLabel,
+        icon: Icons.add,
+        onPressed: () => context.go(
+          Uri(
+            path: role == AppRole.admin
+                ? '/admin/events/new'
+                : '/employer/events/new',
+            queryParameters: {'kind': kind.dbValue},
+          ).toString(),
+        ),
+      ),
+      null when kind != null => LuzButton(
+        label: 'Hiring? Post on LuzHire',
+        icon: Icons.campaign_outlined,
+        onPressed: () => context.go('/sign-up?role=employer'),
+      ),
+      _ => null,
+    };
+
+    // What is coming up instead: every other type that has events.
+    final upcoming = everything.items;
+    final kinds = ref.watch(upcomingEventKindsProvider).value ?? const [];
+    final others = [
+      for (final x in eventTabs)
+        if (x.slug != slug)
+          (tab: x, count: kinds.where(x.kinds.contains).length),
+    ].where((o) => o.count > 0).toList();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LuzCard(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              LuzSurface(
+                depth: LuzDepth.insetSm,
+                radius: LuzRadius.md,
+                padding: const EdgeInsets.all(LuzSpace.sm),
+                child: Icon(
+                  tab?.kinds.first.icon ?? Icons.event_busy_outlined,
+                  color: p.accent,
+                  size: 28,
+                ),
+              ),
+              const SizedBox(width: LuzSpace.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Semantics(
+                      header: true,
+                      child: Text(title, style: t.wsSection),
+                    ),
+                    const SizedBox(height: LuzSpace.xxs),
+                    Text(message, style: t.body.copyWith(color: p.inkMuted)),
+                    const SizedBox(height: LuzSpace.md),
+                    Wrap(
+                      spacing: LuzSpace.sm,
+                      runSpacing: LuzSpace.sm,
+                      children: [
+                        ?post,
+                        if (mode != null)
+                          LuzButton(
+                            label: 'Any place',
+                            icon: Icons.public,
+                            onPressed: () => go(tab: slug),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        if (others.isNotEmpty) ...[
+          const SizedBox(height: LuzSpace.xl),
+          Semantics(
+            header: true,
+            child: Text('Coming up on LuzHire', style: t.wsSection),
+          ),
+          const SizedBox(height: LuzSpace.sm),
+          Wrap(
+            spacing: LuzSpace.xs,
+            runSpacing: LuzSpace.xs,
+            children: [
+              for (final o in others)
+                LuzButton(
+                  label:
+                      '${o.count} '
+                      '${o.count == 1 ? _names[o.tab.slug]!.$1 : _names[o.tab.slug]!.$2}',
+                  icon: o.tab.kinds.first.icon,
+                  onPressed: () => go(tab: o.tab.slug),
+                ),
+            ],
+          ),
+          const SizedBox(height: LuzSpace.lg),
+          LuzGrid(
+            equalHeights: true,
+            children: [
+              for (final e in upcoming.take(3))
+                EventCard(event: e, uniform: true),
+            ],
+          ),
+        ],
+      ],
     );
   }
 }

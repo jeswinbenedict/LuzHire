@@ -67,6 +67,11 @@ final eventListProvider = NotifierProvider.autoDispose
       EventListController.new,
     );
 
+/// How many upcoming events there are of each kind.
+final upcomingEventKindsProvider = FutureProvider.autoDispose<List<EventKind>>(
+  (ref) => ref.watch(eventsRepositoryProvider).upcomingKinds(),
+);
+
 final eventBySlugProvider = FutureProvider.autoDispose
     .family<Opportunity?, String>(
       (ref, slug) => ref.watch(eventsRepositoryProvider).bySlug(slug),

@@ -161,6 +161,44 @@ void main() {
       expect(find.text('Register'), findsNothing);
     });
 
+    testWidgets('an empty tab shows what is coming up instead', (tester) async {
+      final events = FakeEventsRepository([
+        fakeEvent('hack', kind: EventKind.hackathon, mode: EventMode.online),
+        fakeEvent(
+          'contest',
+          kind: EventKind.competition,
+          mode: EventMode.online,
+          registrationUrl: 'https://example.com/contest',
+        ),
+      ]);
+      final router = await _pump(
+        tester,
+        location: '/events?type=hiring',
+        events: events,
+      );
+      expect(find.text('No hiring drives listed right now'), findsOneWidget);
+      expect(find.text('Coming up on LuzHire'), findsOneWidget);
+      expect(find.text('Hiring? Post on LuzHire'), findsOneWidget);
+      await _tapVisible(tester, find.text('1 hackathon'));
+      expect(router.state.uri.queryParameters['type'], 'hackathons');
+    });
+
+    testWidgets('employers can post the missing kind of event', (tester) async {
+      final events = FakeEventsRepository([
+        fakeEvent('hack', kind: EventKind.hackathon, mode: EventMode.online),
+      ]);
+      final router = await _pump(
+        tester,
+        location: '/events?type=webinars',
+        events: events,
+        signedIn: AppRole.employer,
+      );
+      expect(find.text('No webinars listed right now'), findsOneWidget);
+      await _tapVisible(tester, find.text('Post a webinar'));
+      expect(router.state.uri.path, '/employer/events/new');
+      expect(router.state.uri.queryParameters['kind'], 'webinar');
+    });
+
     testWidgets('home shows upcoming opportunities', (tester) async {
       await _pump(tester, location: '/');
       expect(find.text('Drives and contests coming up'), findsOneWidget);
