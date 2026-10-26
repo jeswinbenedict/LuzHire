@@ -17,15 +17,15 @@ How we get from the current scaffold to a production app hosted on Vercel. This 
 | 1 | Design system & adaptive shell | Neumorphic components, responsive/adaptive app shell, Stitch screen designs, first Vercel preview | Vercel account linked to GitHub | ✅ Done (live on luzhire.vercel.app; Stitch designs in `docs/design/`) |
 | 2 | Backend foundation | Postgres schema, triggers, RLS, storage buckets, seed data, pgTAP tests in CI | Supabase project | ✅ Done (CI green; applied to the cloud project on 2026-10-19) |
 | 3 | Authentication & roles | Firebase Auth (email + Google), Supabase third-party auth, role claims, guarded routes | Firebase project | ✅ Done (live sign-up verified 2026-10-19) |
-| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | 🟡 Live on main (Remotive imports fill the cloud database). Still needed: live "new jobs" banner |
+| 4 | Public job board | Home, job search + filters, job detail, companies, saved jobs | — | ✅ Live on main with about 1,800 real jobs from daily imports. The live "new jobs" banner is in PR #35 |
 | 5 | Candidate portal | Profile builder, resume upload, apply flow, realtime application tracker, interviews, offers | — | 🟡 Live on main (migration `20261019120000` applied to the cloud 2026-10-19). Still needed: a live check with real candidate and employer accounts |
-| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts, team switching for people in several companies |
+| 6 | Employer workspace | Company profile + team, job editor, pipeline kanban (realtime), interviews, offers, analytics | — | 🟡 Live on main (migration `20261019130000` applied to the cloud 2026-10-19). Still needed: an end-to-end hire with real accounts. The workspace company switcher is in PR #36 |
 | 7 | Admin console | Verification queue, moderation, users/roles, announcements, audit log, platform stats | — | 🟡 Live on main (migration `20261020120000` applied to the cloud 2026-10-20). Still needed: create the first admin account |
-| 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | 🟡 Live on main (migration applied, `CRON_SECRET` set, first Remotive import of 10 jobs on 2026-10-20). Live job feeds (company career boards, Himalayas, Jobicy, Remote OK) on branch `phase-11-live-job-feeds`. Still needed: optional Adzuna keys |
+| 8 | Data ingestion & SEO | External job feeds, career news with relevance filter, SEO job pages, sitemap | Provider API keys (as Vercel env vars) | 🟡 Live on main (migration applied, `CRON_SECRET` set, first Remotive import of 10 jobs on 2026-10-20). Live job feeds (39 company career boards, Himalayas, Jobicy, Remote OK) live since PR #19 (2026-10-24), with logos for 88 % of companies. Still needed: optional Adzuna keys |
 | 9 | Notifications | In-app realtime centre, web/mobile push (FCM), transactional email | Email provider account (e.g. Resend) | 🟡 Live on main (web push and email verified 2026-10-20). Still needed: Android push (Firebase Android app + a phone), Outlook rendering check |
 | 10 | Hardening | Performance budget, accessibility audit, security review, load test, monitoring | — | 🟡 Live on main (load test done 2026-10-20; see `docs/HARDENING.md`). Still needed: manual screen-reader and keyboard pass; Sentry optional |
-| 10½ | Discovery features | Company directory with logos, career news, hiring map + recommendations, events | Run 5 migrations in Supabase; optional Adzuna keys | 🟡 Live on main (migrations applied 2026-10-21). Still needed: optional Adzuna keys |
-| 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Domain (optional) | ⬜ |
+| 10½ | Discovery features | Company directory with logos, career news, hiring map + recommendations, events | Optional Adzuna keys | ✅ Live on main: news with images, imported contests and hackathons, redesigned events (PRs #21–#34; all migrations applied by 2026-10-26). Optional: Adzuna keys |
+| 11 | Production launch on Vercel | Production env + secrets, domain, release checklist, monitoring, handover docs; optional store builds | Supabase plan, domain (optional), first admin, launch sign-off | 🟡 Production is live with monitoring. Release checklist, rollback plan and handover guide are in PR #37. Still needed: the owner items in the sign-off (docs/RELEASE.md §6) |
 
 Deployment is **continuous**, not left to the end. From Phase 1 onward every push to `main` deploys to Vercel; Phase 11 is the production cut-over and launch checklist.
 
@@ -128,7 +128,8 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Home: "Latest jobs" (real postings only; hidden when there are none).
 - 19 widget tests against in-memory repositories (94 app tests in total).
 
-**Still to do:** the live "new jobs" banner (Realtime broadcast), and real jobs in the cloud database. It is empty until employers post (Phase 6) or feeds are ingested (Phase 8). The seed stays local-only.
+**Done since:** real jobs fill the cloud database from the daily imports (about 1,800 published on 2026-10-26; Phase 8). The live **"new jobs" banner** is in PR #35: an open Find jobs or Home page checks once a minute how many jobs arrived since it opened and shows "↑ N new jobs · Show", which reloads the list. A once-a-minute count replaced the planned Realtime broadcast, because imports add about 1,800 rows a day in bursts and Realtime would push every one to every browser.
+**Polish (PRs #20, #22, #25–#28):** centred search text, a compact three-pane job search, uniform job and company cards in grids, company logos (or a tinted initials tile), and repaired mis-encoded feed text.
 
 **Original scope:**
 - Home (hero search, categories, live "new jobs" banner via Realtime broadcast, honest stats).
@@ -171,7 +172,8 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 - Overview `/employer` and Analytics `/employer/analytics`: real counts only, from `company_hiring_stats` (runs under the caller's RLS). Funnel, applications per week, average time to hire, and job status counts.
 - Viewer role: read-only everywhere. 13 widget tests (onboarding, invites, review flow, live move, drag rules, interview and offer forms, viewer, analytics) and 12 pgTAP assertions (125 app tests, 77 database assertions).
 
-**Still to do:** a full hire with real accounts on the live site, and team switching for people in several companies (the switcher exists on the company page).
+**Company switcher (PR #36):** people in more than one company see the current company in the workspace sidebar (top bar on tablets, drawer on phones) and can switch it from any page. It replaces the switcher that only the company page had.
+**Still to do:** a full hire with real accounts on the live site.
 
 **Original scope:**
 - Company profile + verification request; team invites (owner, recruiter, viewer).
@@ -211,7 +213,7 @@ Delivered: monorepo (`app/`, `api/`, `supabase/`, `tests/`), Flutter 3.47 app fo
 
 **Career news:** done in the discovery features (#9, below).
 
-**Live job feeds (branch `phase-11-live-job-feeds`, 2026-10-23).** The cloud database had only 9 jobs (the free Remotive feed now lists 9 in total), so more sources were added, each checked against its terms:
+**Live job feeds (PR #19, live since 2026-10-24).** The cloud database had only 9 jobs (the free Remotive feed now lists 9 in total), so more sources were added, each checked against its terms:
 - **Company career boards** (`GET /api/ingest/companies`, own daily cron at 06:45 IST): the public job-board APIs of Greenhouse, Lever and Ashby, for a curated list of 39 companies hiring in India (`api/_lib/ingest/boards.ts`: Databricks, MongoDB, Okta, Stripe, Razorpay, Groww, Paytm, Meesho, CRED, Sarvam AI and others). Only roles located in India are kept (about 1,200 on 2026-10-23). These boards are the employers' own, so a listed role stays open however old it is, and a role that leaves its board is closed, but only for boards that answered that day (a failing board is logged, not emptied). Cards say "From the company careers page".
 - **Remote feeds** in the existing `/api/ingest/jobs` run: **Himalayas** (remote jobs open to people in India, about 200 a day; credited with a link, the application link kept unchanged, never passed to Google Jobs), **Jobicy** (APAC and worldwide remote; credited and linked) and **Remote OK** (worldwide or Asia only; credited with a followed link, their logo never used).
 - Providers in a run now download side by side, and the stored-job lookup reads in pages (PostgREST returns 1,000 rows at most). Himalayas logos load through `/api/img` (no CORS on their CDN).
@@ -244,11 +246,12 @@ To add a company, check that its board lists India roles and add `{ token, name,
 - Reliability: Sentry (Flutter + functions), `/api/health` uptime monitor, Supabase backups, load test (500 concurrent users).
 
 ## Phase 10½ — Discovery features (PRs #8–#11) 🟡
-**Live on main.** Migrations `20261020170000`, `20261021120000`, `20261021130000`, `20261021140000` and `20261021150000` were applied to the cloud database on 2026-10-21 (one transaction from the SQL editor, recorded in `schema_migrations`). Still to do: first news import (runs at the next morning cron), optional Adzuna India keys for located jobs.
+**Live on main.** Migrations `20261020170000`, `20261021120000`, `20261021130000`, `20261021140000` and `20261021150000` were applied to the cloud database on 2026-10-21 (one transaction from the SQL editor, recorded in `schema_migrations`); the events migrations `20261025120000` and `20261026120000` followed on 2026-10-25 and 2026-10-26. On 2026-10-26 the live site had 77 news items (all with images), 12 imported events and 323 companies (284 with logos). Optional: Adzuna India keys for located jobs.
 - **Companies directory with every hiring company** (#8): the `company_directory` view adds the companies behind imported jobs, with their feed logo and open-role counts; imported companies get `/companies/jobs-at-<name>`; job cards show LuzHire companies' own logos; Home shows "Companies hiring now".
 - **Career news** (#9): `/api/ingest/news` (daily cron) imports linked headlines from Remotive's blog, DEV #career and freeCodeCamp, filtered to career topics. DEV's feed has no images: headlines are saved first, then up to 60 still without an image get one from DEV's articles API (one request), or else from their article page's preview image (`og:image`, only on those three sites, within a 20 s budget so the run stays under the 60 s limit) (2026-10-25); admins write articles at `/admin/news` (read at `/news/:slug`), feature stories and hide headlines; `/news` has topics, a featured row and Home section.
 - **Hiring map, jobs near you, recommendations** (#10): a `cities` gazetteer geocodes jobs; `/jobs/map` (OpenStreetMap tiles) shows open roles per city and "Jobs near me" by device location; `recommended_jobs()` ranks jobs by skills, headline, city and freshness with reasons ("Picked for you" on Home). Adzuna India keys would add located Indian jobs without code changes.
-- **Imported events (2026-10-25):** `/api/ingest/events` (daily cron, 07:30 IST) imports upcoming coding contests from Codeforces' official API and hackathons from Hack Club's open hackathon directory (online and hybrid ones, in-person only in Asia-Pacific/India), credited "via Hack Club", with registration on the organiser's site. Future events that leave a source's list are cancelled. Migration `20261025120000_event_imports.sql` adds `external_source`/`external_id` (only the import may set them; 6 pgTAP assertions) and must be applied in the Supabase SQL editor. Devpost and MLH were left out: their terms forbid republishing listings. Hiring drives and webinars still come from employers on LuzHire.
+- **Imported events (2026-10-25):** `/api/ingest/events` (daily cron, 07:30 IST) imports upcoming coding contests from Codeforces' official API and hackathons from Hack Club's open hackathon directory (online and hybrid ones, in-person only in Asia-Pacific/India), credited "via Hack Club", with registration on the organiser's site. Future events that leave a source's list are cancelled. Migration `20261025120000_event_imports.sql` adds `external_source`/`external_id` (only the import may set them; 7 pgTAP assertions), and `20261026120000_event_images.sql` adds organiser logos and banners (both applied). Devpost and MLH were left out: their terms forbid republishing listings. Hiring drives and webinars still come from employers on LuzHire.
+- **Events redesign (PRs #32–#34, 2026-10-26):** every list sorts in the direction it promises; event cards are uniform with a banner (or a tinted pattern), the organiser's logo, date, mode and registration state; empty tabs (hiring drives, webinars) point to the kinds that do have events, with counts and a one-click switch, and offer employers "Post a hiring drive / webinar".
 - **Opportunities** (#11): Unstop-style `/events` for walk-in and campus drives, hiring challenges, hackathons, competitions and webinars; in-app (individual or team) or external registration with deadline and capacity enforced in Postgres; `/employer/events` with registrants and `/admin/events` review; events on the hiring map.
 
 ## Phase 11 — Production launch on Vercel
@@ -257,6 +260,9 @@ To add a company, check that its board lists India roles and add `{ token, name,
 - Release checklist and rollback plan; seed real admin account; smoke tests on the live URL.
 - Handover docs: README, setup guide, demo accounts, architecture + design docs, and a screenshot set for the project report.
 - Optional: Android APK/AAB and iOS TestFlight builds.
+
+**Status (2026-10-26):** production runs on Vercel with security headers and an enforced CSP, a smoke test after every deploy, and an uptime check every 30 minutes. In PR #37: `docs/RELEASE.md` (release checklist, rollback plan, launch sign-off) and `docs/HANDOVER.md` (handover guide and screenshot list). Tests on main: 291 Flutter, 109 API and 183 pgTAP assertions.
+**Still needed from the owner** (docs/RELEASE.md §6): choose the Supabase plan, optionally add a domain, create the first admin (`ADMIN_EMAILS`), do a live end-to-end hire with two accounts, check emails in Outlook, do a screen-reader pass, take the screenshot set, and optionally build Android. Then sign off.
 
 **Done when:** the production URL passes the smoke test and the release checklist is signed off.
 
@@ -272,4 +278,7 @@ To add a company, check that its board lists India roles and add `{ token, name,
 | Phase 3 | Firebase project (web, Android, iOS apps registered) | Web config is public. Service-account JSON goes into Vercel env vars only |
 | Phase 8 | Job/news provider API keys | Vercel env vars only |
 | Phase 9 | Sending mailbox (e.g. a Gmail with an app password), `NOTIFY_SECRET`, Supabase webhook | Vercel env vars + Supabase dashboard (SETUP.md §6) |
+| Phase 11 | Supabase plan (Pro recommended) | Supabase billing |
 | Phase 11 | Domain (optional) | DNS settings in Vercel |
+| Phase 11 | First admin: your email in `ADMIN_EMAILS` | Vercel env var, removed after use |
+| Phase 11 | Adzuna keys (optional) | Vercel env vars `ADZUNA_APP_ID`, `ADZUNA_APP_KEY` |
