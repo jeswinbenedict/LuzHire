@@ -306,9 +306,18 @@ class _Registrants extends ConsumerWidget {
 /// /employer/events/new, /employer/events/:id (for the current company) and
 /// /admin/events/new, /admin/events/:id (admins name the organiser).
 class EventEditorPage extends ConsumerWidget {
-  const EventEditorPage({super.key, this.eventId, this.admin = false});
+  const EventEditorPage({
+    super.key,
+    this.eventId,
+    this.admin = false,
+    this.initialKind,
+  });
   final String? eventId;
   final bool admin;
+
+  /// For a new event: the type to start with (from `?kind=` on the link,
+  /// e.g. "Post a webinar").
+  final EventKind? initialKind;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -317,6 +326,7 @@ class EventEditorPage extends ConsumerWidget {
       existing: existing,
       companyId: companyId,
       admin: admin,
+      initialKind: initialKind,
     );
     Widget withEvent(String? companyId) => eventId == null
         ? form(companyId, null)
@@ -341,10 +351,12 @@ class _EventForm extends ConsumerStatefulWidget {
     required this.existing,
     required this.companyId,
     required this.admin,
+    this.initialKind,
   });
   final Opportunity? existing;
   final String? companyId;
   final bool admin;
+  final EventKind? initialKind;
 
   @override
   ConsumerState<_EventForm> createState() => _EventFormState();
@@ -352,7 +364,13 @@ class _EventForm extends ConsumerStatefulWidget {
 
 class _EventFormState extends ConsumerState<_EventForm> {
   late final EventDraft _d = widget.existing == null
-      ? EventDraft()
+      ? EventDraft(
+          kind: widget.initialKind ?? EventKind.walkIn,
+          // Webinars happen online; drives start as in person.
+          mode: widget.initialKind == EventKind.webinar
+              ? EventMode.online
+              : EventMode.inPerson,
+        )
       : EventDraft.from(widget.existing!);
   late final _title = TextEditingController(text: _d.title);
   late final _summary = TextEditingController(text: _d.summary);

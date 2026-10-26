@@ -142,6 +142,21 @@ class EventsRepository {
     return Opportunity.fromJson(row);
   }
 
+  /// The kind of every published event that has not ended (for counts).
+  Future<List<EventKind>> upcomingKinds() => guardDb(() async {
+    final rows = await _db
+        .from('events')
+        .select('kind')
+        .eq('status', 'published')
+        .or(
+          'ends_at.gte.${DateTime.now().toUtc().toIso8601String()},'
+          'and(ends_at.is.null,starts_at.gte.'
+          '${DateTime.now().toUtc().subtract(const Duration(hours: 12)).toIso8601String()})',
+        )
+        .limit(1000);
+    return [for (final r in rows) EventKind.fromDb(r['kind'] as String?)];
+  });
+
   /// Published events that have not ended, soonest first.
   Future<List<Opportunity>> upcoming(
     EventQuery q, {

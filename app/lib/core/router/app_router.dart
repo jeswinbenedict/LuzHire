@@ -201,7 +201,10 @@ final _routes = <RouteBase>[
       _page('/employer/analytics', (_) => const EmployerAnalyticsPage()),
       _page('/employer/company', (_) => const EmployerCompanyPage()),
       _page('/employer/events', (_) => const EmployerEventsPage()),
-      _page('/employer/events/new', (_) => const EventEditorPage()),
+      _page(
+        '/employer/events/new',
+        (s) => EventEditorPage(initialKind: _kindParam(s)),
+      ),
       _page(
         '/employer/events/:id',
         (s) => EventEditorPage(eventId: s.pathParameters['id']),
@@ -228,7 +231,10 @@ final _routes = <RouteBase>[
       _page('/admin/announcements', (_) => const AnnouncementsAdminPage()),
       _page('/admin/news', (_) => const NewsAdminPage()),
       _page('/admin/events', (_) => const AdminEventsPage()),
-      _page('/admin/events/new', (_) => const EventEditorPage(admin: true)),
+      _page(
+        '/admin/events/new',
+        (s) => EventEditorPage(admin: true, initialKind: _kindParam(s)),
+      ),
       _page(
         '/admin/events/:id',
         (s) => EventEditorPage(eventId: s.pathParameters['id'], admin: true),
@@ -244,3 +250,11 @@ GoRoute _page(String path, Widget Function(GoRouterState s) build) => GoRoute(
   pageBuilder: (context, state) =>
       NoTransitionPage(key: state.pageKey, child: build(state)),
 );
+
+/// `?kind=webinar` on a new-event link: the type to start the form with.
+EventKind? _kindParam(GoRouterState s) {
+  final v = s.uri.queryParameters['kind'];
+  return v == null
+      ? null
+      : EventKind.values.where((k) => k.dbValue == v).firstOrNull;
+}

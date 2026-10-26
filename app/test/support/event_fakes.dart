@@ -76,6 +76,12 @@ class FakeEventsRepository implements EventsRepository {
   final statusChanges = <(String, EventStatus)>[];
 
   @override
+  Future<List<EventKind>> upcomingKinds() async => [
+    for (final e in events)
+      if (e.status == EventStatus.published) e.kind,
+  ];
+
+  @override
   Future<List<Opportunity>> upcoming(
     EventQuery q, {
     int offset = 0,
