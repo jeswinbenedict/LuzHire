@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -248,3 +250,43 @@ final isJobSavedProvider = Provider.autoDispose.family<bool, String>((ref, id) {
   final ids = ref.watch(savedJobIdsProvider).value ?? const <String>{};
   return pending[id] ?? ids.contains(id);
 });
+
+// ---------------------------------------------------------------- new jobs
+
+/// How often an open page checks for newly arrived jobs. A small count query
+/// once a minute instead of Realtime on `jobs`, which would push every
+/// imported row (about 1,800 a day, in bursts) to every open browser.
+const newJobsPollInterval = Duration(minutes: 1);
+
+/// Jobs that arrived since the page opened (or since "Show" was tapped).
+class NewJobsController extends Notifier<int> {
+  late DateTime _since;
+  Timer? _timer;
+
+  @override
+  int build() {
+    _since = DateTime.now();
+    _timer = Timer.periodic(newJobsPollInterval, (_) => _check());
+    ref.onDispose(() => _timer?.cancel());
+    return 0;
+  }
+
+  Future<void> _check() async {
+    try {
+      final n = await ref.read(jobsRepositoryProvider).countNewSince(_since);
+      if (ref.mounted) state = n;
+    } catch (_) {
+      // Offline or not configured: try again next minute.
+    }
+  }
+
+  /// The new jobs are being shown: count from now on.
+  void reset() {
+    _since = DateTime.now();
+    state = 0;
+  }
+}
+
+final newJobsProvider = NotifierProvider.autoDispose<NewJobsController, int>(
+  NewJobsController.new,
+);

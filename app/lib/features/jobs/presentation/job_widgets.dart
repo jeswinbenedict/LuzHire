@@ -494,6 +494,31 @@ class JobFilters extends ConsumerWidget {
   }
 }
 
+/// "↑ 5 new jobs · Show": appears when jobs arrive while the page is open
+/// (checked once a minute) and reloads the list from the top when tapped.
+/// Screen readers announce it when it appears.
+class NewJobsBanner extends ConsumerWidget {
+  const NewJobsBanner({super.key, required this.onShow});
+  final VoidCallback onShow;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final n = ref.watch(newJobsProvider);
+    if (n == 0) return const SizedBox.shrink();
+    return Semantics(
+      liveRegion: true,
+      child: LuzButton.accent(
+        label: '${n == 1 ? '1 new job' : '$n new jobs'} · Show',
+        icon: Icons.arrow_upward,
+        onPressed: () {
+          ref.read(newJobsProvider.notifier).reset();
+          onShow();
+        },
+      ),
+    );
+  }
+}
+
 /// Padding of each scrolling pane on the wide job search page: room for the
 /// cards' relief shadows (LuzDepth.raisedMd: 8 px offset + 16 px blur), so a
 /// scrolling pane never cuts one off, and card edges meet the header's 24 px
