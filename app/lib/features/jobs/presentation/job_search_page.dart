@@ -140,32 +140,39 @@ class _JobSearchPageState extends ConsumerState<JobSearchPage> {
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Each pane is one Tab group: all filters, then
+                        // the results, then the preview (not row by row
+                        // across the three columns).
                         SizedBox(
                           width: 256 + 2 * LuzSpace.lg,
-                          child: SingleChildScrollView(
-                            padding: jobPanePadding,
-                            child: LuzCard(
-                              padding: const EdgeInsets.all(LuzSpace.md + 4),
-                              child: JobFilters(query: query, onChanged: _go),
+                          child: FocusTraversalGroup(
+                            child: SingleChildScrollView(
+                              padding: jobPanePadding,
+                              child: LuzCard(
+                                padding: const EdgeInsets.all(LuzSpace.md + 4),
+                                child: JobFilters(query: query, onChanged: _go),
+                              ),
                             ),
                           ),
                         ),
                         if (threePane) ...[
                           SizedBox(
                             width: 400 + 2 * LuzSpace.lg,
-                            child: results,
+                            child: FocusTraversalGroup(child: results),
                           ),
                           Expanded(
                             child: selected == null
                                 ? const SizedBox.shrink()
-                                : JobDetailView(
-                                    key: ValueKey(selected),
-                                    slug: selected,
-                                    embedded: true,
+                                : FocusTraversalGroup(
+                                    child: JobDetailView(
+                                      key: ValueKey(selected),
+                                      slug: selected,
+                                      embedded: true,
+                                    ),
                                   ),
                           ),
                         ] else
-                          Expanded(child: results),
+                          Expanded(child: FocusTraversalGroup(child: results)),
                       ],
                     ),
                   ),

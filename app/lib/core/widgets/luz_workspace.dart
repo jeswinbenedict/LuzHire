@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
@@ -48,6 +49,7 @@ class _LuzDataTableState<T> extends State<LuzDataTable<T>> {
   int? _sortCol;
   bool _asc = true;
   int? _hover;
+  int? _focused;
 
   List<T> get _sorted {
     final i = _sortCol;
@@ -187,19 +189,46 @@ class _LuzDataTableState<T> extends State<LuzDataTable<T>> {
             ),
           );
 
-    return MouseRegion(
-      onEnter: (_) => setState(() => _hover = index),
-      onExit: (_) => setState(() => _hover = null),
-      cursor: widget.onRowTap != null
-          ? SystemMouseCursors.click
-          : MouseCursor.defer,
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: widget.onRowTap == null ? null : () => widget.onRowTap!(row),
-        child: AnimatedContainer(
-          duration: LuzMotion.press,
-          color: _hover == index ? p.sunken : Colors.transparent,
-          child: content,
+    final tap = widget.onRowTap == null ? null : () => widget.onRowTap!(row);
+    // Clickable rows are keyboard stops too: Tab reaches them, Enter or
+    // Space opens them, and focus shows as the accent ring (DESIGN.md §2).
+    return Semantics(
+      button: tap != null,
+      child: FocusableActionDetector(
+        enabled: tap != null,
+        mouseCursor: tap != null ? SystemMouseCursors.click : MouseCursor.defer,
+        onShowHoverHighlight: (v) => setState(
+          () => _hover = v ? index : (_hover == index ? null : _hover),
+        ),
+        onShowFocusHighlight: (v) => setState(
+          () => _focused = v ? index : (_focused == index ? null : _focused),
+        ),
+        shortcuts: const {
+          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+        },
+        actions: {
+          ActivateIntent: CallbackAction<ActivateIntent>(
+            onInvoke: (_) {
+              tap?.call();
+              return null;
+            },
+          ),
+        },
+        child: GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: tap,
+          child: AnimatedContainer(
+            duration: LuzMotion.press,
+            decoration: BoxDecoration(
+              color: _hover == index ? p.sunken : Colors.transparent,
+              border: _focused == index
+                  ? Border.all(color: p.accent, width: 2)
+                  : null,
+              borderRadius: BorderRadius.circular(LuzRadius.xs),
+            ),
+            child: content,
+          ),
         ),
       ),
     );
