@@ -292,7 +292,10 @@ class JobsRepository {
   });
 
   Future<List<({String slug, String name})>> skills() => guardDb(() async {
-    final rows = await _db.from('skills').select('slug, name').order('name');
+    final rows = await _db
+        .from('skills')
+        .select('slug, name')
+        .order('name', ascending: true);
     return [
       for (final r in rows)
         (slug: r['slug'] as String, name: r['name'] as String),

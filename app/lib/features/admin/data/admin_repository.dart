@@ -47,7 +47,7 @@ class AdminRepository {
         .from('companies')
         .select()
         .eq('verification', Verification.pending.dbValue)
-        .order('updated_at');
+        .order('updated_at', ascending: true);
     return [for (final r in rows) Company.fromJson(r)];
   });
 
@@ -68,7 +68,7 @@ class AdminRepository {
         .from('jobs')
         .select()
         .eq('status', JobStatus.pendingReview.dbValue)
-        .order('created_at');
+        .order('created_at', ascending: true);
     return [for (final r in rows) Job.fromJson(r)];
   });
 

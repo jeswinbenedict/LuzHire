@@ -147,8 +147,8 @@ class EventsRepository {
     if (q.mode != null) f = f.eq('mode', q.mode!.dbValue);
     if (q.cityId != null) f = f.eq('city_id', q.cityId!);
     final rows = await f
-        .order('starts_at')
-        .order('id')
+        .order('starts_at', ascending: true)
+        .order('id', ascending: true)
         .range(offset, offset + limit - 1);
     return [for (final r in rows) Opportunity.fromJson(r)];
   });

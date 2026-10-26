@@ -25,8 +25,8 @@ class CompaniesRepository {
     if (q.isNotEmpty) filter = filter.ilike('name', '%$q%');
     final rows = await filter
         .order('open_jobs', ascending: false)
-        .order('name')
-        .order('slug')
+        .order('name', ascending: true)
+        .order('slug', ascending: true)
         .range(offset, offset + limit - 1);
     return [for (final r in rows) Company.fromJson(r)];
   });

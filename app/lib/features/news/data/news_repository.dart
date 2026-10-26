@@ -61,7 +61,7 @@ class NewsRepository {
     }
     final rows = await q
         .order('published_at', ascending: false)
-        .order('id')
+        .order('id', ascending: false)
         .range(offset, offset + limit - 1);
     return [for (final r in rows) NewsItem.fromJson(r)];
   });

@@ -42,7 +42,7 @@ class ApplicationsRepository {
       .from('applications')
       .stream(primaryKey: ['id'])
       .eq('candidate_id', candidateId)
-      .order('created_at')
+      .order('created_at', ascending: false)
       .map(
         (rows) => [for (final r in rows.reversed) JobApplication.fromJson(r)],
       );
@@ -54,7 +54,7 @@ class ApplicationsRepository {
             .from('application_events')
             .select()
             .eq('application_id', applicationId)
-            .order('created_at');
+            .order('created_at', ascending: true);
         return [for (final r in rows) ApplicationEvent.fromJson(r)];
       });
 
@@ -70,7 +70,7 @@ class ApplicationsRepository {
     final rows = await _db
         .from('candidate_interviews')
         .select()
-        .order('scheduled_at');
+        .order('scheduled_at', ascending: true);
     return [for (final r in rows) Interview.fromJson(r)];
   });
 
