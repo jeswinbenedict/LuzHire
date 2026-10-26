@@ -98,12 +98,18 @@ In GitHub → repo → **Settings → Secrets and variables → Actions**:
 }
 ```
 `FIREBASE_VAPID_KEY` is optional (public): Firebase console → Project settings → Cloud Messaging → Web Push certificates. Left empty, web push uses the Firebase SDK's built-in key.
-If anything is missing, the Deploy job shows a **"Deploy skipped"** warning instead of silently passing. After every deploy, it smoke-tests `/`, `/api/health`, `/jobs` and `/favicon.svg` on the live URL.
+If anything is missing, the Deploy job shows a **"Deploy skipped"** warning instead of silently passing. After every deploy, it smoke-tests the live URL (pages, API, database and the deployed commit; see docs/RELEASE.md §3).
 For local development the same file lives at `app/env/local.json` (git-ignored).
 
 ## 5. First admin account
 
-Sign-up never grants admin. After your own account exists (sign up normally as a job seeker), make it an admin **once** from the Firebase Admin SDK. I'll give you a one-off script, or run it with you, when we reach Phase 7. After that, admins promote others from the admin console (`/api/admin/users/:id/role`, which is audited).
+Sign-up never grants admin. To make the first one:
+1. Sign up normally and verify your email.
+2. In Vercel, set `ADMIN_EMAILS` to that email (§3) and redeploy (GitHub → Actions → Deploy → Run workflow).
+3. In LuzHire, open Account → **Claim admin access** (`POST /api/auth/claim-admin`: verified emails on the list only, audited).
+4. Remove the email from `ADMIN_EMAILS`.
+
+After that, admins promote others from Admin → Users (`/api/admin/users/:id/role`, which is audited).
 
 ## 6. Notifications (push and email)
 
