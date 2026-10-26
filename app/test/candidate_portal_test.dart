@@ -4,10 +4,14 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
 import 'package:luzhire/core/data/models.dart';
+import 'package:luzhire/core/platform/file_drop.dart';
+import 'package:luzhire/core/platform/file_save.dart';
 import 'package:luzhire/core/theme/tokens.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
 import 'package:luzhire/features/candidate/presentation/dashboard_page.dart'
     show dashboardSummary;
+import 'package:luzhire/features/candidate/presentation/interviews_page.dart'
+    show interviewIcs;
 
 import 'support/candidate_fakes.dart';
 import 'support/fakes.dart';
@@ -187,8 +191,160 @@ void main() {
       await _pump(tester, f, location: '/me/interviews', width: 375);
       expect(find.text('Video call'), findsOneWidget);
       expect(find.text('Join meeting'), findsOneWidget);
+      // Android and iOS: Google Calendar only (no file download there).
       expect(find.text('Add to calendar'), findsOneWidget);
+      expect(find.textContaining('.ics'), findsNothing);
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('the web offers an .ics file for Outlook and Apple', (
+      tester,
+    ) async {
+      final saved = <(String, String, String)>[];
+      fileSaver = (name, mime, bytes) async =>
+          saved.add((name, mime, String.fromCharCodes(bytes)));
+      addTearDown(() => fileSaver = null);
+      final f = CandidateFakes();
+      final id = await _applyTo(f, 'job-1');
+      f.applications.interviewList.add(
+        Interview(
+          id: 'int-1',
+          applicationId: id,
+          jobId: 'job-1',
+          scheduledAt: DateTime(2026, 11, 2, 10, 30),
+          durationMin: 45,
+          mode: InterviewMode.video,
+          status: InterviewStatus.scheduled,
+          meetingUrl: 'https://meet.example.com/abc',
+        ),
+      );
+      await _pump(tester, f, location: '/me/interviews', width: 1280);
+      expect(find.text('Add to Google Calendar'), findsOneWidget);
+      await _tapVisible(tester, find.text('Download .ics (Outlook, Apple)'));
+
+      final (name, mime, ics) = saved.single;
+      expect(name, 'luzhire-interview-2026-11-02.ics');
+      expect(mime, startsWith('text/calendar'));
+      expect(ics, contains('UID:interview-int-1@luzhire.vercel.app'));
+      expect(ics, contains('URL:https://meet.example.com/abc'));
+    });
+
+    test('the .ics file follows RFC 5545', () {
+      final job = fakeJob(1, title: 'Flutter Developer; Mobile, Payments');
+      final ics = interviewIcs(
+        Interview(
+          id: 'int-9',
+          applicationId: 'app-9',
+          jobId: job.id,
+          scheduledAt: DateTime.utc(2026, 11, 2, 5),
+          durationMin: 45,
+          mode: InterviewMode.onsite,
+          status: InterviewStatus.scheduled,
+          location:
+              'Floor 3, Prestige Tech Park, Outer Ring Road, Marathahalli, '
+              'Bengaluru, Karnataka 560103, India',
+        ),
+        job: job,
+        now: DateTime.utc(2026, 10, 27, 9),
+      );
+      final lines = ics.split('\r\n');
+      // CRLF everywhere, one event, times in UTC.
+      expect(ics, endsWith('END:VCALENDAR\r\n'));
+      expect(ics.replaceAll('\r\n', ''), isNot(contains('\n')));
+      expect(lines.first, 'BEGIN:VCALENDAR');
+      expect(lines, contains('DTSTART:20261102T050000Z'));
+      expect(lines, contains('DTEND:20261102T054500Z'));
+      expect(lines, contains('DTSTAMP:20261027T090000Z'));
+      expect(lines, contains('TRIGGER:-PT30M'));
+      // Commas and semicolons escaped.
+      expect(
+        ics,
+        contains(r'SUMMARY:Interview: Flutter Developer\; Mobile\, Payments'),
+      );
+      // Long lines folded at 75 octets, continued with a space.
+      for (final l in lines) {
+        expect(l.length, lessThanOrEqualTo(75), reason: l);
+      }
+      final unfolded = ics.replaceAll('\r\n ', '');
+      expect(unfolded, contains(r'Bengaluru\, Karnataka 560103\, India'));
+    });
+  });
+
+  group('Resume drag and drop (web)', () {
+    late void Function(Offset?) dragOver;
+    late void Function(Offset, String, Uint8List) drop;
+    var listening = false;
+
+    setUp(() {
+      fileDropListener = ({required onDragOver, required onDrop}) {
+        dragOver = onDragOver;
+        drop = onDrop;
+        listening = true;
+        return () => listening = false;
+      };
+    });
+    tearDown(() => fileDropListener = null);
+
+    Offset resumesCard(WidgetTester tester) => tester.getCenter(
+      find
+          .ancestor(of: find.text('Resumes'), matching: find.byType(LuzCard))
+          .first,
+    );
+
+    testWidgets('a file dropped on the card is uploaded', (tester) async {
+      final f = CandidateFakes();
+      await _pump(tester, f, location: '/me/profile', width: 1280);
+      expect(listening, isTrue);
+      expect(find.textContaining('drag it onto this card'), findsOneWidget);
+
+      dragOver(resumesCard(tester));
+      await tester.pump();
+      expect(find.text('Drop your resume here'), findsOneWidget);
+
+      drop(resumesCard(tester), 'Asha CV.PDF', Uint8List(100));
+      await tester.pumpAndSettle();
+      expect(find.text('Drop your resume here'), findsNothing);
+      expect(f.resumes.items.single.fileName, 'Asha CV.PDF');
+    });
+
+    testWidgets('other files, big files and misses are explained', (
+      tester,
+    ) async {
+      final f = CandidateFakes();
+      await _pump(tester, f, location: '/me/profile', width: 1280);
+
+      drop(resumesCard(tester), 'notes.txt', Uint8List(10));
+      await tester.pumpAndSettle();
+      expect(find.text('Drop a PDF or Word (.docx) file.'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      drop(resumesCard(tester), 'big.pdf', Uint8List(6 * 1024 * 1024));
+      await tester.pumpAndSettle();
+      expect(find.text('That file is larger than 5 MB.'), findsOneWidget);
+      await tester.pump(const Duration(seconds: 5));
+      await tester.pumpAndSettle();
+
+      drop(const Offset(5, 500), 'cv.pdf', Uint8List(10));
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Drop the file on the Resumes card to upload it.'),
+        findsOneWidget,
+      );
+      expect(f.resumes.items, isEmpty);
+    });
+
+    testWidgets('stops listening when the page closes', (tester) async {
+      final router = await _pump(
+        tester,
+        CandidateFakes(),
+        location: '/me/profile',
+        width: 1280,
+      );
+      expect(listening, isTrue);
+      router.go('/me');
+      await tester.pumpAndSettle();
+      expect(listening, isFalse);
     });
   });
 
