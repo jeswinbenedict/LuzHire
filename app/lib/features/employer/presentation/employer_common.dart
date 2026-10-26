@@ -12,6 +12,7 @@ import '../../auth/domain/auth_state.dart';
 import '../../candidate/presentation/candidate_widgets.dart'
     show AsyncBlock, runWithToast;
 import '../application/employer_providers.dart';
+import '../data/employer_repository.dart';
 import 'company_page.dart' show CompanyForm;
 import '../../../core/shell/workspace_page.dart';
 
@@ -176,3 +177,97 @@ String companyFacts(Company c) => [
   if (c.sizeRange != null) '${c.sizeRange} people',
   c.hqLocation,
 ].whereType<String>().where((s) => s.isNotEmpty).join(' · ');
+
+/// The company the workspace is showing, with a way to switch. Only shown
+/// to people in more than one company; lives in the workspace sidebar (or
+/// the top bar when the sidebar is a rail), so every page can switch.
+class CompanySwitcher extends ConsumerWidget {
+  const CompanySwitcher({super.key, this.compact = false});
+
+  /// Top bar: a smaller pill with the name capped at 180 px.
+  final bool compact;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final all = ref.watch(myCompaniesProvider).value ?? const <Membership>[];
+    final current = ref.watch(currentMembershipProvider).value;
+    if (all.length < 2 || current == null) return const SizedBox.shrink();
+    final p = context.luz;
+    final t = context.luzText;
+    final c = current.company;
+    return LuzPressable(
+      radius: LuzRadius.sm,
+      semanticLabel: 'Company: ${c.name}. Switch company',
+      tooltip: 'Switch company',
+      onPressed: () => _pick(context, ref, all, c.id),
+      builder: (context, pressed, hovered) => LuzSurface(
+        depth: pressed ? LuzDepth.insetSm : LuzDepth.raisedSm,
+        radius: LuzRadius.sm,
+        outline: p.outline,
+        padding: const EdgeInsets.fromLTRB(6, 6, 10, 6),
+        child: Row(
+          mainAxisSize: compact ? MainAxisSize.min : MainAxisSize.max,
+          children: [
+            LuzLogoSocket(
+              name: c.name,
+              logoUrl: _logo(ref, c),
+              size: compact ? 28 : 32,
+            ),
+            const SizedBox(width: LuzSpace.sm),
+            Flexible(
+              fit: compact ? FlexFit.loose : FlexFit.tight,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: compact ? 180 : double.infinity,
+                ),
+                child: Text(
+                  c.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: t.bodySm.copyWith(
+                    color: p.ink,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: LuzSpace.xs),
+            Icon(Icons.unfold_more, size: 18, color: p.inkMuted),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static String? _logo(WidgetRef ref, Company c) => c.logoPath == null
+      ? null
+      : ref.read(employerRepositoryProvider).logoUrl(c.logoPath!);
+
+  static void _pick(
+    BuildContext context,
+    WidgetRef ref,
+    List<Membership> all,
+    String currentId,
+  ) {
+    showLuzModal<void>(
+      context: context,
+      title: 'Switch company',
+      builder: (ctx) => Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          for (final m in all)
+            LuzRadio<String>(
+              value: m.company.id,
+              groupValue: currentId,
+              label: '${m.company.name} · ${m.role.label}',
+              onChanged: (id) {
+                ref.read(selectedCompanyProvider.notifier).select(id);
+                Navigator.of(ctx).pop();
+              },
+            ),
+        ],
+      ),
+    );
+  }
+}

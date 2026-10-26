@@ -22,10 +22,16 @@ class WorkspaceShell extends StatefulWidget {
     required this.destinations,
     required this.location,
     required this.child,
+    this.switcher,
   });
 
   /// "Employer" or "Admin".
   final String title;
+
+  /// Picks what the workspace shows (the employer's company switcher). Sits
+  /// under the workspace label; in the top bar while the sidebar is a rail.
+  /// [compact] is true in the top bar.
+  final Widget Function({required bool compact})? switcher;
   final List<LuzDestination> destinations;
   final String location;
   final Widget child;
@@ -48,12 +54,14 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
       LuzBreakpoint.compact => null,
       LuzBreakpoint.medium => _Sidebar(
         title: widget.title,
+        switcher: null,
         destinations: widget.destinations,
         selected: selected,
         collapsed: true,
       ),
       _ => _Sidebar(
         title: widget.title,
+        switcher: _collapsed ? null : widget.switcher?.call(compact: false),
         destinations: widget.destinations,
         selected: selected,
         collapsed: _collapsed,
@@ -75,6 +83,7 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
                   child: SafeArea(
                     child: _Sidebar(
                       title: widget.title,
+                      switcher: widget.switcher?.call(compact: false),
                       destinations: widget.destinations,
                       selected: selected,
                       collapsed: false,
@@ -95,6 +104,11 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
                         title: current?.label ?? widget.title,
                         showMenu: bp.isCompact,
                         onMenu: () => _scaffoldKey.currentState?.openDrawer(),
+                        switcher:
+                            !bp.isCompact &&
+                                (bp == LuzBreakpoint.medium || _collapsed)
+                            ? widget.switcher?.call(compact: true)
+                            : null,
                       ),
                       Expanded(child: widget.child),
                     ],
@@ -112,6 +126,7 @@ class _WorkspaceShellState extends State<WorkspaceShell> {
 class _Sidebar extends StatelessWidget {
   const _Sidebar({
     required this.title,
+    required this.switcher,
     required this.destinations,
     required this.selected,
     required this.collapsed,
@@ -120,6 +135,7 @@ class _Sidebar extends StatelessWidget {
   });
 
   final String title;
+  final Widget? switcher;
   final List<LuzDestination> destinations;
   final int selected;
   final bool collapsed;
@@ -174,6 +190,16 @@ class _Sidebar extends StatelessWidget {
                     ],
                   ),
           ),
+          if (switcher != null)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(
+                LuzSpace.sm,
+                LuzSpace.md,
+                LuzSpace.sm,
+                0,
+              ),
+              child: switcher,
+            ),
           const SizedBox(height: LuzSpace.lg),
           Expanded(
             child: ListView(
@@ -304,10 +330,12 @@ class _TopBar extends StatelessWidget {
     required this.title,
     required this.showMenu,
     required this.onMenu,
+    this.switcher,
   });
   final String title;
   final bool showMenu;
   final VoidCallback onMenu;
+  final Widget? switcher;
 
   @override
   Widget build(BuildContext context) {
@@ -340,6 +368,10 @@ class _TopBar extends StatelessWidget {
                 ),
               ),
             ),
+            if (switcher != null) ...[
+              switcher!,
+              const SizedBox(width: LuzSpace.md),
+            ],
             if (!compact) ...[
               LuzPressable(
                 onPressed: () =>

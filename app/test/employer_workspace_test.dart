@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
+import 'package:luzhire/core/data/models.dart';
 import 'package:luzhire/core/widgets/widgets.dart';
 
 import 'support/candidate_fakes.dart';
@@ -233,6 +234,53 @@ void main() {
         findsOneWidget,
       );
     });
+  });
+
+  group('Company switcher', () {
+    FakeEmployerRepository twoCompanies() => FakeEmployerRepository()
+      ..companies.add(
+        const Company(
+          id: 'co-2',
+          name: 'Orbit Works',
+          slug: 'orbit-works',
+          verification: Verification.verified,
+        ),
+      );
+
+    testWidgets('is hidden for people in one company', (tester) async {
+      await _pump(tester, FakeEmployerRepository(), location: '/employer');
+      expect(find.byIcon(Icons.unfold_more), findsNothing);
+    });
+
+    for (final width in [1440.0, 800.0, 390.0]) {
+      testWidgets('switches the whole workspace at ${width.toInt()} px', (
+        tester,
+      ) async {
+        final router = await _pump(
+          tester,
+          twoCompanies(),
+          location: '/employer',
+          width: width,
+        );
+        // Phones: the switcher sits in the navigation drawer.
+        if (width < 600) {
+          await _tap(tester, find.byTooltip('Open navigation'));
+        }
+        expect(find.byIcon(Icons.unfold_more), findsOneWidget);
+
+        await _tap(tester, find.byIcon(Icons.unfold_more));
+        expect(find.text('Switch company'), findsOneWidget);
+        await _tap(tester, find.text('Orbit Works · Owner'));
+        expect(find.text('Switch company'), findsNothing);
+
+        // Every page now shows the picked company.
+        router.go('/employer/company');
+        await tester.pumpAndSettle();
+        expect(find.text('Orbit Works'), findsWidgets);
+        expect(find.text('Nimbus Labs'), findsNothing);
+        expect(tester.takeException(), isNull);
+      });
+    }
   });
 
   group('Analytics', () {

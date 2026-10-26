@@ -16,6 +16,8 @@ import '../../features/candidate/presentation/profile_page.dart';
 import '../../features/companies/presentation/companies_pages.dart';
 import '../../features/design_gallery/gallery_page.dart';
 import '../../features/employer/presentation/company_page.dart';
+import '../../features/employer/presentation/employer_common.dart'
+    show CompanySwitcher;
 import '../../features/employer/presentation/jobs_pages.dart';
 import '../../features/employer/presentation/pipeline_page.dart';
 import '../../features/employer/presentation/workspace_pages.dart';
@@ -183,6 +185,7 @@ final _routes = <RouteBase>[
       title: 'Employer',
       destinations: employerDestinations,
       location: state.uri.path,
+      switcher: ({required compact}) => CompanySwitcher(compact: compact),
       child: child,
     ),
     routes: [
