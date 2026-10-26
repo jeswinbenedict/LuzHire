@@ -45,6 +45,66 @@ final myResumesProvider = FutureProvider.autoDispose<List<Resume>>(
   (ref) => ref.watch(resumeRepositoryProvider).list(_uid(ref)),
 );
 
+/// The ten things `app.recompute_completion` scores (10 % each), most
+/// useful first: a resume and skills matter most when applying.
+enum ProfileStep {
+  resume,
+  skills,
+  headline,
+  location,
+  experience,
+  education,
+  bio,
+  photo,
+  phone,
+  link,
+}
+
+typedef ProfileStepItem = ({ProfileStep step, String label});
+
+/// What is still missing from the profile, or null while it loads.
+final profileNextStepsProvider = Provider.autoDispose<List<ProfileStepItem>?>((
+  ref,
+) {
+  final profile = ref.watch(myProfileProvider).value;
+  final skills = ref.watch(mySkillsProvider).value;
+  final resumes = ref.watch(myResumesProvider).value;
+  final edu = ref.watch(myEducationsProvider).value;
+  final exp = ref.watch(myExperiencesProvider).value;
+  if (profile == null ||
+      skills == null ||
+      resumes == null ||
+      edu == null ||
+      exp == null) {
+    return null;
+  }
+  bool blank(String? v) => (v ?? '').trim().isEmpty;
+  return [
+    if (!resumes.any((r) => r.isPrimary))
+      (step: ProfileStep.resume, label: 'Upload a resume'),
+    if (skills.length < 3)
+      (
+        step: ProfileStep.skills,
+        label: skills.length == 2
+            ? 'Add 1 more skill'
+            : 'Add ${3 - skills.length} more skills',
+      ),
+    if (blank(profile.headline))
+      (step: ProfileStep.headline, label: 'Add a headline'),
+    if (blank(profile.location))
+      (step: ProfileStep.location, label: 'Add your location'),
+    if (exp.isEmpty) (step: ProfileStep.experience, label: 'Add experience'),
+    if (edu.isEmpty) (step: ProfileStep.education, label: 'Add education'),
+    if (blank(profile.bio)) (step: ProfileStep.bio, label: 'Write a short bio'),
+    if (profile.avatarPath == null)
+      (step: ProfileStep.photo, label: 'Upload a photo'),
+    if (blank(profile.phone))
+      (step: ProfileStep.phone, label: 'Add a phone number'),
+    if (profile.links.values.every((v) => v.trim().isEmpty))
+      (step: ProfileStep.link, label: 'Add a link'),
+  ];
+});
+
 // ---------------------------------------------------------------- applications
 
 /// Live applications (Realtime): stage changes appear without a refresh.

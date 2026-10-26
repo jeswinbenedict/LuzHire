@@ -18,31 +18,43 @@ class CandidateArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final selected = selectedIndexFor(candidateDestinations, location);
-    return LuzContent(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('My LuzHire', style: context.luzText.h3),
-          const SizedBox(height: LuzSpace.md),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            clipBehavior: Clip.none,
-            padding: const EdgeInsets.all(4),
-            child: LuzSegmented<String>(
-              segments: [
-                for (final d in candidateDestinations)
-                  (value: d.path, label: d.label, icon: d.icon),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        LuzContent(
+          vertical: 0,
+          // Full content width, so the title lines up with the page below.
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: LuzSpace.lg),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('My LuzHire', style: context.luzText.h3),
+                const SizedBox(height: LuzSpace.md),
+                SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  clipBehavior: Clip.none,
+                  padding: const EdgeInsets.all(4),
+                  child: LuzSegmented<String>(
+                    segments: [
+                      for (final d in candidateDestinations)
+                        (value: d.path, label: d.label, icon: d.icon),
+                    ],
+                    selected: selected >= 0
+                        ? candidateDestinations[selected].path
+                        : '/me',
+                    onChanged: (path) => context.go(path),
+                  ),
+                ),
+                const SizedBox(height: LuzSpace.xs),
               ],
-              selected: selected >= 0
-                  ? candidateDestinations[selected].path
-                  : '/me',
-              onChanged: (path) => context.go(path),
             ),
           ),
-          const SizedBox(height: LuzSpace.lg),
-          Expanded(child: child),
-        ],
-      ),
+        ),
+        // Full width: each page centres its own content (CandidatePage).
+        Expanded(child: child),
+      ],
     );
   }
 }

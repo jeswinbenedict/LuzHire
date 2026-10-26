@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/material.dart';
 
 import '../theme/tokens.dart';
@@ -32,6 +34,15 @@ class LuzContent extends StatelessWidget {
     );
   }
 }
+
+/// Side padding that puts content in the same centred column as [LuzContent]
+/// inside a full-width scroll view (so its scrollbar sits at the window edge
+/// and card shadows are not clipped). [width] is the scroll view's width.
+double luzContentSide(
+  BuildContext context,
+  double width, {
+  double maxWidth = 1200,
+}) => math.max(context.breakpoint.gutter, (width - maxWidth) / 2);
 
 /// Responsive grid: 1 / 2 / 3 columns by the available width.
 class LuzGrid extends StatelessWidget {
