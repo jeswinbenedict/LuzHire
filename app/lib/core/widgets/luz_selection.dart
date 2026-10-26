@@ -27,71 +27,77 @@ class LuzSegmented<T> extends StatelessWidget {
     final p = context.luz;
     final zone = LuzZone.of(context);
     final radius = zone.isWorkspace ? LuzRadius.sm : LuzRadius.pill;
-    return LuzSurface(
-      depth: LuzDepth.insetSm,
-      radius: radius,
-      padding: const EdgeInsets.all(4),
-      // Scrolls instead of overflowing on narrow screens / large text.
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (final s in segments)
-              LuzPressable(
-                onPressed: () => onChanged(s.value),
-                radius: radius,
-                semanticLabel: s.label,
-                selected: s.value == selected,
-                builder: (context, pressed, _) {
-                  final on = s.value == selected;
-                  return LuzSurface(
-                    depth: on ? LuzDepth.raisedXs : LuzDepth.flat,
-                    radius: radius,
-                    color: on ? p.base : p.sunken,
-                    padding: EdgeInsets.symmetric(
-                      horizontal: zone.isWorkspace ? 12 : 16,
-                      vertical: zone.isWorkspace ? 7 : 9,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            if (s.icon != null) ...[
-                              Icon(
-                                s.icon,
-                                size: 16,
-                                color: on ? p.ink : p.muted,
+    // As wide as its options, at the start, even in a stretched column.
+    return Align(
+      alignment: AlignmentDirectional.centerStart,
+      widthFactor: 1,
+      heightFactor: 1,
+      child: LuzSurface(
+        depth: LuzDepth.insetSm,
+        radius: radius,
+        padding: const EdgeInsets.all(4),
+        // Scrolls instead of overflowing on narrow screens / large text.
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              for (final s in segments)
+                LuzPressable(
+                  onPressed: () => onChanged(s.value),
+                  radius: radius,
+                  semanticLabel: s.label,
+                  selected: s.value == selected,
+                  builder: (context, pressed, _) {
+                    final on = s.value == selected;
+                    return LuzSurface(
+                      depth: on ? LuzDepth.raisedXs : LuzDepth.flat,
+                      radius: radius,
+                      color: on ? p.base : p.sunken,
+                      padding: EdgeInsets.symmetric(
+                        horizontal: zone.isWorkspace ? 12 : 16,
+                        vertical: zone.isWorkspace ? 7 : 9,
+                      ),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              if (s.icon != null) ...[
+                                Icon(
+                                  s.icon,
+                                  size: 16,
+                                  color: on ? p.ink : p.muted,
+                                ),
+                                const SizedBox(width: 6),
+                              ],
+                              Text(
+                                s.label,
+                                style: context.luzText.label.copyWith(
+                                  color: on ? p.ink : p.muted,
+                                  fontWeight: on ? FontWeight.w600 : null,
+                                ),
                               ),
-                              const SizedBox(width: 6),
                             ],
-                            Text(
-                              s.label,
-                              style: context.luzText.label.copyWith(
-                                color: on ? p.ink : p.muted,
-                                fontWeight: on ? FontWeight.w600 : null,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 3),
-                        AnimatedContainer(
-                          duration: LuzMotion.toggle,
-                          width: on ? 18 : 0,
-                          height: 2,
-                          decoration: BoxDecoration(
-                            color: p.accent,
-                            borderRadius: BorderRadius.circular(1),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-          ],
+                          const SizedBox(height: 3),
+                          AnimatedContainer(
+                            duration: LuzMotion.toggle,
+                            width: on ? 18 : 0,
+                            height: 2,
+                            decoration: BoxDecoration(
+                              color: p.accent,
+                              borderRadius: BorderRadius.circular(1),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
         ),
       ),
     );

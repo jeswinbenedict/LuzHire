@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../theme/app_theme.dart';
 import '../theme/tokens.dart';
@@ -96,6 +97,16 @@ class _LuzDataTableState<T> extends State<LuzDataTable<T>> {
     );
   }
 
+  /// A gap between neighbouring columns, so a right-aligned number never
+  /// touches the next column ("3" + "19 Oct" read as "319 Oct").
+  Widget _cellPadding(int column, Widget child) => Padding(
+    padding: EdgeInsets.only(
+      left: column == 0 ? 0 : LuzSpace.sm,
+      right: column == widget.columns.length - 1 ? 0 : LuzSpace.sm,
+    ),
+    child: child,
+  );
+
   Widget _header(BuildContext context) {
     final p = context.luz;
     final t = context.luzText;
@@ -108,24 +119,27 @@ class _LuzDataTableState<T> extends State<LuzDataTable<T>> {
             for (var i = 0; i < widget.columns.length; i++)
               Expanded(
                 flex: widget.columns[i].flex,
-                child: _HeaderCell(
-                  label: widget.columns[i].label,
-                  numeric: widget.columns[i].numeric,
-                  sortable: widget.columns[i].sortKey != null,
-                  sorted: _sortCol == i
-                      ? (_asc ? 'ascending' : 'descending')
-                      : null,
-                  style: t.eyebrow.copyWith(color: p.muted),
-                  onTap: widget.columns[i].sortKey == null
-                      ? null
-                      : () => setState(() {
-                          if (_sortCol == i) {
-                            _asc = !_asc;
-                          } else {
-                            _sortCol = i;
-                            _asc = true;
-                          }
-                        }),
+                child: _cellPadding(
+                  i,
+                  _HeaderCell(
+                    label: widget.columns[i].label,
+                    numeric: widget.columns[i].numeric,
+                    sortable: widget.columns[i].sortKey != null,
+                    sorted: _sortCol == i
+                        ? (_asc ? 'ascending' : 'descending')
+                        : null,
+                    style: t.eyebrow.copyWith(color: p.muted),
+                    onTap: widget.columns[i].sortKey == null
+                        ? null
+                        : () => setState(() {
+                            if (_sortCol == i) {
+                              _asc = !_asc;
+                            } else {
+                              _sortCol = i;
+                              _asc = true;
+                            }
+                          }),
+                  ),
                 ),
               ),
           ],
@@ -171,14 +185,17 @@ class _LuzDataTableState<T> extends State<LuzDataTable<T>> {
                   for (final col in widget.columns)
                     Expanded(
                       flex: col.flex,
-                      child: Align(
-                        alignment: col.numeric
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: DefaultTextStyle.merge(
-                          style: t.bodySm.copyWith(color: p.ink),
-                          overflow: TextOverflow.ellipsis,
-                          child: col.cell(context, row),
+                      child: _cellPadding(
+                        widget.columns.indexOf(col),
+                        Align(
+                          alignment: col.numeric
+                              ? Alignment.centerRight
+                              : Alignment.centerLeft,
+                          child: DefaultTextStyle.merge(
+                            style: t.bodySm.copyWith(color: p.ink),
+                            overflow: TextOverflow.ellipsis,
+                            child: col.cell(context, row),
+                          ),
                         ),
                       ),
                     ),
@@ -329,6 +346,168 @@ class LuzKanbanColumn extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+/// Headline figures spread evenly across their card (two per row when
+/// narrow). Numbers use the figure style; words such as "No hires yet" use
+/// plain type so they don't read as a value.
+class LuzStatStrip extends StatelessWidget {
+  const LuzStatStrip({super.key, required this.stats});
+  final List<({String label, String value})> stats;
+
+  static final _number = RegExp(r'^[\d.,]+$');
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final t = context.luzText;
+    Widget stat(({String label, String value}) s) => Semantics(
+      label: '${s.label}: ${s.value}',
+      excludeSemantics: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(s.label, style: t.caption.copyWith(color: p.inkMuted)),
+          const SizedBox(height: LuzSpace.xxs),
+          Text(
+            s.value,
+            style: _number.hasMatch(s.value)
+                ? t.wsTitle.copyWith(fontFamily: t.mono.fontFamily)
+                : t.wsSection.copyWith(color: p.inkMuted),
+          ),
+        ],
+      ),
+    );
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        final perRow = c.maxWidth >= stats.length * 140
+            ? stats.length
+            : (c.maxWidth >= 280 ? 2 : 1);
+        return Column(
+          spacing: LuzSpace.md,
+          children: [
+            for (var i = 0; i < stats.length; i += perRow)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                spacing: LuzSpace.md,
+                children: [
+                  for (var j = i; j < i + perRow; j++)
+                    Expanded(
+                      child: j < stats.length
+                          ? stat(stats[j])
+                          : const SizedBox.shrink(),
+                    ),
+                ],
+              ),
+          ],
+        );
+      },
+    );
+  }
+}
+
+/// Counts per week for the last 12 weeks, oldest first, every week shown
+/// (an empty week is a thin baseline), so one busy week is one bar of
+/// twelve, not a bar the width of the card.
+class LuzWeekBars extends StatelessWidget {
+  const LuzWeekBars({
+    super.key,
+    required this.weeks,
+    required this.unit,
+    this.barHeight = 100,
+    this.now,
+  });
+
+  /// Week starts (as `date_trunc('week')` returns them) with their counts.
+  final List<({DateTime week, int count})> weeks;
+
+  /// What is counted, plural ("applications", "sign-ups").
+  final String unit;
+  final double barHeight;
+
+  /// Today, for tests.
+  final DateTime? now;
+
+  @override
+  Widget build(BuildContext context) {
+    final p = context.luz;
+    final t = context.luzText;
+    final today = now ?? DateTime.now();
+    final monday = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).subtract(Duration(days: today.weekday - 1));
+    final slots = [
+      for (var i = 11; i >= 0; i--) monday.subtract(Duration(days: 7 * i)),
+    ];
+    // Same week if within half a week (UTC week starts vs local days).
+    int countFor(DateTime start) => weeks
+        .where((w) => w.week.toLocal().difference(start).inHours.abs() < 84)
+        .fold(0, (sum, w) => sum + w.count);
+    final counts = [for (final s in slots) countFor(s)];
+    final max = counts.fold(1, (a, b) => b > a ? b : a);
+    final caption = MediaQuery.textScalerOf(context)
+        .scale((t.caption.fontSize ?? 12) * (t.caption.height ?? 1.4));
+
+    return LayoutBuilder(
+      builder: (context, c) {
+        // Narrow: a date under every third bar, so labels never collide.
+        final every = c.maxWidth / 12 < 40 ? 3 : 1;
+        return SizedBox(
+          height: barHeight + 2 * caption + 8,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              for (var i = 0; i < 12; i++)
+                Expanded(
+                  child: Semantics(
+                    label:
+                        'Week of ${DateFormat('d MMM').format(slots[i])}: '
+                        '${counts[i]} $unit',
+                    excludeSemantics: true,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 3),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Text(
+                            counts[i] == 0 ? '' : '${counts[i]}',
+                            style: t.caption,
+                            maxLines: 1,
+                          ),
+                          Container(
+                            height: counts[i] == 0
+                                ? 2
+                                : barHeight * counts[i] / max,
+                            decoration: BoxDecoration(
+                              color: counts[i] == 0 ? p.hairline : p.accent,
+                              borderRadius: const BorderRadius.vertical(
+                                top: Radius.circular(4),
+                              ),
+                            ),
+                          ),
+                          Text(
+                            (11 - i) % every == 0
+                                ? DateFormat('d/M').format(slots[i])
+                                : '',
+                            style: t.caption.copyWith(color: p.muted),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.visible,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

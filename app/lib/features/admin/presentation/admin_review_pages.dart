@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/data/enums.dart';
@@ -86,8 +85,8 @@ class AdminOverviewPage extends ConsumerWidget {
           onRetry: () => ref.invalidate(platformStatsProvider),
           data: (s) => _Overview(stats: s),
         ),
+        // WorkspacePage spaces its children.
         const _ImportsCard(),
-        const SizedBox(height: LuzSpace.lg),
         const _ErrorsCard(),
       ],
     );
@@ -132,10 +131,6 @@ class _Overview extends StatelessWidget {
       ('Live jobs', s.jobs['published'] ?? 0),
       ('Applications', s.applications),
     ];
-    final maxWeek = s.signupsByWeek.fold<int>(
-      1,
-      (m, w) => w.count > m ? w.count : m,
-    );
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -181,28 +176,8 @@ class _Overview extends StatelessWidget {
         ),
         const SizedBox(height: LuzSpace.lg),
         LuzCard(
-          child: Wrap(
-            spacing: LuzSpace.xl,
-            runSpacing: LuzSpace.md,
-            children: [
-              for (final n in numbers)
-                Semantics(
-                  label: '${n.$1}: ${n.$2}',
-                  excludeSemantics: true,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(n.$1, style: t.caption.copyWith(color: p.inkMuted)),
-                      Text(
-                        '${n.$2}',
-                        style: t.wsTitle.copyWith(
-                          fontFamily: t.mono.fontFamily,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
+          child: LuzStatStrip(
+            stats: [for (final n in numbers) (label: n.$1, value: '${n.$2}')],
           ),
         ),
         const SizedBox(height: LuzSpace.lg),
@@ -215,56 +190,7 @@ class _Overview extends StatelessWidget {
               if (s.signupsByWeek.isEmpty)
                 Text('No sign-ups yet.', style: t.bodySm)
               else
-                SizedBox(
-                  // 100 px of bars plus two caption lines, which grow with
-                  // the OS text size.
-                  height:
-                      100 +
-                      2 *
-                          MediaQuery.textScalerOf(context).scale(
-                            (t.caption.fontSize ?? 12) *
-                                (t.caption.height ?? 1.4),
-                          ) +
-                      8,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      for (final w in s.signupsByWeek)
-                        Expanded(
-                          child: Semantics(
-                            label:
-                                'Week of ${DateFormat('d MMM').format(w.week)}: '
-                                '${w.count} sign-ups',
-                            excludeSemantics: true,
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 3,
-                              ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  Text('${w.count}', style: t.caption),
-                                  Container(
-                                    height: 100 * w.count / maxWeek,
-                                    decoration: BoxDecoration(
-                                      color: p.accent,
-                                      borderRadius: const BorderRadius.vertical(
-                                        top: Radius.circular(4),
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    DateFormat('d/M').format(w.week),
-                                    style: t.caption.copyWith(color: p.muted),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
+                LuzWeekBars(weeks: s.signupsByWeek, unit: 'sign-ups'),
             ],
           ),
         ),

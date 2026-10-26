@@ -223,6 +223,17 @@ class _Sidebar extends StatelessWidget {
               ],
             ),
           ),
+          // The drawer (phones): theme here instead of the top bar.
+          if (onNavigate != null)
+            const Padding(
+              padding: EdgeInsets.fromLTRB(
+                LuzSpace.sm,
+                LuzSpace.sm,
+                LuzSpace.sm,
+                0,
+              ),
+              child: ThemeModeSelector(),
+            ),
           if (onToggleCollapsed != null)
             Padding(
               padding: EdgeInsets.symmetric(
@@ -415,8 +426,11 @@ class _TopBar extends StatelessWidget {
               ),
               const SizedBox(width: LuzSpace.sm),
             ],
-            const ThemeSwitchButton(),
-            const SizedBox(width: LuzSpace.sm),
+            // Phones: in the drawer, so the page title has room.
+            if (!compact) ...[
+              const ThemeSwitchButton(),
+              const SizedBox(width: LuzSpace.sm),
+            ],
             const NotificationBell(),
             const SizedBox(width: LuzSpace.sm),
             const AccountArea(compact: true),

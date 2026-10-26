@@ -155,7 +155,7 @@ class _JobBody extends ConsumerWidget {
                       const SizedBox(height: LuzSpace.md),
                       _Header(job: job),
                       const SizedBox(height: LuzSpace.lg),
-                      _Facts(job: job),
+                      _Facts(job: job, showSalary: true),
                       const SizedBox(height: LuzSpace.lg),
                       main,
                     ],
@@ -505,8 +505,11 @@ class _ApplyPanel extends StatelessWidget {
 
 /// Posted, deadline and applicant count. Every number comes from the job row.
 class _Facts extends StatelessWidget {
-  const _Facts({required this.job});
+  const _Facts({required this.job, this.showSalary = false});
   final Job job;
+
+  /// Phones: no apply panel shows the salary, so it leads the facts.
+  final bool showSalary;
 
   @override
   Widget build(BuildContext context) {
@@ -524,13 +527,23 @@ class _Facts extends StatelessWidget {
           Expanded(
             child: Text(label, style: t.bodySm.copyWith(color: p.inkMuted)),
           ),
-          Text(value, style: t.label),
+          const SizedBox(width: LuzSpace.sm),
+          // Wraps with large text instead of running off the screen.
+          Flexible(
+            child: Text(value, style: t.label, textAlign: TextAlign.end),
+          ),
         ],
       ),
     );
 
     return Column(
       children: [
+        if (showSalary)
+          fact(
+            Icons.payments_outlined,
+            'Salary',
+            formatSalary(job) ?? 'Not disclosed',
+          ),
         if (job.publishedAt != null)
           fact(Icons.schedule, 'Posted', formatRelative(job.publishedAt!)),
         if (deadline != null)

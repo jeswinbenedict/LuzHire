@@ -127,7 +127,11 @@ class _AdminUsersPageState extends ConsumerState<AdminUsersPage> {
               LuzColumn(
                 label: 'Role',
                 sortKey: (u) => u.role.index,
-                cell: (_, u) => Text(u.role.dbValue),
+                cell: (_, u) => Text(switch (u.role) {
+                  AppRole.candidate => 'Candidate',
+                  AppRole.employer => 'Employer',
+                  AppRole.admin => 'Admin',
+                }),
               ),
               LuzColumn(
                 label: 'Status',

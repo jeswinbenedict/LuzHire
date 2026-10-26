@@ -433,7 +433,8 @@ class AccountPage extends ConsumerWidget {
       padding: const EdgeInsets.all(LuzSpace.lg),
       child: Center(
         child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 560),
+          // Same column as Notification settings, one step deeper.
+          constraints: const BoxConstraints(maxWidth: 640),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
