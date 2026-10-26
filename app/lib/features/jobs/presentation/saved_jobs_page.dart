@@ -21,40 +21,46 @@ class SavedJobsPage extends ConsumerWidget {
     final t = context.luzText;
     final saved = ref.watch(savedJobsProvider);
 
-    return SingleChildScrollView(
-      padding: const EdgeInsets.only(bottom: LuzSpace.xxl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Jobs you bookmarked. Closed jobs drop off this list.',
-            style: t.body.copyWith(color: p.inkMuted),
+    // Full width like the other /me pages (candidatePagePadding).
+    return LayoutBuilder(
+      builder: (context, c) {
+        final side = luzContentSide(context, c.maxWidth);
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(side, LuzSpace.md, side, LuzSpace.xxl),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Jobs you bookmarked. Closed jobs drop off this list.',
+                style: t.body.copyWith(color: p.inkMuted),
+              ),
+              const SizedBox(height: LuzSpace.xl),
+              saved.when(
+                loading: () => const JobCardSkeleton(),
+                error: (e, _) => JobBoardError(
+                  error: mapDbError(e),
+                  onRetry: () => ref.invalidate(savedJobIdsProvider),
+                ),
+                data: (jobs) => jobs.isEmpty
+                    ? LuzEmptyState(
+                        icon: Icons.bookmark_border,
+                        title: 'No saved jobs yet',
+                        message: 'Tap the bookmark on any job to keep it here.',
+                        actionLabel: 'Browse jobs',
+                        onAction: () => context.go('/jobs'),
+                      )
+                    : LuzGrid(
+                        maxColumns: 2,
+                        equalHeights: true,
+                        children: [
+                          for (final j in jobs) JobCard(job: j, uniform: true),
+                        ],
+                      ),
+              ),
+            ],
           ),
-          const SizedBox(height: LuzSpace.xl),
-          saved.when(
-            loading: () => const JobCardSkeleton(),
-            error: (e, _) => JobBoardError(
-              error: mapDbError(e),
-              onRetry: () => ref.invalidate(savedJobIdsProvider),
-            ),
-            data: (jobs) => jobs.isEmpty
-                ? LuzEmptyState(
-                    icon: Icons.bookmark_border,
-                    title: 'No saved jobs yet',
-                    message: 'Tap the bookmark on any job to keep it here.',
-                    actionLabel: 'Browse jobs',
-                    onAction: () => context.go('/jobs'),
-                  )
-                : LuzGrid(
-                    maxColumns: 2,
-                    equalHeights: true,
-                    children: [
-                      for (final j in jobs) JobCard(job: j, uniform: true),
-                    ],
-                  ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

@@ -3,24 +3,36 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/data/failures.dart';
+import '../../../core/layout/content.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
 import '../../jobs/presentation/job_search_page.dart' show JobBoardError;
 
-/// Scrollable body for /me/* pages (CandidateArea supplies width + tabs).
+/// Scrollable body for /me/* pages (CandidateArea supplies the title + tabs).
 class CandidatePage extends StatelessWidget {
   const CandidatePage({super.key, required this.children});
   final List<Widget> children;
 
   @override
-  Widget build(BuildContext context) => SingleChildScrollView(
-    padding: const EdgeInsets.only(bottom: LuzSpace.xxl),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: children,
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, c) => SingleChildScrollView(
+      padding: candidatePagePadding(context, c.maxWidth),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: children,
+      ),
     ),
   );
+}
+
+/// /me pages scroll across the full window width, so the scrollbar sits at
+/// the window edge (not over the cards) and card shadows are not clipped.
+/// Their content stays in the centred column of the title and tabs above.
+EdgeInsets candidatePagePadding(BuildContext context, double width) {
+  final side = luzContentSide(context, width);
+  // Top: room for the first card's light edge, which the viewport would clip.
+  return EdgeInsets.fromLTRB(side, LuzSpace.md, side, LuzSpace.xxl);
 }
 
 /// Raised card with a heading and an optional trailing action.
@@ -46,19 +58,40 @@ class SectionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              if (icon != null) ...[
-                Icon(icon, size: 20, color: p.accent),
-                const SizedBox(width: LuzSpace.xs),
-              ],
-              Expanded(
-                child: Semantics(header: true, child: Text(title, style: t.h4)),
+          // One height with or without an action link (a 48 px touch
+          // target), so titles of cards side by side line up. With large
+          // text the link moves under the title.
+          Container(
+            constraints: const BoxConstraints(minHeight: 48),
+            alignment: Alignment.centerLeft,
+            child: SizedBox(
+              width: double.infinity,
+              child: Wrap(
+                alignment: WrapAlignment.spaceBetween,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                spacing: LuzSpace.md,
+                children: [
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (icon != null) ...[
+                        Icon(icon, size: 20, color: p.accent),
+                        const SizedBox(width: LuzSpace.xs),
+                      ],
+                      Flexible(
+                        child: Semantics(
+                          header: true,
+                          child: Text(title, style: t.h4),
+                        ),
+                      ),
+                    ],
+                  ),
+                  ?action,
+                ],
               ),
-              ?action,
-            ],
+            ),
           ),
-          const SizedBox(height: LuzSpace.md),
+          const SizedBox(height: LuzSpace.sm),
           child,
         ],
       ),

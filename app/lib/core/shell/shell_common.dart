@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../features/auth/application/auth_controller.dart';
 import '../../features/auth/domain/auth_state.dart';
+import '../data/format.dart';
 import '../layout/input_mode.dart';
 import '../router/auth_redirect.dart';
 import '../theme/app_theme.dart';
@@ -347,7 +348,7 @@ class AccountArea extends ConsumerWidget {
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 140),
                       child: Text(
-                        user.displayName,
+                        friendlyName(user.displayName),
                         overflow: TextOverflow.ellipsis,
                         style: context.luzText.label,
                       ),

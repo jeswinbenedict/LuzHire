@@ -63,6 +63,20 @@ String _stripUnit(String lo, String hi) {
 String _trim(double v) =>
     v == v.roundToDouble() ? v.toStringAsFixed(0) : v.toStringAsFixed(1);
 
+/// A name as people write it: "JESWIN BENEDICT" (typed with caps lock, or
+/// copied from a form) becomes "Jeswin Benedict". Mixed case is kept as
+/// typed ("McKenzie", "de Souza").
+String friendlyName(String name) {
+  final trimmed = name.trim();
+  if (trimmed.toUpperCase() != trimmed || trimmed.toLowerCase() == trimmed) {
+    return trimmed;
+  }
+  return trimmed
+      .split(RegExp(r'\s+'))
+      .map((w) => w.length <= 1 ? w : w[0] + w.substring(1).toLowerCase())
+      .join(' ');
+}
+
 /// "Just now", "5 min ago", "3 h ago", "2 days ago", then "12 Oct 2026".
 String formatRelative(DateTime when, {DateTime? now}) {
   final n = now ?? DateTime.now();

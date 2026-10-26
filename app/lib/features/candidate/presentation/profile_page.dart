@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/data/failures.dart';
 import '../../../core/data/models.dart';
+import '../../../core/layout/content.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
 import '../../../core/widgets/widgets.dart';
@@ -47,7 +48,9 @@ class ProfilePage extends ConsumerWidget {
       onRetry: () => ref.invalidate(myProfileProvider),
       data: (p) => LayoutBuilder(
         builder: (context, c) {
-          final wide = c.maxWidth >= 1000;
+          // The page scrolls full width (CandidatePage); measure its column.
+          final wide =
+              c.maxWidth - 2 * luzContentSide(context, c.maxWidth) >= 1000;
           final left = [_StrengthCard(profile: p), _BasicsCard(profile: p)];
           final right = const [
             _ResumesCard(),
@@ -61,16 +64,17 @@ class ProfilePage extends ConsumerWidget {
           if (!wide) {
             return CandidatePage(children: spaced([...left, ...right]));
           }
-          return SingleChildScrollView(
-            padding: const EdgeInsets.only(bottom: LuzSpace.xxl),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(child: Column(children: spaced(left))),
-                const SizedBox(width: LuzSpace.lg),
-                Expanded(child: Column(children: spaced(right))),
-              ],
-            ),
+          return CandidatePage(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: Column(children: spaced(left))),
+                  const SizedBox(width: LuzSpace.lg),
+                  Expanded(child: Column(children: spaced(right))),
+                ],
+              ),
+            ],
           );
         },
       ),
@@ -88,23 +92,9 @@ class _StrengthCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final p = context.luz;
     final t = context.luzText;
-    final skills = ref.watch(mySkillsProvider).value ?? const [];
-    final resumes = ref.watch(myResumesProvider).value ?? const [];
-    final edu = ref.watch(myEducationsProvider).value ?? const [];
-    final exp = ref.watch(myExperiencesProvider).value ?? const [];
     // Same ten items as app.recompute_completion (10 % each).
-    final missing = [
-      if ((profile.headline ?? '').isEmpty) 'Add a headline',
-      if ((profile.bio ?? '').isEmpty) 'Write a short bio',
-      if ((profile.location ?? '').isEmpty) 'Add your location',
-      if (profile.avatarPath == null) 'Upload a photo',
-      if ((profile.phone ?? '').isEmpty) 'Add a phone number',
-      if (profile.links.values.every((v) => v.trim().isEmpty)) 'Add a link',
-      if (edu.isEmpty) 'Add education',
-      if (exp.isEmpty) 'Add experience',
-      if (skills.length < 3) 'Add ${3 - skills.length} more skills',
-      if (!resumes.any((r) => r.isPrimary)) 'Upload a resume',
-    ];
+    final steps = ref.watch(profileNextStepsProvider);
+    final missing = [for (final s in steps ?? const []) s.label];
 
     return SectionCard(
       title: 'Profile strength',
@@ -132,7 +122,7 @@ class _StrengthCard extends ConsumerWidget {
                   ),
               ],
             ),
-          ] else ...[
+          ] else if (steps != null) ...[
             const SizedBox(height: LuzSpace.sm),
             Text(
               'Your profile is complete. Employers see everything they need.',
