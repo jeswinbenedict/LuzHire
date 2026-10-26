@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:luzhire/core/data/enums.dart';
@@ -382,6 +383,52 @@ void main() {
         expect(find.textContaining('new job'), findsNothing);
       });
     }
+
+    testWidgets('starts counting again on the next page and search', (
+      tester,
+    ) async {
+      final jobs = FakeJobsRepository()..newSince = 4;
+      final router = await _pump(
+        tester,
+        location: '/',
+        width: 1280,
+        jobs: jobs,
+      );
+      await tester.pump(newJobsPollInterval);
+      await tester.pump();
+      expect(find.text('4 new jobs · Show'), findsOneWidget);
+
+      // Find jobs loads the newest jobs itself: nothing is new there yet.
+      router.go('/jobs');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('new job'), findsNothing);
+
+      await tester.pump(newJobsPollInterval);
+      await tester.pump();
+      expect(find.text('4 new jobs · Show'), findsOneWidget);
+
+      // Another search loads fresh results too.
+      router.go('/jobs?q=intern');
+      await tester.pumpAndSettle();
+      expect(find.textContaining('new job'), findsNothing);
+    });
+
+    testWidgets('gets a row of its own on phones', (tester) async {
+      final jobs = FakeJobsRepository()..newSince = 12;
+      await _pump(tester, location: '/jobs', width: 390, jobs: jobs);
+      await tester.pump(newJobsPollInterval);
+      await tester.pump();
+      final pill = find.text('12 new jobs · Show');
+      expect(pill, findsOneWidget);
+      // Below the Map and Filters row, with its whole label on screen.
+      expect(
+        tester.getTopLeft(pill).dy,
+        greaterThan(tester.getBottomLeft(find.text('Filters')).dy),
+      );
+      final label = tester.renderObject<RenderParagraph>(pill);
+      expect(label.didExceedMaxLines, isFalse);
+      expect(tester.takeException(), isNull);
+    });
 
     testWidgets('names a single job in the singular', (tester) async {
       final jobs = FakeJobsRepository()..newSince = 1;

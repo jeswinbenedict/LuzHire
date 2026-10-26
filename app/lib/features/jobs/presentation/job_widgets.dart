@@ -497,23 +497,52 @@ class JobFilters extends ConsumerWidget {
 /// "↑ 5 new jobs · Show": appears when jobs arrive while the page is open
 /// (checked once a minute) and reloads the list from the top when tapped.
 /// Screen readers announce it when it appears.
-class NewJobsBanner extends ConsumerWidget {
-  const NewJobsBanner({super.key, required this.onShow});
+///
+/// Counts from when it is first shown: the list beside it was just loaded,
+/// so jobs counted on the previous page (Home → Find jobs) are not "new"
+/// here. Give it a new key when the list reloads for another search.
+class NewJobsBanner extends ConsumerStatefulWidget {
+  const NewJobsBanner({
+    super.key,
+    required this.onShow,
+    this.padding = EdgeInsets.zero,
+  });
   final VoidCallback onShow;
 
+  /// Space around the pill, only while it shows (a row of its own adds no
+  /// gap when there is nothing new).
+  final EdgeInsets padding;
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<NewJobsBanner> createState() => _NewJobsBannerState();
+}
+
+class _NewJobsBannerState extends ConsumerState<NewJobsBanner> {
+  @override
+  void initState() {
+    super.initState();
+    // After this frame: providers can't change while widgets build.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) ref.read(newJobsProvider.notifier).reset();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final n = ref.watch(newJobsProvider);
     if (n == 0) return const SizedBox.shrink();
-    return Semantics(
-      liveRegion: true,
-      child: LuzButton.accent(
-        label: '${n == 1 ? '1 new job' : '$n new jobs'} · Show',
-        icon: Icons.arrow_upward,
-        onPressed: () {
-          ref.read(newJobsProvider.notifier).reset();
-          onShow();
-        },
+    return Padding(
+      padding: widget.padding,
+      child: Semantics(
+        liveRegion: true,
+        child: LuzButton.accent(
+          label: '${n == 1 ? '1 new job' : '$n new jobs'} · Show',
+          icon: Icons.arrow_upward,
+          onPressed: () {
+            ref.read(newJobsProvider.notifier).reset();
+            widget.onShow();
+          },
+        ),
       ),
     );
   }
