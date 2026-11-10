@@ -1,12 +1,14 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/config/app_config.dart';
+import '../../../core/config/app_module.dart';
 import '../../../core/data/enums.dart';
 import '../../../core/data/failures.dart';
 import '../../notifications/application/notification_providers.dart'
     show forgetPushDevice;
 import '../data/account_api.dart';
 import '../data/auth_gateway.dart';
+import '../data/local_auth_gateway.dart';
 import '../domain/auth_state.dart';
 
 /// Overridden in main() with the config the services were started with.
@@ -16,10 +18,17 @@ final appConfigProvider = Provider<AppConfig>(
 
 final authGatewayProvider = Provider<AuthGateway>((ref) {
   final config = ref.watch(appConfigProvider);
-  return config.isAuthConfigured
-      ? FirebaseAuthGateway()
-      : const DisabledAuthGateway();
+  if (!config.isAuthConfigured) return const DisabledAuthGateway();
+  if (config.usesLocalAuth) {
+    return LocalAuthGateway.instance ??= LocalAuthGateway(config);
+  }
+  return FirebaseAuthGateway();
 });
+
+/// The module this page serves (one role per port in the offline demo).
+final moduleConfigProvider = Provider<ModuleConfig>(
+  (ref) => ModuleConfig.fromPage(),
+);
 
 final accountApiProvider = Provider<AccountApi>(
   (ref) => AccountApi(ref.watch(appConfigProvider)),
@@ -52,6 +61,7 @@ class AuthController extends Notifier<AuthState> {
   Future<void> signIn(String email, String password) => _run(() async {
     await _gateway.signInWithEmail(email, password);
     await _sync();
+    await _enforceModule();
   });
 
   /// Creates the Firebase account, sets the role + profile through the API,
@@ -62,6 +72,7 @@ class AuthController extends Notifier<AuthState> {
     required String displayName,
     required AppRole role,
   }) => _run(() async {
+    _checkModuleRole(role);
     await _gateway.signUpWithEmail(
       email: email,
       password: password,
@@ -79,6 +90,7 @@ class AuthController extends Notifier<AuthState> {
   Future<void> signInWithGoogle() => _run(() async {
     await _gateway.signInWithGoogle();
     await _sync();
+    await _enforceModule();
   });
 
   /// For accounts without a role yet (first Google sign-in, or a sign-up
@@ -120,6 +132,41 @@ class AuthController extends Notifier<AuthState> {
     await forgetPushDevice(ref);
     await _gateway.signOut();
     state = const SignedOut();
+  }
+
+  /// On a single-role module (offline demo ports), other roles are sent to
+  /// their own module instead of signing in here.
+  Future<void> _enforceModule() async {
+    final role = switch (state) {
+      SignedIn(:final user) ||
+      NeedsEmailVerification(:final user) => user.appRole,
+      _ => null,
+    };
+    if (role == null) return;
+    try {
+      _checkModuleRole(role);
+    } on AppFailure {
+      await _gateway.signOut();
+      state = const SignedOut();
+      rethrow;
+    }
+  }
+
+  void _checkModuleRole(AppRole role) {
+    final modules = ref.read(moduleConfigProvider);
+    if (modules.allows(role)) return;
+    final target = AppModule.forRole(role);
+    final link = modules.links[target];
+    throw AppFailure(
+      'This is the ${modules.module.label} module. '
+      '${switch (role) {
+        AppRole.candidate => 'Candidate',
+        AppRole.employer => 'Recruiter',
+        AppRole.admin => 'Admin',
+      }} accounts sign in to the ${target.label} module'
+      '${link == null ? '' : ' at $link'}.',
+      code: 'auth/wrong-module',
+    );
   }
 
   Future<void> _bootstrap(AppRole role, String? displayName) async {

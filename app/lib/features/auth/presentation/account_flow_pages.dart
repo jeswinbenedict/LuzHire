@@ -31,11 +31,30 @@ class _VerifyEmailPageState extends ConsumerState<VerifyEmailPage> {
   bool _busy = false;
   int _cooldown = 0;
   Timer? _timer;
+  Timer? _poll;
+
+  @override
+  void initState() {
+    super.initState();
+    // Moves on by itself once the link is opened (often in another tab), so
+    // nobody is left waiting on this page after confirming.
+    _poll = Timer.periodic(const Duration(seconds: 5), (_) => _checkQuietly());
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _poll?.cancel();
     super.dispose();
+  }
+
+  Future<void> _checkQuietly() async {
+    if (_busy || !mounted) return;
+    try {
+      await ref.read(authControllerProvider.notifier).checkEmailVerified();
+    } catch (_) {
+      // Offline or a flaky network: the button still reports errors.
+    }
   }
 
   Future<void> _check() async {

@@ -265,6 +265,8 @@ To add a company, check that its board lists India roles and add `{ token, name,
 - Handover docs: README, setup guide, demo accounts, architecture + design docs, and a screenshot set for the project report.
 - Optional: Android APK/AAB and iOS TestFlight builds.
 
+**Offline demo (2026-11-11):** `docs/OFFLINE_DEMO.md`. `npm run demo` serves the Candidate (8081), Recruiter (8082) and Admin (8083) modules from one local server and the local Supabase in Docker, with offline sign-in (`api/_lib/local-identity.ts`, `AUTH_PROVIDER=local`). Same app and API code as production; verified end to end (apply, review, shortlist, offer, hire, admin) with no internet requests. Admins can also confirm a user's email by hand (`/api/admin/users/:id/verify-email`) for verification emails that never arrive.
+
 **Status (2026-10-27):** production runs on Vercel with security headers and an enforced CSP, a smoke test after every deploy, and an uptime check every 30 minutes. `docs/RELEASE.md` (release checklist, rollback plan, launch sign-off) and `docs/HANDOVER.md` (handover guide) are on main (#37), with a visual review of 30 more screens and its fixes (#43) and the report screenshot set in `docs/screenshots/` (#44). Tests on main: 385 Flutter (including 67 keyboard checks), 109 API and 183 pgTAP assertions.
 **Still needed from the owner** (docs/RELEASE.md §6): choose the Supabase plan, optionally add a domain, create the first admin (`ADMIN_EMAILS`), do a live end-to-end hire with two accounts, check emails in Outlook, do a screen-reader pass, and optionally build Android. Then sign off.
 

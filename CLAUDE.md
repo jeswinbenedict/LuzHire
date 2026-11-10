@@ -3,6 +3,7 @@
 LuzHire is a job portal (successor to CareerConnect): candidates, employers and admins, with realtime updates.
 Read these first:
 - `docs/HANDOVER.md`: what is where, operations and open items
+- `docs/OFFLINE_DEMO.md`: the offline localhost demo (three module ports, local database and sign-in)
 - `docs/ARCHITECTURE.md`: the architecture, data model, RLS rules and phased build plan (§10)
 - `DESIGN.md`: the design system (accessible neumorphism, Spotlight and Workspace zones, light and dark themes). Every UI change must use its tokens.
 
@@ -33,7 +34,7 @@ npx supabase db reset     # apply migrations + seed
 npx supabase test db      # pgTAP RLS tests
 npm run db:check          # same migrations + pgTAP tests in PGlite, no Docker needed
 ```
-The Flutter SDK (3.47.7 or newer) is on the user PATH: `C:\Users\SUMA\dev\flutter\bin` on the old laptop, `C:\Users\jeswi\OneDrive\Desktop\flutter_windows_3.38.4-stable\flutter\bin` on the new one.
+The Flutter SDK (3.47.7 or newer) is on the user PATH: `C:\Users\SUMA\dev\flutter\bin` on the old laptop, `C:\Users\jeswi\dev\flutter\bin` on the new one (reinstalled 2026-11-11).
 
 ## Conventions
 - **Flutter:** feature-first (`lib/features/<feature>/{data,domain,presentation}`), shared code in `lib/core/`. Use the Riverpod providers for state. Models use freezed. Never hardcode colours, radii, shadows or text styles. Use `LuzTokens` / `context.luz` and the `Luz*` widgets in `lib/core/widgets/`.

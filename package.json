@@ -12,7 +12,10 @@
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:test": "supabase test db",
-    "db:check": "node tools/db-check/run.mjs"
+    "db:check": "node tools/db-check/run.mjs",
+    "demo": "node tools/local/demo.mjs start",
+    "demo:setup": "node tools/local/demo.mjs setup",
+    "demo:reset": "node tools/local/demo.mjs reset"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.10",

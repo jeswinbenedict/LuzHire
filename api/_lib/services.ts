@@ -7,6 +7,7 @@ import { getAuth, type Auth } from 'firebase-admin/auth';
 import { getMessaging, type Messaging } from 'firebase-admin/messaging';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { HttpError } from './http.js';
+import { LocalIdentity } from './local-identity.js';
 
 function required(name: string): string {
   const value = process.env[name];
@@ -46,6 +47,26 @@ let auth: Auth | undefined;
 export function firebaseAuth(): Auth {
   auth ??= getAuth(firebaseApp());
   return auth;
+}
+
+/** What the account rules need from the identity provider. */
+export type Identity = Pick<Auth, 'verifyIdToken' | 'setCustomUserClaims' | 'revokeRefreshTokens'> & {
+  updateUser(uid: string, change: { disabled?: boolean; emailVerified?: boolean }): Promise<unknown>;
+};
+
+let local: LocalIdentity | undefined;
+/** The offline demo's identity store (LUZ_LOCAL_AUTH=1, never on Vercel). */
+export function localIdentity(): LocalIdentity {
+  if (process.env.VERCEL) {
+    throw new HttpError(503, 'not_configured', 'Local sign-in is not available on Vercel.');
+  }
+  local ??= new LocalIdentity(required('LUZ_LOCAL_USERS'), required('LUZ_LOCAL_JWT_SECRET'));
+  return local;
+}
+
+/** Firebase Auth in production; the local store in the offline demo. */
+export function identity(): Identity {
+  return process.env.LUZ_LOCAL_AUTH === '1' ? (localIdentity() as unknown as Identity) : firebaseAuth();
 }
 
 let messaging: Messaging | undefined;

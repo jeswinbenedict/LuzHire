@@ -22,6 +22,7 @@ class AppConfig {
     required this.firebaseIosAppId,
     required this.firebaseIosBundleId,
     this.firebaseVapidKey = '',
+    this.authProvider = 'firebase',
   });
 
   factory AppConfig.fromEnvironment() => const AppConfig(
@@ -41,6 +42,10 @@ class AppConfig {
     firebaseIosAppId: String.fromEnvironment('FIREBASE_IOS_APP_ID'),
     firebaseIosBundleId: String.fromEnvironment('FIREBASE_IOS_BUNDLE_ID'),
     firebaseVapidKey: String.fromEnvironment('FIREBASE_VAPID_KEY'),
+    authProvider: String.fromEnvironment(
+      'AUTH_PROVIDER',
+      defaultValue: 'firebase',
+    ),
   );
 
   final String env;
@@ -63,6 +68,12 @@ class AppConfig {
   /// Messaging. Empty = the Firebase SDK's built-in key.
   final String firebaseVapidKey;
 
+  /// `firebase` (production) or `local`: the offline demo's own sign-in
+  /// server (docs/OFFLINE_DEMO.md), which needs no internet.
+  final String authProvider;
+
+  bool get usesLocalAuth => authProvider == 'local';
+
   static bool _real(String v) => v.isNotEmpty && !v.startsWith('replace-');
 
   String get _platformAppId {
@@ -83,7 +94,8 @@ class AppConfig {
       _real(supabaseUrl) && _real(supabasePublishableKey);
 
   /// Auth needs both: Firebase signs in, Supabase stores the profile.
-  bool get isAuthConfigured => isFirebaseConfigured && isSupabaseConfigured;
+  bool get isAuthConfigured =>
+      (usesLocalAuth || isFirebaseConfigured) && isSupabaseConfigured;
 
   FirebaseOptions get firebaseOptions => FirebaseOptions(
     apiKey: firebaseApiKey,

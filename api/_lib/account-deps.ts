@@ -1,7 +1,8 @@
-// Production wiring of AccountDeps: Firebase Admin + Supabase service role.
+// Wiring of AccountDeps: the identity provider (Firebase Admin, or the
+// offline demo's local store) + Supabase service role.
 import type { AccountDeps } from './accounts.js';
 import { HttpError } from './http.js';
-import { firebaseAuth, supabaseAdmin } from './services.js';
+import { identity, supabaseAdmin } from './services.js';
 
 function check(error: { message: string } | null, what: string): void {
   if (error) {
@@ -12,11 +13,14 @@ function check(error: { message: string } | null, what: string): void {
 
 export function liveAccountDeps(): AccountDeps {
   return {
-    verifyIdToken: (token) => firebaseAuth().verifyIdToken(token, true),
-    setClaims: (uid, claims) => firebaseAuth().setCustomUserClaims(uid, claims),
-    revokeSessions: (uid) => firebaseAuth().revokeRefreshTokens(uid),
+    verifyIdToken: (token) => identity().verifyIdToken(token, true),
+    setClaims: (uid, claims) => identity().setCustomUserClaims(uid, claims),
+    revokeSessions: (uid) => identity().revokeRefreshTokens(uid),
     async setDisabled(uid, disabled) {
-      await firebaseAuth().updateUser(uid, { disabled });
+      await identity().updateUser(uid, { disabled });
+    },
+    async setEmailVerified(uid) {
+      await identity().updateUser(uid, { emailVerified: true });
     },
     async ensureProfile(profile) {
       const { error } = await supabaseAdmin()

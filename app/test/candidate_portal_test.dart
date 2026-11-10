@@ -206,12 +206,14 @@ void main() {
       addTearDown(() => fileSaver = null);
       final f = CandidateFakes();
       final id = await _applyTo(f, 'job-1');
+      // Always upcoming: past interviews have no calendar links.
+      final day = DateTime.now().add(const Duration(days: 7));
       f.applications.interviewList.add(
         Interview(
           id: 'int-1',
           applicationId: id,
           jobId: 'job-1',
-          scheduledAt: DateTime(2026, 11, 2, 10, 30),
+          scheduledAt: DateTime(day.year, day.month, day.day, 10, 30),
           durationMin: 45,
           mode: InterviewMode.video,
           status: InterviewStatus.scheduled,
@@ -223,7 +225,11 @@ void main() {
       await _tapVisible(tester, find.text('Download .ics (Outlook, Apple)'));
 
       final (name, mime, ics) = saved.single;
-      expect(name, 'luzhire-interview-2026-11-02.ics');
+      String two(int n) => n.toString().padLeft(2, '0');
+      expect(
+        name,
+        'luzhire-interview-${day.year}-${two(day.month)}-${two(day.day)}.ics',
+      );
       expect(mime, startsWith('text/calendar'));
       expect(ics, contains('UID:interview-int-1@luzhire.vercel.app'));
       expect(ics, contains('URL:https://meet.example.com/abc'));

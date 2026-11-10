@@ -225,6 +225,27 @@ class _ManageUserState extends ConsumerState<_ManageUser> {
                 },
         ),
         const SizedBox(height: LuzSpace.lg),
+        Text('Email', style: t.label),
+        const SizedBox(height: LuzSpace.xs),
+        Text(
+          'If the confirmation email never arrived, confirm the address '
+          'here. They then tap "I have confirmed my email" or sign in again.',
+          style: t.bodySm,
+        ),
+        const SizedBox(height: LuzSpace.sm),
+        LuzButton(
+          label: 'Mark email as confirmed',
+          icon: Icons.mark_email_read_outlined,
+          onPressed: () async {
+            final ok = await runWithToast(
+              context,
+              () => actions.verifyEmail(u.id),
+              success: '${u.email} is confirmed',
+            );
+            if (ok && context.mounted) Navigator.of(context).pop();
+          },
+        ),
+        const SizedBox(height: LuzSpace.lg),
         Text('Access', style: t.label),
         const SizedBox(height: LuzSpace.xs),
         Text(
