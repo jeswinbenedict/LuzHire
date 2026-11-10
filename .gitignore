@@ -29,3 +29,6 @@ Thumbs.db
 # Claude Code local settings (may contain MCP keys)
 .claude/settings.local.json
 .mcp.json
+
+# Offline demo (tools/local): generated accounts and build
+tools/local/.data/

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/config/app_module.dart';
 import '../../../core/data/enums.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
@@ -24,9 +25,14 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   final _name = TextEditingController();
   final _email = TextEditingController();
   final _password = TextEditingController();
-  late AppRole _role = widget.initialRole == AppRole.employer
-      ? AppRole.employer
-      : AppRole.candidate;
+  late AppRole _role =
+      _moduleRole ??
+      (widget.initialRole == AppRole.employer
+          ? AppRole.employer
+          : AppRole.candidate);
+
+  /// A single-role module (offline demo port) signs up only that role.
+  AppRole? get _moduleRole => ref.read(moduleConfigProvider).module.role;
   String? _nameError;
   String? _emailError;
   String? _passwordError;
@@ -76,7 +82,9 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     final configured = ref.watch(authControllerProvider.notifier).isConfigured;
-    final enabled = configured && !_busy;
+    final module = ref.watch(moduleConfigProvider).module;
+    // Admins are made by other admins, never by signing up.
+    final enabled = configured && !_busy && module != AppModule.admin;
     final p = context.luz;
     return AuthLayout(
       title: 'Create your account',
@@ -89,31 +97,42 @@ class _SignUpPageState extends ConsumerState<SignUpPage> {
               AuthNotice(message: _formError!, tone: LuzChipTone.red),
               const SizedBox(height: LuzSpace.md),
             ],
-            Text(
-              'I want to',
-              style: context.luzText.label.copyWith(color: p.inkMuted),
-            ),
-            const SizedBox(height: LuzSpace.xs),
-            Align(
-              alignment: Alignment.centerLeft,
-              child: LuzSegmented<AppRole>(
-                segments: const [
-                  (
-                    value: AppRole.candidate,
-                    label: 'Find a job',
-                    icon: Icons.person_search_outlined,
-                  ),
-                  (
-                    value: AppRole.employer,
-                    label: 'Hire people',
-                    icon: Icons.business_center_outlined,
-                  ),
-                ],
-                selected: _role,
-                onChanged: (r) => setState(() => _role = r),
+            if (module == AppModule.admin) ...[
+              const AuthNotice(
+                icon: Icons.info_outline,
+                message:
+                    'Admin accounts are created by another admin. Sign in '
+                    'instead, or sign up in the Candidate or Recruiter module.',
               ),
-            ),
-            const SizedBox(height: LuzSpace.lg),
+              const SizedBox(height: LuzSpace.md),
+            ],
+            if (module.role == null) ...[
+              Text(
+                'I want to',
+                style: context.luzText.label.copyWith(color: p.inkMuted),
+              ),
+              const SizedBox(height: LuzSpace.xs),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: LuzSegmented<AppRole>(
+                  segments: const [
+                    (
+                      value: AppRole.candidate,
+                      label: 'Find a job',
+                      icon: Icons.person_search_outlined,
+                    ),
+                    (
+                      value: AppRole.employer,
+                      label: 'Hire people',
+                      icon: Icons.business_center_outlined,
+                    ),
+                  ],
+                  selected: _role,
+                  onChanged: (r) => setState(() => _role = r),
+                ),
+              ),
+              const SizedBox(height: LuzSpace.lg),
+            ],
             LuzTextField(
               label: _role == AppRole.employer ? 'Your name' : 'Full name',
               controller: _name,

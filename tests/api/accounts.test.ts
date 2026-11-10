@@ -1,5 +1,5 @@
 import { describe, expect, it, beforeEach } from 'vitest';
-import { bootstrapAccount, changeRole, changeStatus, claimAdmin, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
+import { bootstrapAccount, changeRole, changeStatus, claimAdmin, verifyEmail, type AccountDeps, type VerifiedToken } from '../../api/_lib/accounts.js';
 import { HttpError, corsHeaders } from '../../api/_lib/http.js';
 
 type Call = [string, ...unknown[]];
@@ -18,6 +18,7 @@ function fakeDeps(tokens: Record<string, VerifiedToken>) {
     async setDisabled(uid, disabled) { calls.push(['setDisabled', uid, disabled]); },
     async updateProfileStatus(uid, status) { calls.push(['updateProfileStatus', uid, status]); },
     async revokeSessions(uid) { calls.push(['revokeSessions', uid]); },
+    async setEmailVerified(uid) { calls.push(['setEmailVerified', uid]); },
     async audit(e) { calls.push(['audit', e]); },
   };
   return { deps, calls };
@@ -177,6 +178,28 @@ describe('claimAdmin', () => {
   it('needs a finished account and is a no-op for admins', async () => {
     await expectHttp(claimAdmin(ctx.deps, 'fresh', list), 409, 'finish_setup');
     expect(await claimAdmin(ctx.deps, 'admin', list)).toEqual({ appRole: 'admin', refreshToken: false });
+    expect(ctx.calls).toEqual([]);
+  });
+});
+
+describe('verifyEmail', () => {
+  const tokens = {
+    admin: { uid: 'a1', email: 'a@x.com', app_role: 'admin' },
+    employer: { uid: 'e1', email: 'e@x.com', app_role: 'employer' },
+  };
+
+  it('lets an admin confirm a user email and audits it', async () => {
+    const ctx = fakeDeps(tokens);
+    await expect(verifyEmail(ctx.deps, 'admin', 'u9')).resolves.toEqual({ uid: 'u9', emailVerified: true });
+    expect(ctx.calls.map((c) => c[0])).toEqual(['setEmailVerified', 'audit']);
+    expect(ctx.calls[1]?.[1]).toMatchObject({ actor_id: 'a1', action: 'profiles.verify_email', target_id: 'u9' });
+  });
+
+  it('refuses non-admins, bad tokens and empty ids', async () => {
+    const ctx = fakeDeps(tokens);
+    await expectHttp(verifyEmail(ctx.deps, 'employer', 'u9'), 403, 'forbidden');
+    await expectHttp(verifyEmail(ctx.deps, 'nope', 'u9'), 401, 'invalid_token');
+    await expectHttp(verifyEmail(ctx.deps, 'admin', ''), 400, 'invalid_user');
     expect(ctx.calls).toEqual([]);
   });
 });

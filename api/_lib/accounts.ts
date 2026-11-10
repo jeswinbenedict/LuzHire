@@ -25,6 +25,8 @@ export interface AccountDeps {
   /** Blocks (or re-allows) Firebase sign-in for the user. */
   setDisabled(uid: string, disabled: boolean): Promise<void>;
   updateProfileStatus(uid: string, status: AccountStatus): Promise<void>;
+  /** Marks the user's email as confirmed with the identity provider. */
+  setEmailVerified(uid: string): Promise<void>;
   revokeSessions(uid: string): Promise<void>;
   audit(entry: { actor_id: string; action: string; target_id: string; diff: unknown }): Promise<void>;
 }
@@ -170,6 +172,33 @@ export async function changeStatus(
     diff: { account_status: body.status },
   });
   return { uid: targetUid, status: body.status };
+}
+
+/**
+ * POST /api/admin/users/:id/verify-email — admins confirm a user's email by
+ * hand when the verification email never arrives (spam filters, typos in a
+ * mail server). The user's next sign-in or "I've confirmed" check sees it.
+ */
+export async function verifyEmail(
+  deps: AccountDeps,
+  idToken: string,
+  targetUid: string,
+): Promise<{ uid: string; emailVerified: true }> {
+  const caller = await verify(deps, idToken);
+  if (caller.app_role !== 'admin') {
+    throw new HttpError(403, 'forbidden', 'Only admins can confirm emails.');
+  }
+  if (!targetUid || targetUid.length > 128) {
+    throw new HttpError(400, 'invalid_user', 'Unknown user.');
+  }
+  await deps.setEmailVerified(targetUid);
+  await deps.audit({
+    actor_id: caller.uid,
+    action: 'profiles.verify_email',
+    target_id: targetUid,
+    diff: { email_verified: true },
+  });
+  return { uid: targetUid, emailVerified: true };
 }
 
 async function verify(deps: AccountDeps, idToken: string): Promise<VerifiedToken> {

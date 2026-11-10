@@ -56,6 +56,16 @@ class AccountApi {
     'status': status.dbValue,
   }, fallback: 'Could not update the account. Try again.');
 
+  /// Admin: confirms [uid]'s email when the verification email never
+  /// arrived; their next "I've confirmed" check or sign-in goes through.
+  Future<void> verifyEmail({required String idToken, required String uid}) =>
+      _post(
+        '/api/admin/users/${Uri.encodeComponent(uid)}/verify-email',
+        idToken,
+        const {},
+        fallback: 'Could not confirm the email. Try again.',
+      );
+
   Future<Map<String, dynamic>> _post(
     String path,
     String idToken,

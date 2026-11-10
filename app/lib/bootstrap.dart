@@ -4,21 +4,30 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'core/config/app_config.dart';
 import 'core/config/firebase_sdk_loader.dart';
+import 'features/auth/data/local_auth_gateway.dart';
 
 /// Starts Firebase and Supabase when this build has their config. Without it
 /// the app still runs (public pages, design gallery) and sign-in shows a
 /// "not available in this build" notice.
 Future<AppConfig> bootstrapServices() async {
   final config = AppConfig.fromEnvironment();
-  if (config.isFirebaseConfigured) {
+  if (config.isFirebaseConfigured && !config.usesLocalAuth) {
     await waitForFirebaseSdk();
     await Firebase.initializeApp(options: config.firebaseOptions);
   }
   if (config.isSupabaseConfigured) {
+    // Offline demo: the local sign-in server's tokens instead of Firebase's.
+    final local = config.usesLocalAuth
+        ? LocalAuthGateway.instance ??= LocalAuthGateway(config)
+        : null;
     await Supabase.initialize(
       url: config.supabaseUrl,
       publishableKey: config.supabasePublishableKey,
-      accessToken: config.isFirebaseConfigured ? _firebaseAccessToken : null,
+      accessToken: local != null
+          ? local.accessToken
+          : config.isFirebaseConfigured
+          ? _firebaseAccessToken
+          : null,
     );
   }
   return config;

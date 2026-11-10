@@ -187,6 +187,12 @@ class AdminActions {
     _ref.invalidate(usersProvider);
   }
 
+  Future<void> verifyEmail(String uid) async {
+    await _ref
+        .read(accountApiProvider)
+        .verifyEmail(idToken: await _token(), uid: uid);
+  }
+
   Future<void> setStatus(String uid, AccountStatus status) async {
     await _ref
         .read(accountApiProvider)

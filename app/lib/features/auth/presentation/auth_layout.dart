@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../core/brand/luz_logo.dart';
+import '../../../core/config/app_module.dart';
 import '../../../core/data/failures.dart';
 import '../../../core/theme/app_theme.dart';
 import '../../../core/theme/tokens.dart';
@@ -28,6 +29,7 @@ class AuthLayout extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final configured = ref.watch(authControllerProvider.notifier).isConfigured;
+    final module = ref.watch(moduleConfigProvider).module;
     final t = context.luzText;
     final p = context.luz;
 
@@ -39,6 +41,17 @@ class AuthLayout extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: [
+            if (module != AppModule.all) ...[
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: LuzStatusChip(
+                  label: '${module.label} module',
+                  tone: LuzChipTone.orange,
+                  icon: Icons.dns_outlined,
+                ),
+              ),
+              const SizedBox(height: LuzSpace.sm),
+            ],
             Semantics(header: true, child: Text(title, style: t.h3)),
             if (subtitle != null) ...[
               const SizedBox(height: LuzSpace.xs),

@@ -161,3 +161,74 @@ values ('00000000-0000-4000-d000-000000000003', date_trunc('hour', now()) + inte
 
 insert into public.announcements (title, body_md, audience, published_at, created_by)
 values ('Welcome to LuzHire', 'This is a demo environment with fictional companies and jobs.', 'all', now(), 'seed-admin');
+
+-- ================================================================ offline demo accounts
+-- The three accounts of the offline demo (docs/OFFLINE_DEMO.md). Their
+-- sign-in records (password, claims) live in tools/local/.data/users.json,
+-- created by `npm run demo:setup` with the same ids.
+insert into public.profiles (id, role, email, display_name, headline, bio, location, phone, links) values
+  ('demo-tom',   'candidate', 'tom@luzhire.local',   'Tom',            'Computer science graduate, Flutter and Node.js',
+   'Final-year student who builds cross-platform apps and REST APIs. Looking for a first full-time developer role.',
+   'Chennai, IN', '+91 90000 00001', '{"github": "https://github.com/example-tom"}'),
+  ('demo-lisa',  'employer',  'lisa@luzhire.local',  'Lisa Immanuel',  'Talent acquisition lead', null, 'Chennai, IN', null, '{}'),
+  ('demo-jechu', 'admin',     'jechu@luzhire.local', 'Jechu Emmanuel', 'Platform administrator',  null, 'Amaravati, IN', null, '{}');
+
+insert into public.educations (user_id, institution, degree, field, start_date, end_date, grade)
+values ('demo-tom', 'Anna University', 'B.E.', 'Computer Science and Engineering', '2022-08-01', '2026-05-31', '8.4 CGPA');
+insert into public.experiences (user_id, company, title, start_date, end_date, description)
+values ('demo-tom', 'Bluefin Systems', 'Software Engineering Intern', '2025-05-01', '2025-07-31',
+        'Built a Flutter dashboard and Node.js endpoints; wrote widget and API tests.');
+insert into public.profile_skills (user_id, skill_id)
+select 'demo-tom', id from public.skills where slug in ('flutter', 'dart', 'node-js', 'postgresql', 'git', 'rest-apis');
+-- The PDF itself is uploaded to local Storage by tools/local/seed.mjs.
+insert into public.resumes (id, user_id, storage_path, file_name, is_primary)
+values ('00000000-0000-4000-c000-000000000101', 'demo-tom', 'demo-tom/tom-resume.pdf', 'tom-resume.pdf', true);
+
+-- Lisa's company (she is its owner through the companies_after_insert trigger).
+insert into public.companies (id, owner_id, name, slug, description, industry, size_range, website, hq_location, benefits, verification)
+values ('00000000-0000-4000-a000-000000000101', 'demo-lisa', 'Northstar Software', 'northstar-software',
+        'Northstar Software builds hiring and HR tools for growing companies across India. Fictional company for the LuzHire demo.',
+        'Software', '51-200', 'https://example.com/northstar-software', 'Chennai, IN',
+        array['Health insurance', 'Hybrid work', 'Learning budget', 'Annual offsite'], 'verified');
+
+insert into public.jobs (
+  id, company_id, company_name, posted_by, title, summary, description_md, employment_type, experience_level,
+  workplace, location_text, country_code, salary_min, salary_max, salary_currency, salary_period,
+  responsibilities, qualifications, benefits, status, deadline, published_at
+) values
+  ('00000000-0000-4000-b000-000000000901', '00000000-0000-4000-a000-000000000101', '', 'demo-lisa',
+   'Junior Flutter Developer', 'Build the Northstar mobile and web apps with a small product team.',
+   E'You will build features in our Flutter apps used by recruiters every day.\n\n## How we work\n\n- Small, kind team\n- Code review on every change\n- Ship weekly',
+   'full_time', 'entry', 'hybrid', 'Chennai, IN', 'IN', 500000, 800000, 'INR', 'year',
+   array['Build screens and state management in Flutter', 'Write widget and integration tests', 'Work with designers on accessible UI'],
+   array['B.E./B.Tech in Computer Science or similar', '0–2 years of Flutter or Dart experience', 'Understanding of REST APIs and Git'],
+   array['Health insurance', 'Hybrid work', 'Learning budget'], 'published', current_date + 30, now() - interval '2 days'),
+  ('00000000-0000-4000-b000-000000000902', '00000000-0000-4000-a000-000000000101', '', 'demo-lisa',
+   'Backend Developer (Node.js)', 'Design APIs and data models for our hiring platform.',
+   E'Own backend services in Node.js and PostgreSQL.\n\n## What you will do\n\n- Design REST APIs\n- Model data in PostgreSQL\n- Improve reliability',
+   'full_time', 'mid', 'onsite', 'Chennai, IN', 'IN', 900000, 1500000, 'INR', 'year',
+   array['Build and maintain Node.js services', 'Design PostgreSQL schemas and queries', 'Monitor and improve performance'],
+   array['2–4 years of backend development', 'Strong SQL and PostgreSQL', 'Experience with REST API design'],
+   array['Health insurance', 'Annual offsite'], 'published', current_date + 21, now() - interval '5 days'),
+  ('00000000-0000-4000-b000-000000000903', '00000000-0000-4000-a000-000000000101', '', 'demo-lisa',
+   'QA Engineer Intern', 'Help us test every release, by hand and with automation.',
+   E'Six months with our QA team, writing test plans and automated checks.',
+   'internship', 'entry', 'remote', 'Remote', 'IN', 20000, 30000, 'INR', 'month',
+   array['Write test cases and run release checks', 'Automate tests with Cypress'],
+   array['Final-year student or recent graduate', 'Curiosity and attention to detail'],
+   array['Certificate and pre-placement offer'], 'published', current_date + 14, now() - interval '1 day');
+
+insert into public.job_skills (job_id, skill_id)
+select j, s.id from (values
+  ('00000000-0000-4000-b000-000000000901'::uuid, array['flutter', 'dart', 'git', 'testing']),
+  ('00000000-0000-4000-b000-000000000902'::uuid, array['node-js', 'postgresql', 'rest-apis', 'docker']),
+  ('00000000-0000-4000-b000-000000000903'::uuid, array['testing', 'cypress', 'javascript'])
+) as x(j, slugs)
+join public.skills s on s.slug = any (x.slugs);
+
+-- Other (fictional) candidates already in Lisa's pipeline, so it is not empty.
+insert into public.applications (id, job_id, candidate_id, resume_id, cover_letter, stage) values
+  ('00000000-0000-4000-d000-000000000901', '00000000-0000-4000-b000-000000000901', 'seed-candidate',
+   '00000000-0000-4000-c000-000000000001', 'I have built two Flutter apps and would love to join Northstar.', 'shortlisted'),
+  ('00000000-0000-4000-d000-000000000902', '00000000-0000-4000-b000-000000000902', 'seed-candidate2',
+   null, 'I work with SQL every day and want to move into backend development.', 'applied');
